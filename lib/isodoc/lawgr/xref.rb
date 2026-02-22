@@ -5,7 +5,7 @@ module IsoDoc
   module Lawgr
     class Xref < IsoDoc::Xref
       STRUCTURAL_TYPES = %w[book part tmima chapter article
-                            subarticle paragraph].freeze
+                            subarticle paragraph custom].freeze
 
       def clause_order_main(_docxml)
         [{ path: "//sections/clause | //sections/terms | " \
@@ -33,15 +33,29 @@ module IsoDoc
         unnumbered_section_name?(clause) and return num
         ctype = clause["type"]
         case ctype
+        when "book", "part", "tmima", "chapter"
+          lawgr_structural_names(clause, num, lvl)
         when "article"
           lawgr_article_names(clause, num, lvl)
-        when "paragraph"
-          # paragraphs at top level treated as plain clauses
-          section_names(clause, num, lvl)
         else
           section_names(clause, num, lvl)
         end
         num
+      end
+
+      # Structural containers (parts, books, etc.) are transparent
+      # for article numbering: they get their own anchor but do not
+      # consume a number from the article counter.
+      def lawgr_structural_names(clause, article_num, lvl)
+        c = clause_title(clause)
+        title = c ? semx(clause, c, "title") : nil
+        @anchors[clause["id"]] =
+          { label: nil, xref: title, title: title,
+            level: lvl, type: "clause",
+            elem: @labels["clause"] }
+        clause.xpath(ns(subclauses)).each do |child|
+          lawgr_section_names(child, article_num, lvl + 1)
+        end
       end
 
       def lawgr_article_names(clause, num, lvl)
@@ -49,9 +63,9 @@ module IsoDoc
         article_num_str = num.print
         lbl = labelled_autonum(@labels["article"], semx(clause, article_num_str))
         lawgr_article_anchor(clause, lbl, article_num_str, lvl)
-        i = clause_counter(0)
+        sub_num = clause_counter(0)
         clause.xpath(ns(subclauses)).each do |c|
-          lawgr_paragraph_names(c, i, lvl + 1, clause, article_num_str)
+          lawgr_child_of_article(c, sub_num, lvl + 1, article_num_str)
         end
       end
 
@@ -64,21 +78,102 @@ module IsoDoc
             elem: @labels["article"], value: value }
       end
 
-      def lawgr_paragraph_names(clause, num, lvl, parent, article_num_str)
+      # Children of an article can be subarticles or direct paragraphs.
+      def lawgr_child_of_article(clause, num, lvl, prefix)
+        unnumbered_section_name?(clause) and return
+        ctype = clause["type"]
+        case ctype
+        when "subarticle"
+          lawgr_subarticle_names(clause, num, lvl, prefix)
+        when "custom"
+          lawgr_custom_names(clause, num, lvl, prefix)
+        when "paragraph", nil
+          lawgr_paragraph_names(clause, num, lvl, prefix)
+        else
+          section_names(clause, num, lvl)
+        end
+      end
+
+      def lawgr_subarticle_names(clause, num, lvl, prefix)
+        num.increment(clause)
+        display = @inheritnumbering ? "#{prefix}.#{num.print}" : num.print
+        lbl = semx(clause, display)
+        lawgr_subarticle_anchor(clause, lbl, lvl)
+        para_num = clause_counter(0)
+        custom_num = clause_counter(0)
+        clause.xpath(ns(subclauses)).each do |c|
+          if c["type"] == "custom"
+            lawgr_custom_names(c, para_num, lvl + 1, display,
+                               custom_num)
+          else
+            lawgr_paragraph_names(c, para_num, lvl + 1, display)
+          end
+        end
+      end
+
+      def lawgr_subarticle_anchor(clause, lbl, level)
+        c = clause_title(clause)
+        title = c ? semx(clause, c, "title") : nil
+        @anchors[clause["id"]] =
+          { label: lbl, xref: labelled_autonum(@labels["clause"], lbl),
+            title: title, level: level, type: "clause",
+            elem: @labels["clause"] }
+      end
+
+      # In Greek-law AsciiDoc, deep paragraphs (level=6/7) can end up
+      # inside <p> elements in the XML.  Standard subclauses (./clause)
+      # misses them, so we also look inside <p>.
+      PARAGRAPH_SUBCLAUSES =
+        "./clause | ./p/clause | ./references | ./term | " \
+        "./terms | ./definitions".freeze
+
+      # Custom clauses (e.g. "Α. Φυσική Πρόσβαση") get uppercase-Greek
+      # numbering that is NOT inherited by children.  The parent's
+      # paragraph counter is passed through so child paragraphs
+      # continue the parent numbering sequence.
+      def lawgr_custom_names(clause, para_num, lvl, prefix,
+                             custom_num = nil)
+        custom_num ||= clause_counter(0)
+        custom_num.increment(clause)
+        idx = custom_num.print.to_i
+        greek = Metanorma::Lawgr::GreekNumerals::GREEK_UPPER_LETTERS[idx - 1] || idx.to_s
+        lbl = semx(clause, greek)
+        lawgr_custom_anchor(clause, lbl, lvl)
+        clause.xpath(ns(PARAGRAPH_SUBCLAUSES)).each do |c|
+          if c["type"] == "custom"
+            lawgr_custom_names(c, para_num, lvl + 1, prefix)
+          else
+            lawgr_paragraph_names(c, para_num, lvl + 1, prefix)
+          end
+        end
+      end
+
+      def lawgr_custom_anchor(clause, lbl, level)
+        c = clause_title(clause)
+        title = c ? semx(clause, c, "title") : nil
+        @anchors[clause["id"]] =
+          { label: lbl, xref: lbl, title: title,
+            level: level, type: "clause",
+            elem: @labels["clause"] }
+      end
+
+      # Paragraphs and their sub-paragraphs (recursive).
+      # prefix carries the inherited numbering chain (e.g. "3.1").
+      def lawgr_paragraph_names(clause, num, lvl, prefix)
         unnumbered_section_name?(clause) and return
         ctype = clause["type"]
         if ctype == "paragraph" || ctype.nil?
           num.increment(clause)
-          if @inheritnumbering
-            display = "#{article_num_str}.#{num.print}"
-          else
-            display = num.print
-          end
+          display = @inheritnumbering ? "#{prefix}.#{num.print}" : num.print
           lbl = semx(clause, display)
           lawgr_paragraph_anchor(clause, lbl, lvl)
-          j = clause_counter(0)
-          clause.xpath(ns(subclauses)).each do |c|
-            section_names1(c, lbl, j.increment(c).print, lvl + 1)
+          sub_num = clause_counter(0)
+          clause.xpath(ns(PARAGRAPH_SUBCLAUSES)).each do |c|
+            if c["type"] == "custom"
+              lawgr_custom_names(c, sub_num, lvl + 1, display)
+            else
+              lawgr_paragraph_names(c, sub_num, lvl + 1, display)
+            end
           end
         else
           section_names(clause, num, lvl)

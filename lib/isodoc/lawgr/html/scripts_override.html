@@ -1,0 +1,36 @@
+<script>
+// lawgr: fix toggle button + body margin when navbar collapses/expands.
+// The base isodoc script animates nav left and body marginLeft but
+// (a) leaves #toggle at its fixed CSS position, and
+// (b) sets body marginLeft to 0 on collapse, hiding content behind toggle.
+//
+// We override both: toggle slides in sync, and body always keeps a
+// minimum margin = toggleWidth + gap so content never overlaps the widget.
+(function() {
+  var jqToggle = $('#toggle');
+  var jqNav = $('nav');
+  var jqBody = $('body');
+  if (!jqToggle.length || !jqNav.length) return;
+
+  var navWidth = parseInt(jqNav.css('width')) || 278;
+  var toggleWidth = jqToggle.outerWidth() || 30;
+  var gap = parseInt(jqBody.css('margin-left')) - navWidth - toggleWidth;
+  if (gap < 0) gap = 12;
+  var navExpanded = jqNav.is(':visible');
+
+  jqToggle.on('click', function() {
+    navExpanded = !navExpanded;
+
+    var targetLeft = navExpanded ? navWidth + 'px' : '0px';
+    jqToggle.stop(true, true).animate({ left: targetLeft }, 'slow');
+
+    var targetMargin = navExpanded
+      ? (navWidth + toggleWidth + gap) + 'px'
+      : (toggleWidth + gap) + 'px';
+    jqBody.stop(true, true).animate({ marginLeft: targetMargin }, 'slow');
+
+    var arrow = navExpanded ? '\u25C0' : '\u25B6';
+    jqToggle.find('span').text(arrow);
+  });
+})();
+</script>

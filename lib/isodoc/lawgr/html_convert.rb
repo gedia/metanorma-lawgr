@@ -25,6 +25,7 @@ module IsoDoc
           htmlstylesheet: html_doc_path("htmlstyle.css"),
           htmlcoverpage: html_doc_path("html_lawgr_titlepage.html"),
           htmlintropage: html_doc_path("html_lawgr_intro.html"),
+          scripts_override: html_doc_path("scripts_override.html"),
         }
       end
 
@@ -35,6 +36,7 @@ module IsoDoc
       end
 
       def make_body(xml, docxml)
+        precompute_paragraph_widths(docxml)
         body_attr = { lang: "EL", link: "blue", vlink: "#954F72",
                       "xml:lang": "EL", class: "container" }
         xml.body **body_attr do |body|

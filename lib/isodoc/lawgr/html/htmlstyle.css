@@ -442,22 +442,54 @@ h3[data-type="article"],
   text-align: center;
 }
 
-/* Subarticle */
-h4[data-type="subarticle"],
-.subarticle-title {
+/* Subarticle – hanging-indent layout.
+ * --lawgr-sub-num-width is set per-div by the HTML converter,
+ * calculated from the widest subarticle label.  The heading is
+ * pulled back so the number sits at the container's left edge
+ * while all other child content (paragraphs, bare <p> tags)
+ * starts at the title-text position. */
+div.lawgr-subarticle {
+  padding-left: var(--lawgr-sub-num-width, 4ch);
+  margin-top: 1em;
+}
+
+div.lawgr-subarticle > h3 {
+  margin-left: calc(-1 * var(--lawgr-sub-num-width, 4ch));
   font-weight: 600;
   font-size: 1em;
-  margin-top: 1em;
+  margin-top: 0;
+  margin-bottom: 0.3em;
+}
+
+/* Custom clause – "Α. Title" with hanging-indent layout.
+ * --lawgr-custom-num-width is set per-div by the HTML converter.
+ * The heading is pulled back so the label sits at the container's
+ * left edge while all child content (paragraphs) starts at the
+ * title-text position. */
+div.lawgr-custom {
+  padding-left: var(--lawgr-custom-num-width, 3ch);
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+div.lawgr-custom > h3,
+div.lawgr-custom > h4,
+div.lawgr-custom > h5,
+div.lawgr-custom > h6 {
+  margin-left: calc(-1 * var(--lawgr-custom-num-width, 3ch));
+  font-weight: 700;
+  font-size: 1em;
+  margin-top: 0;
   margin-bottom: 0.3em;
 }
 
 /* ===== Lawgr Paragraph hanging-indent layout ===== */
-/* The paragraph number (h2/h3) floats left; all content aligns to its right.
- * When there is no title, the first <p> flows next to the number;
- * subsequent blocks maintain the same left indent. */
+/* The paragraph number (h2/h3/…) floats left; all content aligns to its right.
+ * --lawgr-num-width is set per-div by the HTML converter, calculated from
+ * the widest label at each numbering depth.  Fallback is 3em. */
 div.lawgr-paragraph {
   position: relative;
-  padding-left: 2.5em;
+  padding-left: var(--lawgr-num-width, 3em);
   margin-top: 0.8em;
   margin-bottom: 0.4em;
 }
@@ -471,23 +503,30 @@ div.lawgr-paragraph::after {
 div.lawgr-paragraph > h2,
 div.lawgr-paragraph > h3,
 div.lawgr-paragraph > h4,
-div.lawgr-paragraph > h5 {
+div.lawgr-paragraph > h5,
+div.lawgr-paragraph > h6,
+div.lawgr-paragraph > h7,
+div.lawgr-paragraph > h8 {
+  display: block;
   float: left;
-  margin-left: -2.5em;
-  width: 2.2em;
+  margin-left: calc(-1 * var(--lawgr-num-width, 3em));
+  width: calc(var(--lawgr-num-width, 3em) - 0.3em);
   margin-top: 0;
   margin-bottom: 0;
   font-size: 1em;
   font-weight: 600;
   line-height: 1.6;
-  text-align: right;
+  text-align: left;
 }
 
 /* First content element flows next to the number */
 div.lawgr-paragraph > h2 + *,
 div.lawgr-paragraph > h3 + *,
 div.lawgr-paragraph > h4 + *,
-div.lawgr-paragraph > h5 + * {
+div.lawgr-paragraph > h5 + *,
+div.lawgr-paragraph > h6 + *,
+div.lawgr-paragraph > h7 + *,
+div.lawgr-paragraph > h8 + * {
   margin-top: 0;
 }
 
@@ -502,12 +541,20 @@ div.lawgr-paragraph > ol {
   margin-bottom: 0.4em;
 }
 
+/* Extra spacing when nesting level changes: first child paragraph
+ * inside a parent paragraph gets more top margin so it doesn't
+ * feel crammed against the parent's content. */
+div.lawgr-paragraph > div.lawgr-paragraph:first-of-type {
+  margin-top: 1.2em;
+}
+
 /* Lawgr Article styling */
 div.lawgr-article {
   margin-top: 1.8em;
 }
 
-div.lawgr-article > h1 {
+div.lawgr-article > h1,
+div.lawgr-article > h2 {
   text-align: center;
   font-weight: 700;
   font-size: 1.1em;

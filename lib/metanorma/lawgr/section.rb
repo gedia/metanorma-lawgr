@@ -2,7 +2,7 @@ module Metanorma
   module Lawgr
     module Section
       HEADING_TYPES = %w[book part section tmima chapter article
-                         subarticle paragraph].freeze
+                         subarticle paragraph custom].freeze
 
       SEMANTIC_TYPES = %w[general-provisions substantive-provisions
                           organisational-provisions sanctions

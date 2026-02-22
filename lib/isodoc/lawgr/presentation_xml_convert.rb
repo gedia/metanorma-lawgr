@@ -27,6 +27,8 @@ module IsoDoc
           prefix_article_label(elem, lbl, level)
         when "subarticle"
           prefix_subarticle_label(elem, lbl, level)
+        when "custom"
+          prefix_custom_label(elem, lbl, level)
         when "paragraph"
           prefix_paragraph_label(elem, lbl, level)
         else
@@ -80,12 +82,41 @@ module IsoDoc
         t = elem.at(ns("./fmt-title")) and t["depth"] = level
       end
 
-      def prefix_paragraph_label(elem, lbl, level)
-        if lbl && elem["unnumbered"] != "true"
+      # Custom clause: "Α. Title" — label + period + space + title inline.
+      def prefix_custom_label(elem, lbl, level)
+        if lbl
           t = elem.at(ns("./title"))
           if t && !t.text.strip.empty?
             prefix_name(elem, { caption: "<span class='fmt-caption-delim'>. </span>" },
                         lbl, "title")
+          else
+            prefix_name(elem, { label: "." }, lbl, "title")
+          end
+        else
+          prefix_name(elem, {}, nil, "title")
+        end
+        t = elem.at(ns("./fmt-title")) and t["depth"] = level
+      end
+
+      def prefix_paragraph_label(elem, lbl, level)
+        if lbl && elem["unnumbered"] != "true"
+          t = elem.at(ns("./title"))
+          if t && !t.text.strip.empty?
+            # Titled paragraph: number goes in heading, title rendered
+            # as paragraph-style body text (not as part of the heading).
+            title_xml = to_xml(t.children)
+            t.children.each(&:remove)
+            prefix_name(elem, { label: "." }, lbl, "title")
+            t.inner_html = title_xml
+            fmt_t = elem.at(ns("./fmt-title"))
+            if fmt_t
+              p_node = Nokogiri::XML::Node.new("p", elem.document)
+              p_node["class"] = "paragraph-title"
+              p_node.inner_html = "<strong>#{title_xml}</strong>"
+              fmt_t.add_next_sibling(p_node)
+            end
+            toc_lbl = @xrefs.anchor(elem["id"], :xref, false)
+            add_toc_variant_title(elem, toc_lbl) if toc_lbl
           else
             prefix_name(elem, { label: "." }, lbl, "title")
             toc_lbl = @xrefs.anchor(elem["id"], :xref, false)
