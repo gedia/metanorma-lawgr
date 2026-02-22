@@ -107,6 +107,17 @@ module IsoDoc
         end
       end
 
+      # Remap any source-specified lowergreek type to alphabet for now,
+      # since the base Counter#listlabel doesn't handle :lowergreek.
+      def ol_numbering(docxml)
+        docxml.xpath(ns("//ol")).each do |elem|
+          if elem["type"] == "lowergreek"
+            elem["type"] = "alphabet"
+          end
+          elem["type"] ||= ol_depth(elem).to_s
+        end
+      end
+
       def move_norm_ref_to_sections(docxml); end
 
       include Init
