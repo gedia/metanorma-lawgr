@@ -22,7 +22,7 @@ module IsoDoc
 
       def default_file_locations(_options)
         {
-          htmlstylesheet: html_doc_path("htmlstyle.scss"),
+          htmlstylesheet: html_doc_path("htmlstyle.css"),
           htmlcoverpage: html_doc_path("html_lawgr_titlepage.html"),
           htmlintropage: html_doc_path("html_lawgr_intro.html"),
         }

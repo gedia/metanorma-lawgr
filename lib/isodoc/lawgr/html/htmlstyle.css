@@ -1,0 +1,161 @@
+body {
+  font-family: 'Times New Roman', serif;
+  font-size: 15px;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Times New Roman', serif;
+  color: #1a1a1a;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.book-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.4em;
+  font-weight: bold;
+  margin-top: 2em;
+  border-bottom: 2px solid #333;
+  padding-bottom: 0.3em;
+}
+
+.part-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-top: 1.8em;
+}
+
+.tmima-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.5em;
+}
+
+.chapter-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.5em;
+}
+
+.article-title {
+  font-weight: bold;
+  font-size: 1.05em;
+  margin-top: 1.2em;
+  margin-bottom: 0.3em;
+}
+
+.paragraph-num {
+  font-weight: bold;
+  margin-right: 0.3em;
+}
+
+.preface {
+  margin-bottom: 2em;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 1em;
+}
+
+.colophon {
+  margin-top: 3em;
+  border-top: 1px solid #ccc;
+  padding-top: 1em;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+
+th, td {
+  border: 1px solid #666;
+  padding: 0.5em;
+  text-align: left;
+}
+
+th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+ol.lowergreek {
+  list-style-type: none;
+  padding-left: 2em;
+}
+
+.note {
+  border-left: 3px solid #999;
+  padding-left: 1em;
+  margin: 1em 0;
+  font-size: 0.95em;
+  color: #555;
+}
+
+.footnote {
+  font-size: 0.9em;
+  color: #666;
+}
+
+pre, code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+pre {
+  background: #f8f8f8;
+  padding: 1em;
+  border: 1px solid #ddd;
+  overflow-x: auto;
+}
+
+.toc {
+  margin: 2em 0;
+  padding: 1em;
+  background: #fafafa;
+  border: 1px solid #eee;
+}
+
+.toc a {
+  text-decoration: none;
+  color: #333;
+}
+
+.toc a:hover {
+  text-decoration: underline;
+}
+
+.fek-header {
+  text-align: center;
+  font-size: 0.95em;
+  color: #555;
+  margin-bottom: 1em;
+}
+
+@media print {
+  body {
+    font-size: 12pt;
+    color: #000;
+  }
+  main {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+}
