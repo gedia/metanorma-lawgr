@@ -8,3 +8,13 @@
 /tmp/
 *.gem
 Gemfile.lock
+node_modules/
+package.json
+package-lock.json
+spec/examples/*.xml
+spec/examples/*.html
+spec/examples/*.presentation.xml
+spec/examples/*.rxl
+spec/examples/*.err.html
+spec/examples/*.tmp.html
+spec/examples/*.asciidoc.log.txt
