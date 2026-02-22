@@ -12,6 +12,80 @@ module IsoDoc
                  "//sections/definitions",
            multi: true }]
       end
+
+      # Override main_anchor_names to implement Greek law numbering:
+      # articles are numbered sequentially across the whole law,
+      # paragraphs are numbered within each article.
+      def main_anchor_names(xml)
+        n = clause_counter
+        clause_order_main(xml).each do |a|
+          xml.xpath(ns(a[:path])).each do |c|
+            lawgr_section_names(c, n, 1)
+            a[:multi] or break
+          end
+        end
+      end
+
+      def lawgr_section_names(clause, num, lvl)
+        unnumbered_section_name?(clause) and return num
+        ctype = clause["type"]
+        case ctype
+        when "article"
+          lawgr_article_names(clause, num, lvl)
+        when "paragraph"
+          # paragraphs at top level treated as plain clauses
+          section_names(clause, num, lvl)
+        else
+          section_names(clause, num, lvl)
+        end
+        num
+      end
+
+      def lawgr_article_names(clause, num, lvl)
+        num.increment(clause)
+        lbl = labelled_autonum(@labels["article"], semx(clause, num.print))
+        lawgr_article_anchor(clause, lbl, num.print, lvl)
+        # number paragraphs within this article
+        i = clause_counter(0)
+        clause.xpath(ns(subclauses)).each do |c|
+          lawgr_paragraph_names(c, i, lvl + 1, clause)
+        end
+      end
+
+      def lawgr_article_anchor(clause, lbl, value, level)
+        c = clause_title(clause)
+        title = c ? semx(clause, c, "title") : nil
+        @anchors[clause["id"]] =
+          { label: lbl, xref: lbl, title: title,
+            level: level, type: "clause",
+            elem: @labels["article"], value: value }
+      end
+
+      def lawgr_paragraph_names(clause, num, lvl, parent)
+        unnumbered_section_name?(clause) and return
+        ctype = clause["type"]
+        if ctype == "paragraph" || ctype.nil?
+          num.increment(clause)
+          lbl = semx(clause, num.print)
+          lawgr_paragraph_anchor(clause, lbl, lvl)
+          # sub-subclauses within a paragraph (rare)
+          j = clause_counter(0)
+          clause.xpath(ns(subclauses)).each do |c|
+            section_names1(c, lbl, j.increment(c).print, lvl + 1)
+          end
+        else
+          section_names(clause, num, lvl)
+        end
+      end
+
+      def lawgr_paragraph_anchor(clause, lbl, level)
+        c = clause_title(clause)
+        title = c ? semx(clause, c, "title") : nil
+        @anchors[clause["id"]] =
+          { label: lbl, xref: labelled_autonum(@labels["paragraph"], lbl),
+            title: title, level: level, type: "clause",
+            elem: @labels["paragraph"] }
+      end
     end
   end
 end

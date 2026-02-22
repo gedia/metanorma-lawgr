@@ -22,11 +22,14 @@ module Metanorma
         end
       end
 
-      def clause_attrs(node)
+      # Override section_attributes to map heading= to type=.
+      # The base standoc reads type= directly, but Greek law adoc
+      # uses heading= for structural hierarchy (article, paragraph, etc.).
+      def section_attributes(node)
         attrs = super
         heading = node.attr("heading")
         if heading && HEADING_TYPES.include?(heading)
-          attrs[:type] = heading
+          attrs[:type] ||= heading
         end
         attrs
       end
