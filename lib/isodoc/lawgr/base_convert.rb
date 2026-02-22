@@ -79,33 +79,45 @@ module IsoDoc
           "//bibliography/references"
       end
 
-      # For lowergreek lists, suppress native <ol> numbering so we can
-      # render the fmt-name labels inline instead.
+      # Add CSS classes to all <ol> elements for reliable styling.
+      # Lowergreek gets its native type removed (inline labels handle it).
+      # Other types keep their HTML type but also get a class for CSS
+      # counter targeting (avoids browser case-sensitivity quirks with
+      # attribute selectors on type="i" vs type="I").
+      OL_CLASS = {
+        "arabic" => "ol-arabic",
+        "alphabet" => "ol-alphabet",
+        "alphabet_upper" => "ol-alphabet-upper",
+        "roman" => "ol-roman",
+        "roman_upper" => "ol-roman-upper",
+      }.freeze
+
       def ol_attrs(node)
         attrs = super
-        if node["type"] == "lowergreek"
+        xml_type = node["type"]
+        if xml_type == "lowergreek"
           attrs.delete(:type)
-          existing = attrs[:style].to_s
-          attrs[:style] = [existing, "list-style: none; padding-left: 0"]
-                            .reject(&:empty?).join("; ")
+          attrs[:class] = "lowergreek"
+        elsif OL_CLASS[xml_type]
+          attrs[:class] = OL_CLASS[xml_type]
         end
         attrs
       end
 
-      # Render fmt-name content for lowergreek list items (the base
-      # converter skips fmt-name because standard types use native
-      # browser numbering).
+      # Render fmt-name content as inline <span class="ol-label"> for
+      # ALL ordered-list items.  The base converter skips fmt-name
+      # because standard flavours use native browser numbering via
+      # <ol type>.  We render labels inline so they are selectable,
+      # consistently styled, and support hanging-indent via CSS.
       def li_parse(node, out)
-        lowergreek = node.parent["type"] == "lowergreek"
         out.li **attr_code(id: node["id"]) do |li|
           li << li_checkbox(node)
-          if lowergreek
+          if node.parent.name == "ol"
             fmt = node.at(ns("./fmt-name"))
             if fmt
               li.span class: "ol-label" do |span|
                 fmt.children.each { |n| parse(n, span) }
               end
-              li << " "
             end
           end
           node.children.each do |n|

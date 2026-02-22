@@ -566,12 +566,6 @@ ul, ol {
   margin-left: 2em;
 }
 
-/* Greek numeral list labels (rendered inline, native numbering suppressed) */
-.ol-label {
-  display: inline-block;
-  min-width: 2.5ch;
-  font-weight: 400;
-}
 
 ul > li {
   list-style: none;
@@ -585,74 +579,34 @@ ul > li > p:first-child::before {
   margin-right: 0.5em;
 }
 
-ol[class=alphabet] { counter-reset: alphabet; }
-ol[class=arabic] { counter-reset: arabic; }
-ol[class=roman] { counter-reset: roman; }
-ol[class=alphabet_upper] { counter-reset: alphabet_upper; }
-ol[class=roman_upper] { counter-reset: roman_upper; }
-
-ol[class=alphabet] ol[class=alphabet] { counter-reset: alphabet2; }
-ol[class=arabic] ol[class=arabic] { counter-reset: arabic2; }
-ol[class=roman] ol[class=roman] { counter-reset: roman2; }
-
-ol { counter-reset: alphabet; }
-
+/* Ordered-list labels are rendered as inline <span class="ol-label">
+ * by li_parse (all types: arabic, roman, greek, etc.).  No CSS
+ * counters needed.  Hanging indent keeps wrapped lines aligned. */
 ol > li {
   list-style: none;
-  position: relative;
+  padding-left: 2.5em;
 }
 
-ol > li::before {
-  position: absolute;
-  left: -1.4em;
+ol > li > .ol-label {
+  display: inline-block;
+  min-width: 2.5em;
+  margin-left: -2.5em;
+  text-align: left;
 }
 
-ol[class=roman] > li::before { left: -2em; }
-ol[class=roman_upper] > li::before { left: -2.3em; }
-
-ol[class=alphabet] > li::before {
-  counter-increment: alphabet;
-  content: counter(alphabet, lower-alpha) ") ";
+ol.ol-roman > li,
+ol.ol-roman-upper > li {
+  padding-left: 3em;
 }
 
-ol[class=arabic] > li::before {
-  counter-increment: arabic;
-  content: counter(arabic, decimal) ") ";
+ol.ol-roman > li > .ol-label,
+ol.ol-roman-upper > li > .ol-label {
+  min-width: 3em;
+  margin-left: -3em;
 }
 
-ol[class=roman] > li::before {
-  counter-increment: roman;
-  content: counter(roman, lower-roman) ") ";
-}
-
-ol[class=alphabet_upper] > li::before {
-  counter-increment: alphabet_upper;
-  content: counter(alphabet_upper, upper-alpha) ") ";
-}
-
-ol[class=roman_upper] > li::before {
-  counter-increment: roman_upper;
-  content: counter(roman_upper, upper-roman) ") ";
-}
-
-ol > li::before {
-  counter-increment: alphabet;
-  content: counter(alphabet, lower-alpha) ") ";
-}
-
-ol[class=alphabet] ol[class=alphabet] > li::before {
-  counter-increment: alphabet2;
-  content: counter(alphabet2, lower-alpha) ") ";
-}
-
-ol[class=arabic] ol[class=arabic] > li::before {
-  counter-increment: arabic2;
-  content: counter(arabic2, decimal) ") ";
-}
-
-ol[class=roman] ol[class=roman] > li::before {
-  counter-increment: roman2;
-  content: counter(roman2, lower-roman) ") ";
+ol > li > p:first-of-type {
+  display: inline;
 }
 
 ol > li > p::before {
