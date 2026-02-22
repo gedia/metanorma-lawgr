@@ -1,161 +1,1011 @@
-body {
-  font-family: 'Times New Roman', serif;
-  font-size: 15px;
-  color: #333;
-  line-height: 1.6;
-  margin: 0;
-  padding: 0;
+/* metanorma-lawgr HTML stylesheet
+ * Greek legislative document presentation
+ * Inspired by metanorma-iso and kodiko.gr patterns
+ */
+
+/* ===== 1. Reset / Normalize ===== */
+html {
+  font-family: sans-serif;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
-main {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 2em;
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+b, strong {
+  font-weight: 700;
+}
+
+sub, sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+
+img {
+  border: 0;
+  vertical-align: middle;
+  max-width: 100%;
+  height: auto;
+}
+
+hr {
+  box-sizing: content-box;
+  height: 0;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  border: 0;
+  border-top: 1px solid #ddd;
+}
+
+/* ===== 2. Base Typography ===== */
+html {
+  font-size: 10px;
+}
+
+body {
+  font-family: "Times New Roman", "GFS Didot", Georgia, serif;
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1.45;
+  color: #333;
+  background-color: #fff;
+}
+
+html, body, div, span, applet, object, iframe,
+p, blockquote,
+a, abbr, acronym, address, big, cite,
+del, dfn, em, img, ins, q, s,
+small, strike, strong, sub, sup, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  font-family: "Times New Roman", "GFS Didot", Georgia, serif;
+}
+
+code, pre, tt, kbd, samp {
+  font-family: "Courier New", monospace;
+  font-variant-ligatures: none;
+}
+
+code *, pre *, tt *, kbd *, samp * {
+  font-family: "Courier New", monospace !important;
+  font-variant-ligatures: none;
+}
+
+p code, dt code, li code, label code,
+caption code, th code, td code,
+p tt, dt tt, li tt, label tt,
+caption tt, th tt, td tt {
+  font-size: 0.8em;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Times New Roman', serif;
+  font-family: "Times New Roman", "GFS Didot", Georgia, serif;
+  font-weight: 700;
   color: #1a1a1a;
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
-}
-
-.book-title {
-  text-align: center;
-  text-transform: uppercase;
-  font-size: 1.4em;
-  font-weight: bold;
-  margin-top: 2em;
-  border-bottom: 2px solid #333;
-  padding-bottom: 0.3em;
-}
-
-.part-title {
-  text-align: center;
-  text-transform: uppercase;
-  font-size: 1.2em;
-  font-weight: bold;
-  margin-top: 1.8em;
-}
-
-.tmima-title {
-  text-align: center;
-  text-transform: uppercase;
-  font-size: 1.1em;
-  font-weight: bold;
-  margin-top: 1.5em;
-}
-
-.chapter-title {
-  text-align: center;
-  text-transform: uppercase;
-  font-size: 1.1em;
-  font-weight: bold;
-  margin-top: 1.5em;
-}
-
-.article-title {
-  font-weight: bold;
-  font-size: 1.05em;
   margin-top: 1.2em;
-  margin-bottom: 0.3em;
+  margin-bottom: 0.4em;
+  line-height: 1.25;
 }
 
-.paragraph-num {
-  font-weight: bold;
-  margin-right: 0.3em;
+h1 { font-size: 1.6em; }
+h2 { font-size: 1.35em; }
+h3 { font-size: 1.15em; }
+h4 { font-size: 1.05em; }
+h5 { font-size: 1em; }
+h6 { font-size: 0.95em; }
+
+h2 p, .h2 p { display: inline; }
+
+p {
+  margin-top: 0.6em;
+  margin-bottom: 0.6em;
 }
 
-.preface {
-  margin-bottom: 2em;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 1em;
+li p {
+  margin-bottom: 0.6em;
+  line-height: 1.2;
 }
 
-.colophon {
-  margin-top: 3em;
-  border-top: 1px solid #ccc;
-  padding-top: 1em;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-  margin: 1em 0;
-}
-
-th, td {
-  border: 1px solid #666;
-  padding: 0.5em;
-  text-align: left;
-}
-
-th {
-  background-color: #f0f0f0;
-  font-weight: bold;
-}
-
-ol.lowergreek {
-  list-style-type: none;
-  padding-left: 2em;
-}
-
-.note {
-  border-left: 3px solid #999;
-  padding-left: 1em;
-  margin: 1em 0;
-  font-size: 0.95em;
-  color: #555;
-}
-
-.footnote {
-  font-size: 0.9em;
-  color: #666;
-}
-
-pre, code {
-  font-family: 'Courier New', monospace;
-  font-size: 0.9em;
-}
-
-pre {
-  background: #f8f8f8;
-  padding: 1em;
-  border: 1px solid #ddd;
-  overflow-x: auto;
-}
-
-.toc {
-  margin: 2em 0;
-  padding: 1em;
-  background: #fafafa;
-  border: 1px solid #eee;
-}
-
-.toc a {
+/* ===== 3. Links ===== */
+a {
+  color: #2a6496;
   text-decoration: none;
-  color: #333;
 }
 
-.toc a:hover {
+a:focus,
+a:hover {
+  color: #193c5a;
   text-decoration: underline;
 }
 
-.fek-header {
+a:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+a.header {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.header:hover {
+  color: #a53221 !important;
+  background: inherit;
+  box-shadow: none;
+}
+
+a.anchor {
+  position: absolute;
+  z-index: 1001;
+  width: 1.5ex;
+  margin-left: -1.5ex;
+  display: block;
+  text-decoration: none !important;
+  visibility: hidden;
   text-align: center;
-  font-size: 0.95em;
-  color: #555;
-  margin-bottom: 1em;
+  font-weight: 400;
+}
+
+a.anchor::before {
+  content: "\00A7";
+  font-size: 0.85em;
+  display: block;
+  padding-top: 0.1em;
+}
+
+h1:hover > a.anchor,
+h2:hover > a.anchor,
+h3:hover > a.anchor,
+h4:hover > a.anchor,
+h5:hover > a.anchor,
+h6:hover > a.anchor {
+  visibility: visible;
+}
+
+/* ===== 4. Layout ===== */
+body {
+  margin-left: 298px;
+  margin-right: 2em;
+}
+
+body main {
+  margin: 0 3em 0 1em;
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    margin-left: 2em;
+  }
+  body main {
+    margin: 0;
+    padding: 0;
+  }
 }
 
 @media print {
   body {
+    margin-left: 2em;
+    margin-right: 2em;
     font-size: 12pt;
     color: #000;
   }
-  main {
-    max-width: none;
+  body main {
     margin: 0;
+  }
+}
+
+/* ===== 5. Navigation Sidebar ===== */
+@media screen and (min-width: 768px) {
+  nav {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 278px;
+    font-size: 0.9em;
+    overflow: auto;
+    padding: 0 0 0 20px;
+    background-color: #f7f7f7;
+    border-right: 1px solid #e0e0e0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  nav {
+    position: relative;
+    width: auto;
+    font-size: 0.9em;
     padding: 0;
+    background-color: #f7f7f7;
+    margin-bottom: 2em;
+  }
+}
+
+@media print {
+  nav {
+    position: relative;
+    width: auto;
+    font-size: 0.9em;
+    overflow: auto;
+    padding: 0;
+    background-color: white;
+  }
+}
+
+nav {
+  line-height: 1.2em;
+}
+
+#toc ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#toc ul li a {
+  padding: 5px 10px;
+}
+
+#toc ul a {
+  text-decoration: none;
+  display: block;
+  color: #333;
+}
+
+#toc ul a:hover {
+  box-shadow: none;
+  color: black;
+  background: #eee;
+}
+
+#toc .h2 { padding-left: 30px; }
+#toc .h3 { padding-left: 50px; }
+#toc .h4 { padding-left: 70px; }
+#toc .h5 { padding-left: 90px; }
+#toc .h6 { padding-left: 110px; }
+
+#toc .toc-active,
+#toc li:hover {
+  box-shadow: 0px 1px 0px 0px #333 !important;
+  background: none;
+}
+
+#toc li::before {
+  content: " ";
+  display: none;
+}
+
+#toc-list ul {
+  margin-bottom: 0.25em;
+}
+
+#toc-list ol li {
+  list-style-type: none;
+}
+
+@media screen and (min-width: 768px) {
+  #toggle {
+    position: fixed;
+    height: 100%;
+    width: 30px;
+    background-color: #f7f7f7;
+    color: black !important;
+    cursor: pointer;
+    z-index: 100;
+    border-right: solid black 1px;
+    margin-left: -4em;
+    margin-top: -2em;
+  }
+  #toggle span {
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #toggle { display: none; }
+}
+
+@media print {
+  #toggle { display: none; }
+}
+
+@media screen and (min-width: 768px) {
+  .container {
+    padding-left: 360px;
+  }
+  .rule.toc {
+    display: none;
+  }
+  h1.toc-contents {
+    margin-top: 1em;
+  }
+  ul#toc-list {
+    padding: 0;
+    margin: 0;
+  }
+}
+
+/* ===== 6. Document Title & Cover ===== */
+.title-section {
+  padding-left: 2em;
+  padding-top: 2em;
+}
+
+p.zzSTDTitle1 {
+  font-size: 1.6em;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.5em;
+}
+
+p.zzSTDTitle2 {
+  font-size: 1.3em;
+  font-weight: 400;
+  text-align: center;
+  margin-bottom: 1.5em;
+}
+
+/* ===== 7. Greek Law Structural Headings ===== */
+/* ΒΙΒΛΙΟ – Book level */
+h1[data-type="book"],
+.book-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.5em;
+  font-weight: 700;
+  margin-top: 2.5em;
+  margin-bottom: 0.8em;
+  padding-bottom: 0.4em;
+  border-bottom: 2px solid #333;
+}
+
+/* ΜΕΡΟΣ – Part level */
+h2[data-type="part"],
+.part-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.3em;
+  font-weight: 700;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+}
+
+/* ΤΜΗΜΑ – Section level */
+h2[data-type="tmima"],
+.tmima-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.2em;
+  font-weight: 700;
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+}
+
+/* ΚΕΦΑΛΑΙΟ – Chapter level */
+h2[data-type="chapter"],
+.chapter-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.15em;
+  font-weight: 700;
+  margin-top: 1.6em;
+  margin-bottom: 0.5em;
+}
+
+/* Άρθρο – Article level */
+h3[data-type="article"],
+.article-title {
+  font-weight: 700;
+  font-size: 1.05em;
+  margin-top: 1.5em;
+  margin-bottom: 0.4em;
+  text-align: center;
+}
+
+/* Subarticle */
+h4[data-type="subarticle"],
+.subarticle-title {
+  font-weight: 600;
+  font-size: 1em;
+  margin-top: 1em;
+  margin-bottom: 0.3em;
+}
+
+/* Paragraph numbering */
+.paragraph-num,
+.numbering {
+  font-weight: 700;
+  margin-right: 0.3em;
+}
+
+.paragraph {
+  text-indent: 30px;
+}
+
+/* ===== 8. Lists ===== */
+ul, ol {
+  margin-left: 2em;
+}
+
+ul > li {
+  list-style: none;
+}
+
+ul > li > p:first-child::before {
+  content: "\2014";
+  display: inline-block;
+  width: 1em;
+  margin-left: -1.5em;
+  margin-right: 0.5em;
+}
+
+ol[class=alphabet] { counter-reset: alphabet; }
+ol[class=arabic] { counter-reset: arabic; }
+ol[class=roman] { counter-reset: roman; }
+ol[class=alphabet_upper] { counter-reset: alphabet_upper; }
+ol[class=roman_upper] { counter-reset: roman_upper; }
+
+ol[class=alphabet] ol[class=alphabet] { counter-reset: alphabet2; }
+ol[class=arabic] ol[class=arabic] { counter-reset: arabic2; }
+ol[class=roman] ol[class=roman] { counter-reset: roman2; }
+
+ol { counter-reset: alphabet; }
+
+ol > li {
+  list-style: none;
+  position: relative;
+}
+
+ol > li::before {
+  position: absolute;
+  left: -1.4em;
+}
+
+ol[class=roman] > li::before { left: -2em; }
+ol[class=roman_upper] > li::before { left: -2.3em; }
+
+ol[class=alphabet] > li::before {
+  counter-increment: alphabet;
+  content: counter(alphabet, lower-alpha) ") ";
+}
+
+ol[class=arabic] > li::before {
+  counter-increment: arabic;
+  content: counter(arabic, decimal) ") ";
+}
+
+ol[class=roman] > li::before {
+  counter-increment: roman;
+  content: counter(roman, lower-roman) ") ";
+}
+
+ol[class=alphabet_upper] > li::before {
+  counter-increment: alphabet_upper;
+  content: counter(alphabet_upper, upper-alpha) ") ";
+}
+
+ol[class=roman_upper] > li::before {
+  counter-increment: roman_upper;
+  content: counter(roman_upper, upper-roman) ") ";
+}
+
+ol > li::before {
+  counter-increment: alphabet;
+  content: counter(alphabet, lower-alpha) ") ";
+}
+
+ol[class=alphabet] ol[class=alphabet] > li::before {
+  counter-increment: alphabet2;
+  content: counter(alphabet2, lower-alpha) ") ";
+}
+
+ol[class=arabic] ol[class=arabic] > li::before {
+  counter-increment: arabic2;
+  content: counter(arabic2, decimal) ") ";
+}
+
+ol[class=roman] ol[class=roman] > li::before {
+  counter-increment: roman2;
+  content: counter(roman2, lower-roman) ") ";
+}
+
+ol > li > p::before {
+  content: "";
+  display: none;
+}
+
+/* ===== 9. Tables ===== */
+table {
+  width: 100%;
+  font-weight: 300;
+  margin: 1em 0 2em 0;
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+  background-color: transparent;
+}
+
+table, table th, table td {
+  border: 1px solid black;
+  font-size: 0.95em;
+}
+
+table th, table td {
+  padding: 0.8em;
+  line-height: 1.42857143;
+  vertical-align: top;
+}
+
+table th {
+  font-weight: 700;
+  vertical-align: bottom;
+  background-color: #f5f5f5;
+}
+
+td > p:first-child, th > p:first-child {
+  margin-top: 0;
+}
+
+td > p:last-child, th > p:last-child {
+  margin-bottom: 0;
+}
+
+p.TableTitle {
+  text-align: center;
+  margin-top: 2.5em;
+  font-weight: 700;
+  font-size: 1.1em;
+}
+
+.table-bordered,
+.table-bordered > tbody > tr > td,
+.table-bordered > tbody > tr > th,
+.table-bordered > thead > tr > td,
+.table-bordered > thead > tr > th {
+  border: 1px solid #ddd;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+
+/* ===== 10. Notes & Admonitions ===== */
+.Note, .note {
+  background-color: #fff495;
+  color: #47430c;
+  padding: 0.5em 1em;
+  margin: 1.5em 0;
+  text-align: left;
+  border-left: 4px solid #e6d800;
+}
+
+.Note p, .note p {
+  margin: 0.3em 0;
+}
+
+.Admonition, .admonition {
+  background-color: #ffcccc;
+  padding: 0.5em 1em;
+  margin: 1.5em 0;
+  text-align: left;
+  border-left: 4px solid #cc0000;
+}
+
+.Admonition p, .admonition p {
+  margin: 0.3em 0;
+}
+
+.AdmonitionTitle,
+.RecommendationTitle {
+  font-weight: 700;
+  font-size: 1em;
+  text-align: center;
+}
+
+/* ===== 11. Examples ===== */
+.example {
+  background-color: #e1eef1;
+  color: #424242;
+  padding: 0.5em 1em;
+  margin: 2em 0 1em 0;
+  text-align: left;
+}
+
+.example p {
+  margin: 0.3em 0;
+}
+
+.example .example-title {
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 0;
+}
+
+.example pre,
+.example .pseudocode {
+  background: none;
+}
+
+/* ===== 12. Code & Figures ===== */
+.figure .SourceTitle,
+pre .SourceTitle,
+.pseudocode .SourceTitle {
+  font-weight: 700;
+  font-size: 1em;
+  text-align: center;
+}
+
+.figure,
+pre,
+.pseudocode {
+  background-color: #f7f7f7;
+  line-height: 1.6em;
+  padding: 1.5em;
+  margin: 2em 0 1em 0;
+  overflow: auto;
+  font-size: 1em;
+}
+
+pre {
+  font-family: "Courier New", monospace;
+  font-variant-ligatures: none;
+}
+
+div.figure .FigureTitle,
+div.figure .figure-title {
+  font-weight: 700;
+  font-size: 1em;
+  text-align: center;
+}
+
+div.figure > img,
+div.figure > svg {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.svg-container {
+  width: 100%;
+  display: block;
+}
+
+svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ===== 13. Footnotes ===== */
+a.footnote-number,
+a.TableFootnoteRef,
+span.TableFootnoteRef {
+  vertical-align: super;
+  font-size: 0.8em;
+}
+
+.footnote {
+  font-size: 0.9em;
+}
+
+ol.footnotes-list, aside.footnote {
+  margin-left: 1em;
+}
+
+ol.footnotes-list li, aside.footnote {
+  font-size: 0.9em;
+  vertical-align: top;
+  list-style: decimal;
+  margin-bottom: 1em;
+}
+
+ol.footnotes-list:first-child {
+  margin-top: 2em;
+}
+
+ol.footnotes-list p, aside.footnote p {
+  display: inline;
+}
+
+.TableFootnote {
+  text-align: left !important;
+}
+
+/* ===== 14. Blockquotes ===== */
+.Quote {
+  background-color: #f7f7f7;
+  font-style: italic;
+  width: 80%;
+  padding: 1.5em;
+  margin-top: 2em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+blockquote, q {
+  quotes: none;
+}
+
+blockquote::before, blockquote::after,
+q::before, q::after {
+  content: "";
+  content: none;
+}
+
+/* ===== 15. Formulas ===== */
+.formula {
+  background-color: #f7f7f7;
+  padding: 1.5em;
+  margin-top: 2em;
+  text-align: center;
+  margin-left: 20%;
+  margin-right: 20%;
+}
+
+/* ===== 16. Bibliography ===== */
+p.Biblio, p.NormRef, div.Biblio, div.NormRef {
+  margin-top: 1em;
+  margin-left: 2em;
+}
+
+/* ===== 17. Rules / Separators ===== */
+.rule {
+  width: 100%;
+  height: 1px;
+  background-color: #333;
+  margin: 2em 0;
+}
+
+/* ===== 18. ΦΕΚ Header ===== */
+.fek-header {
+  text-align: center;
+  font-size: 0.95em;
+  color: #555;
+  margin-bottom: 1.5em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #ddd;
+}
+
+/* ===== 19. Preface & Colophon ===== */
+.preface {
+  margin-bottom: 2em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #ddd;
+}
+
+.colophon {
+  margin-top: 3em;
+  padding-top: 1em;
+  border-top: 1px solid #ddd;
+}
+
+/* ===== 20. Collapsible Sections ===== */
+.hidable {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 3px 0;
+  margin: 0;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+
+.collapsible::after {
+  content: "\25BC";
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+.active::after {
+  content: "\25B2";
+}
+
+.collapsible + .hidable {
+  margin-top: 0;
+}
+
+.collapsible:not(.active) + .hidable {
+  overflow: hidden;
+  padding: 0;
+}
+
+/* ===== 21. Utility Classes ===== */
+.bold { font-weight: 700; }
+.center { text-align: center; }
+.right { text-align: right; }
+.text-indent { text-indent: 30px; }
+
+.text-success { color: #3c763d; }
+.text-danger { color: #a94442; }
+.text-info { color: #31708f; }
+.text-warning { color: #8a6d3b; }
+.text-muted { color: #717171; }
+
+.highlight, em[class^=hlt] {
+  background-color: #fff798;
+}
+
+.addition { color: blue; }
+.deletion { color: red; text-decoration: line-through; }
+
+mark {
+  background: #ff0;
+  color: #000;
+}
+
+small, .small { font-size: 80%; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+/* ===== 22. Code Highlighting ===== */
+table.rouge-line-table td.rouge-gutter {
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  padding-right: 1em;
+}
+
+table.rouge-line-table td.rouge-code {
+  -moz-user-select: all;
+  -ms-user-select: all;
+  -webkit-user-select: all;
+  user-select: all;
+}
+
+table.rouge-line-table,
+table.rouge-line-table th,
+table.rouge-line-table td {
+  width: auto;
+  border: none;
+  margin: 0;
+  padding: 0;
+  font-size: 100%;
+}
+
+table.rouge-line-table pre {
+  margin: 0;
+  padding: 0;
+  overflow-x: visible;
+  font-size: 100%;
+}
+
+/* ===== 23. Diff Markup ===== */
+span.diff-tag-removed {
+  text-decoration: line-through;
+  background-color: #fdc6c6;
+}
+
+span.diff-tag-added {
+  background-color: #cfc;
+}
+
+span.diff-html-added {
+  background-color: #cfc;
+  cursor: pointer;
+}
+
+span.diff-html-removed {
+  text-decoration: line-through;
+  background-color: #fdc6c6;
+  cursor: pointer;
+}
+
+span.diff-html-changed {
+  cursor: pointer;
+}
+
+/* ===== 24. Print ===== */
+@media print {
+  nav { display: none; }
+  #toggle { display: none; }
+
+  body {
+    font-size: 12pt;
+    color: #000;
+    background-color: #fff;
+    margin: 0;
+  }
+
+  body main {
+    margin: 0;
+  }
+
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  .Note, .note {
+    border: 1px solid #999;
+    background-color: #fafafa;
+  }
+
+  .example {
+    border: 1px solid #999;
+    background-color: #fafafa;
+  }
+
+  table, table th, table td {
+    border-color: #000;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+
+  table, figure, .example, .Note {
+    page-break-inside: avoid;
   }
 }
