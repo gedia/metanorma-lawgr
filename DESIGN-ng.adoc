@@ -65,7 +65,7 @@ Authors never hardcode numbers in section titles.
 
 | Paragraph
 | Παράγραφος
-| Arabic, dot-separated (1, 2… or 5.2.8.1); hidden when article has only one
+| Arabic within article (1, 2…); optionally dot-separated from article via `:inheritnumbering:` (5.1, 5.2…); hidden when article has only one
 | 1.
 |===
 
@@ -125,16 +125,23 @@ The `number` attribute (inherited from StanDoc) can override auto-numbering when
 
 ==== Paragraph numbering
 
-The displayed number of a paragraph is derived exclusively from its position within the *article/subarticle/paragraph* ancestry.
-Organisational levels (Book, Part, Section, Chapter) exist in the model and have their own numbering, but their numbers are *not* incorporated into paragraph numbering.
+By default, paragraphs are numbered with *flat Arabic numerals* within each article: 1, 2, 3…
+Organisational levels (Book, Part, Section, Chapter) are never incorporated into paragraph numbering.
 
-For example, given the hierarchy:
+The document attribute `:inheritnumbering: true` switches to *hierarchical dot-separated* numbering, where each paragraph’s label is prefixed with its article number:
+
+* Default (flat): 1., 2., 3.…
+* `:inheritnumbering: true`: 5.1., 5.2., 5.3.…
+
+With hierarchical numbering enabled and deeper nesting, the full ancestry is reflected:
 ____
-ΒΙΒΛΙΟ ΠΡΩΤΟ → ΜΕΡΟΣ Α' → ΚΕΦΑΛΑΙΟ Β' → Άρθρο 5 → Υποάρθρο 5.2 → Παράγραφος 5.2.8 → Παράγραφος 5.2.8.1 → Παράγραφος 5.2.8.1.1
+ΒΙΒΛΙΟ ΠΡΩΤΟ → ΜΕΡΟΣ Α’ → ΚΕΦΑΛΑΙΟ Β’ → Άρθρο 5 → Υποάρθρο 5.2 → Παράγραφος 5.2.8 → Παράγραφος 5.2.8.1 → Παράγραφος 5.2.8.1.1
 ____
 The displayed number of the deepest paragraph is *5.2.8.1.1* — the Book, Part, and Chapter numbers play no role.
 
 The numbering components are: `{article}.{subarticle?}.{para}.{sub-para}…`
+
+The `:inheritnumbering:` attribute is stored in the XML as `<ext><inheritnumbering>true</inheritnumbering></ext>` and read by `IsoDoc::Lawgr::Xref` during the numbering phase.
 
 === Sub-paragraph enumeration
 
@@ -243,7 +250,7 @@ ____
 === Output formats
 
 * *Primary:* HTML (via `IsoDoc::Lawgr::HtmlConvert`)
-* *Good-to-have:* PDF (via XSL-FO / `IsoDoc::Lawgr::PdfConvert`)
+* *Deferred:* PDF (via XSL-FO / `IsoDoc::Lawgr::PdfConvert`) — removed from the prototype processor
 
 
 == AsciiDoc authoring syntax
@@ -392,7 +399,12 @@ The two mechanisms (`level` attribute and `leveloffset`) can be combined as need
 :fek-year: 2015
 :publisher: ΕΘΝΙΚΟ ΤΥΠΟΓΡΑΦΕΙΟ
 :mn-document-class: lawgr
+:inheritnumbering: true
 ----
+
+NOTE: `:inheritnumbering: true` is optional.
+When set, paragraph numbering becomes hierarchical (e.g. 5.1., 5.2.) instead of flat (1., 2.).
+See <<Paragraph numbering>>.
 
 === Structural sections
 
@@ -679,6 +691,20 @@ Use the `type` attribute on top-level body clauses:
 ...
 ----
 
+==== Combining `heading` and `type`
+
+When a structural element also carries a semantic classification, both attributes can be specified:
+
+[source,asciidoc]
+----
+[heading=article,type=entry-into-force]
+== Έναρξη ισχύος
+----
+
+The `heading` attribute always determines the *structural type* (`type="article"` in the XML).
+The user-specified `type` is preserved as a separate `semantic-type` attribute (`semantic-type="entry-into-force"` in the XML).
+This ensures the element is correctly recognised for numbering and rendering while retaining its semantic classification.
+
 === Preface and conclusions
 
 [source,asciidoc]
@@ -876,6 +902,17 @@ Reuses StanDoc's `ClauseSection` with `type` constrained to:
 | `article` | Άρθρο
 | `subarticle` | Υποάρθρο
 | `paragraph` | Παράγραφος
+|===
+
+The `type` attribute is always a *structural* type derived from the `heading` attribute.
+When the AsciiDoc source also specifies a `type` attribute (e.g. `[heading=article,type=entry-into-force]`), the structural type takes precedence and the user-specified type is stored as `semantic-type`.
+
+Recognised `semantic-type` values:
+
+[cols="2,3", options="header"]
+|===
+| semantic-type value | Semantic category
+
 | `general-provisions` | Γενικές διατάξεις
 | `substantive-provisions` | Ουσιαστικές διατάξεις
 | `organisational-provisions` | Οργανωτικές και διαδικαστικές διατάξεις
@@ -896,16 +933,26 @@ The rendering pipeline follows standard Metanorma architecture:
 . *AsciiDoc source* → `Metanorma::Lawgr::Converter` → *Semantic XML*
 . *Semantic XML* → `IsoDoc::Lawgr::PresentationXMLConvert` → *Presentation XML*
 . *Presentation XML* → `IsoDoc::Lawgr::HtmlConvert` → *HTML*
-. *Presentation XML* → `IsoDoc::Lawgr::PdfConvert` → *PDF* (good-to-have)
+. *Presentation XML* → `IsoDoc::Lawgr::PdfConvert` → *PDF* (deferred)
 
 === Presentation XML customisations
 
 `IsoDoc::Lawgr::PresentationXMLConvert` overrides:
 
-* `ol_depth` — selects Greek numeral type based on nesting depth
-* `clause1` — renders structural labels (ΒΙΒΛΙΟ ΠΡΩΤΟ, ΜΕΡΟΣ Α', Άρθρο 1, etc.)
-* `paragraph_numbering` — computes the dot-separated display number for each paragraph by walking only the article/subarticle/paragraph ancestry (see <<Paragraph numbering rule>>); organisational ancestors (Book, Part, Section, Chapter) are excluded
-* `single_paragraph_suppression` — suppresses paragraph numbering when an article has only one paragraph
+* `ol_depth` — selects list type based on nesting depth (currently maps to `:alphabet` / `:roman`; proper Greek numeral list types are deferred)
+* `clause1` — dispatches to structural label methods based on clause `type`: `prefix_structural_label`, `prefix_article_label`, `prefix_subarticle_label`, `prefix_paragraph_label`
+* `add_toc_variant_title` — injects `<variant-title type="toc">` for untitled paragraphs (showing "Παράγραφος _n_") and untitled articles (showing "Άρθρο _n_") so the navigation sidebar displays meaningful labels instead of bare numbers
+* `single_paragraph_suppression` — suppresses paragraph numbering when an article has only one paragraph *(not yet implemented)*
+
+`IsoDoc::Lawgr::Xref` overrides:
+
+* `main_anchor_names` — reads `:inheritnumbering:` from document metadata, then dispatches to `lawgr_section_names`
+* `lawgr_article_names` — numbers articles sequentially across the whole law
+* `lawgr_paragraph_names` — numbers paragraphs within each article; supports flat (default) and hierarchical (`:inheritnumbering:`) modes
+
+`IsoDoc::Lawgr::BaseConvert` overrides:
+
+* `clause_attrs` — adds CSS classes (`lawgr-article`, `lawgr-paragraph`, etc.) to clause `<div>` elements based on the XML `type` attribute, enabling targeted CSS styling
 
 === i18n
 
@@ -930,12 +977,14 @@ table_of_contents: Πίνακας Περιεχομένων
 
 === HTML output
 
-Custom HTML template and SCSS stylesheet providing:
+Custom HTML template and plain CSS stylesheet (`htmlstyle.css`) providing:
 
-* Uppercase rendering for top-level structural labels (ΒΙΒΛΙΟ, ΜΕΡΟΣ, ΤΜΗΜΑ, ΚΕΦΑΛΑΙΟ)
-* Proper indentation for the article/paragraph hierarchy
-* Cover page template with ΦΕΚ publication metadata
-* Table of contents following the structural hierarchy
+* *Font:* Inter (Google Fonts), with system sans-serif fallbacks
+* *Navigation sidebar:* fixed left sidebar with table of contents generated server-side from heading elements; toggle button to collapse/expand; paragraph TOC entries show "Παράγραφος _n_" via `variant-title` mechanism
+* *Hanging-indent paragraph layout:* paragraph numbers float left in a gutter; the first content block flows inline next to the number; subsequent blocks maintain the same left indent (CSS class `lawgr-paragraph`)
+* *Structural labels:* uppercase centred rendering for top-level elements (ΒΙΒΛΙΟ, ΜΕΡΟΣ, ΤΜΗΜΑ, ΚΕΦΑΛΑΙΟ); centred article headings
+* *Cover page:* template with ΦΕΚ publication metadata
+* *Responsive:* sidebar collapses on narrow viewports; print styles hide navigation
 
 
 == Cross-references
@@ -951,7 +1000,7 @@ Standard Metanorma `xref` targeting element IDs:
 
 Rendered as: "Παράγραφος 1 του Άρθρου 5" (or abbreviated per context).
 
-The `IsoDoc::Lawgr::Xref` class overrides `anchor_struct` to produce Greek law reference labels using the i18n labels.
+The `IsoDoc::Lawgr::Xref` class overrides `main_anchor_names` and provides `lawgr_article_names` / `lawgr_paragraph_names` to produce Greek law reference labels using the i18n labels.
 
 === Law-to-law references
 
@@ -1003,7 +1052,7 @@ metanorma-lawgr/
 │       └── lawgr/
 │           ├── base_convert.rb
 │           ├── html_convert.rb          # IsoDoc::Lawgr::HtmlConvert
-│           ├── pdf_convert.rb           # IsoDoc::Lawgr::PdfConvert (stub)
+│           # pdf_convert.rb             # IsoDoc::Lawgr::PdfConvert (deferred)
 │           ├── presentation_xml_convert.rb
 │           ├── presentation_xref.rb     # Greek law xref label generation
 │           ├── xref.rb                  # IsoDoc::Lawgr::Xref
@@ -1015,8 +1064,7 @@ metanorma-lawgr/
 │           └── html/
 │               ├── html_lawgr_titlepage.html
 │               ├── html_lawgr_intro.html
-│               ├── style-lawgr.scss
-│               └── htmlstyle.scss
+│               └── htmlstyle.css          # plain CSS (Inter font, nav sidebar, hanging-indent paragraphs)
 ├── spec/                                # RSpec tests
 └── Gemfile
 ----
@@ -1028,26 +1076,29 @@ metanorma-lawgr/
 
 * Gem skeleton with Metanorma registry integration
 * `Metanorma::Lawgr::Converter` inheriting from StanDoc, registered as `lawgr`
-* Section type dispatch for the full Greek law hierarchy (Book through Paragraph, with recursive nesting)
-* Dot-separated paragraph numbering derived from article/subarticle/paragraph ancestry
-* Greek numeral algorithm (`GreekNumerals` module)
-* Custom ordered-list rendering for περίπτωση / υποπερίπτωση / στοιχείο
-* Single-paragraph suppression
-* i18n labels (Greek)
-* Basic HTML output with structural hierarchy rendering
-* Basic metadata extraction (law number, ΦΕΚ, date, type, signers)
-* Internal cross-references
-* Manual bibliography for law-to-law references
+* Section type dispatch for the full Greek law hierarchy (Book through Paragraph) via `heading` attribute
+* `heading` / `type` / `semantic-type` attribute separation
+* Flat paragraph numbering within articles (default), with opt-in hierarchical numbering via `:inheritnumbering:`
+* Greek numeral algorithm (`GreekNumerals` module) — utility implemented; ordered-list integration deferred
+* i18n labels (Greek and English)
+* HTML output with Inter font, navigation sidebar, hanging-indent paragraph layout, structural labels
+* Navigation sidebar with meaningful TOC entries ("Παράγραφος _n_" for untitled paragraphs via `variant-title` mechanism)
+* Basic metadata extraction (law number, ΦΕΚ, date, type)
+* CSS classes on clause divs (`lawgr-article`, `lawgr-paragraph`, etc.) for targeted styling
+* Cover page template with ΦΕΚ publication metadata
 
 === Deferred
 
 * PDF output
+* Custom ordered-list rendering for περίπτωση / υποπερίπτωση / στοιχείο (Greek numeral list types)
+* Single-paragraph suppression (hiding paragraph number when article has only one)
 * εδάφιο (sentence-level) modelling
 * Amendment authoring syntax
 * Akoma Ntoso XML export
 * Relaton database fetching
 * Structural validation rules (continuous article numbering, etc.)
-* Cover page / ΦΕΚ header template polish
+* Signer metadata extraction
+* Internal cross-references (xref rendering)
 * Word (`.doc`) output
 
 
