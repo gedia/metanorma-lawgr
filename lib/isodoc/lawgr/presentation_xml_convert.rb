@@ -128,28 +128,21 @@ module IsoDoc
         t = elem.at(ns("./fmt-title")) and t["depth"] = level
       end
 
-      # Use standard list types for now.
-      # TODO: proper Greek numeral list support requires extending
-      # IsoDoc::XrefGen::Counter#listlabel with custom types.
-      # For MVP, depth 1 = alphabet (a,b,c), depth 2+ = roman (i,ii,iii).
+      # Greek law list depth: depth 1 uses proper Greek lowercase
+      # numerals (α, β… στ, ζ…); deeper levels use roman.
       def ol_depth(node)
         depth = node.ancestors("ul, ol").size + 1
         case depth
-        when 1 then :alphabet
-        when 2 then :alphabet
+        when 1 then :lowergreek
         else :roman
         end
       end
 
-      # Remap any source-specified lowergreek type to alphabet for now,
-      # since the base Counter#listlabel doesn't handle :lowergreek.
-      def ol_numbering(docxml)
-        docxml.xpath(ns("//ol")).each do |elem|
-          if elem["type"] == "lowergreek"
-            elem["type"] = "alphabet"
-          end
-          elem["type"] ||= ol_depth(elem).to_s
-        end
+      # Label format templates — add lowergreek with closing paren.
+      def ol_label_template(_elem)
+        super.merge(
+          lowergreek: %{%<span class="fmt-label-delim">)</span>},
+        )
       end
 
       def add_toc_variant_title(elem, label_text)

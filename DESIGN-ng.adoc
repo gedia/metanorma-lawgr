@@ -997,7 +997,8 @@ The rendering pipeline follows standard Metanorma architecture:
 
 `IsoDoc::Lawgr::PresentationXMLConvert` overrides:
 
-* `ol_depth` — selects list type based on nesting depth (currently maps to `:alphabet` / `:roman`; proper Greek numeral list types are deferred)
+* `ol_depth` — selects list type based on nesting depth: depth 1 → `:lowergreek` (proper Greek lowercase numerals α, β… στ, ζ… ι, ια…); depth 2+ → `:roman`
+* `ol_label_template` — adds `:lowergreek` format template (`%)`)
 * `clause1` — dispatches to structural label methods based on clause `type`: `prefix_structural_label`, `prefix_article_label`, `prefix_subarticle_label`, `prefix_custom_label`, `prefix_paragraph_label`
 * `add_toc_variant_title` — injects `<variant-title type="toc">` for untitled paragraphs (showing "Παράγραφος _n_") and untitled articles (showing "Άρθρο _n_") so the navigation sidebar displays meaningful labels instead of bare numbers
 * `single_paragraph_suppression` — suppresses paragraph numbering when an article has only one paragraph *(not yet implemented)*
@@ -1009,11 +1010,14 @@ The rendering pipeline follows standard Metanorma architecture:
 * `lawgr_subarticle_names` — numbers subarticles within articles and dispatches to child paragraphs and custom clauses
 * `lawgr_paragraph_names` — numbers paragraphs within each article; supports flat (default) and hierarchical (`:inheritnumbering:`) modes
 * `lawgr_custom_names` / `lawgr_custom_anchor` — assigns uppercase-Greek numbering to custom clauses; the parent's paragraph counter is passed through transparently so child paragraphs continue the parent sequence
+* `list_item_value` — overrides base method to produce proper Greek lowercase numerals for `:lowergreek` ordered lists, calling `GreekNumerals.to_greek_lower` instead of `Counter#listlabel`
 
 `IsoDoc::Lawgr::BaseConvert` overrides:
 
 * `clause_attrs` — adds CSS classes (`lawgr-article`, `lawgr-paragraph`, `lawgr-custom`, etc.) to clause `<div>` elements based on the XML `type` attribute; also sets CSS custom properties for cascading indentation (see <<Cascading indentation>>)
 * `precompute_paragraph_widths` — scans all paragraph, subarticle, and custom labels in the presentation XML before rendering to compute maximum label widths per numbering depth; stores them as `@paragraph_indent_by_segments`, `@subarticle_max_num_width`, and `@custom_max_num_width`
+* `ol_attrs` — suppresses native `<ol>` numbering for `:lowergreek` lists (sets `list-style: none`)
+* `li_parse` — renders `<fmt-name>` content as inline `<span class="ol-label">` for `:lowergreek` list items (the base converter skips `fmt-name` because standard types use native browser numbering)
 
 === i18n
 
@@ -1198,7 +1202,7 @@ metanorma-lawgr/
 * Section type dispatch for the full Greek law hierarchy (Book through Paragraph) via `heading` attribute
 * `heading` / `type` / `semantic-type` attribute separation
 * Flat paragraph numbering within articles (default), with opt-in hierarchical numbering via `:inheritnumbering:`
-* Greek numeral algorithm (`GreekNumerals` module) — utility implemented; ordered-list integration deferred
+* Greek numeral algorithm (`GreekNumerals` module) — utility implemented and integrated for περίπτωση (depth-1 ordered lists) via `list_item_value` override
 * i18n labels (Greek and English)
 * Custom clause type (`heading=custom`) with uppercase-Greek numbering, transparent to child paragraph numbering
 * HTML output with Inter font, navigation sidebar, hanging-indent paragraph layout, structural labels, cascading indentation via CSS custom properties
@@ -1211,7 +1215,7 @@ metanorma-lawgr/
 === Deferred
 
 * PDF output
-* Custom ordered-list rendering for περίπτωση / υποπερίπτωση / στοιχείο (Greek numeral list types)
+* Double-Greek ordered-list rendering for υποπερίπτωση (depth-2 lists: αα, αβ… βα, ββ…) — requires parent-ordinal threading through `list_item_anchor_names`
 * Single-paragraph suppression (hiding paragraph number when article has only one)
 * εδάφιο (sentence-level) modelling
 * Amendment authoring syntax

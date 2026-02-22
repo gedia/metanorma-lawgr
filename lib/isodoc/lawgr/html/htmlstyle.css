@@ -566,6 +566,13 @@ ul, ol {
   margin-left: 2em;
 }
 
+/* Greek numeral list labels (rendered inline, native numbering suppressed) */
+.ol-label {
+  display: inline-block;
+  min-width: 2.5ch;
+  font-weight: 400;
+}
+
 ul > li {
   list-style: none;
 }

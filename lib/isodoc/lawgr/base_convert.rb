@@ -79,6 +79,42 @@ module IsoDoc
           "//bibliography/references"
       end
 
+      # For lowergreek lists, suppress native <ol> numbering so we can
+      # render the fmt-name labels inline instead.
+      def ol_attrs(node)
+        attrs = super
+        if node["type"] == "lowergreek"
+          attrs.delete(:type)
+          existing = attrs[:style].to_s
+          attrs[:style] = [existing, "list-style: none; padding-left: 0"]
+                            .reject(&:empty?).join("; ")
+        end
+        attrs
+      end
+
+      # Render fmt-name content for lowergreek list items (the base
+      # converter skips fmt-name because standard types use native
+      # browser numbering).
+      def li_parse(node, out)
+        lowergreek = node.parent["type"] == "lowergreek"
+        out.li **attr_code(id: node["id"]) do |li|
+          li << li_checkbox(node)
+          if lowergreek
+            fmt = node.at(ns("./fmt-name"))
+            if fmt
+              li.span class: "ol-label" do |span|
+                fmt.children.each { |n| parse(n, span) }
+              end
+              li << " "
+            end
+          end
+          node.children.each do |n|
+            n.name == "fmt-name" and next
+            parse(n, li)
+          end
+        end
+      end
+
       def convert_i18n_init1(docxml)
         super
         @lang = "el" if docxml.xpath(ns("//bibdata/language")).empty?
