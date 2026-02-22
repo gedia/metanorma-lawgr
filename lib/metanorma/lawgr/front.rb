@@ -22,6 +22,8 @@ module Metanorma
       def metadata_ext(node, xml)
         super
         metadata_fek(node, xml)
+        inh = node.attr("inheritnumbering")
+        xml.inheritnumbering inh if inh
       end
 
       def metadata_fek(node, xml)

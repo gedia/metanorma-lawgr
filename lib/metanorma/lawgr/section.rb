@@ -29,7 +29,10 @@ module Metanorma
         attrs = super
         heading = node.attr("heading")
         if heading && HEADING_TYPES.include?(heading)
-          attrs[:type] ||= heading
+          if attrs[:type] && attrs[:type] != heading
+            attrs[:"semantic-type"] = attrs[:type]
+          end
+          attrs[:type] = heading
         end
         attrs
       end

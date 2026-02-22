@@ -203,7 +203,7 @@ h6:hover > a.anchor {
 
 /* ===== 4. Layout ===== */
 body {
-  margin-left: 298px;
+  margin-left: 320px;
   margin-right: 2em;
 }
 
@@ -325,15 +325,15 @@ nav {
 @media screen and (min-width: 768px) {
   #toggle {
     position: fixed;
+    top: 0;
+    left: 278px;
     height: 100%;
     width: 30px;
     background-color: #f7f7f7;
     color: black !important;
     cursor: pointer;
     z-index: 100;
-    border-right: solid black 1px;
-    margin-left: -4em;
-    margin-top: -2em;
+    border-right: 1px solid #e0e0e0;
   }
   #toggle span {
     text-align: center;
@@ -353,9 +353,6 @@ nav {
 }
 
 @media screen and (min-width: 768px) {
-  .container {
-    padding-left: 360px;
-  }
   .rule.toc {
     display: none;
   }

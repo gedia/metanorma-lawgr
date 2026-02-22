@@ -17,6 +17,9 @@ module IsoDoc
       # articles are numbered sequentially across the whole law,
       # paragraphs are numbered within each article.
       def main_anchor_names(xml)
+        @inheritnumbering = xml.at(
+          ns("//bibdata/ext/inheritnumbering")
+        )&.text&.strip == "true"
         n = clause_counter
         clause_order_main(xml).each do |a|
           xml.xpath(ns(a[:path])).each do |c|
@@ -43,12 +46,12 @@ module IsoDoc
 
       def lawgr_article_names(clause, num, lvl)
         num.increment(clause)
-        lbl = labelled_autonum(@labels["article"], semx(clause, num.print))
-        lawgr_article_anchor(clause, lbl, num.print, lvl)
-        # number paragraphs within this article
+        article_num_str = num.print
+        lbl = labelled_autonum(@labels["article"], semx(clause, article_num_str))
+        lawgr_article_anchor(clause, lbl, article_num_str, lvl)
         i = clause_counter(0)
         clause.xpath(ns(subclauses)).each do |c|
-          lawgr_paragraph_names(c, i, lvl + 1, clause)
+          lawgr_paragraph_names(c, i, lvl + 1, clause, article_num_str)
         end
       end
 
@@ -61,14 +64,18 @@ module IsoDoc
             elem: @labels["article"], value: value }
       end
 
-      def lawgr_paragraph_names(clause, num, lvl, parent)
+      def lawgr_paragraph_names(clause, num, lvl, parent, article_num_str)
         unnumbered_section_name?(clause) and return
         ctype = clause["type"]
         if ctype == "paragraph" || ctype.nil?
           num.increment(clause)
-          lbl = semx(clause, num.print)
+          if @inheritnumbering
+            display = "#{article_num_str}.#{num.print}"
+          else
+            display = num.print
+          end
+          lbl = semx(clause, display)
           lawgr_paragraph_anchor(clause, lbl, lvl)
-          # sub-subclauses within a paragraph (rare)
           j = clause_counter(0)
           clause.xpath(ns(subclauses)).each do |c|
             section_names1(c, lbl, j.increment(c).print, lvl + 1)

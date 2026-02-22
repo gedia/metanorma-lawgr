@@ -57,6 +57,7 @@ module IsoDoc
                         lbl, "title")
           else
             prefix_name(elem, {}, lbl, "title")
+            add_toc_variant_title(elem, lbl)
           end
         else
           prefix_name(elem, {}, nil, "title")
@@ -87,6 +88,8 @@ module IsoDoc
                         lbl, "title")
           else
             prefix_name(elem, { label: "." }, lbl, "title")
+            toc_lbl = @xrefs.anchor(elem["id"], :xref, false)
+            add_toc_variant_title(elem, toc_lbl) if toc_lbl
           end
         else
           prefix_name(elem, {}, nil, "title")
@@ -116,6 +119,14 @@ module IsoDoc
           end
           elem["type"] ||= ol_depth(elem).to_s
         end
+      end
+
+      def add_toc_variant_title(elem, label_text)
+        fmt = elem.at(ns("./fmt-title")) or return
+        vt = Nokogiri::XML::Node.new("variant-title", elem.document)
+        vt["type"] = "toc"
+        vt.inner_html = label_text.to_s
+        fmt.add_next_sibling(vt)
       end
 
       def move_norm_ref_to_sections(docxml); end
