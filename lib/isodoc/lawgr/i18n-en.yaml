@@ -1,0 +1,14 @@
+clause: Clause
+book: Book
+part: Part
+section: Section
+chapter: Chapter
+article: Article
+subarticle: Subarticle
+paragraph: Paragraph
+case: case
+subcase: subcase
+element: element
+edafio: sentence
+table_of_contents: Table of Contents
+annex: Annex

@@ -1,0 +1,7 @@
+require "isodoc/lawgr/html_convert"
+require "isodoc/lawgr/pdf_convert"
+require "isodoc/lawgr/presentation_xml_convert"
+require "isodoc/lawgr/xref"
+require "isodoc/lawgr/metadata"
+require "isodoc/lawgr/i18n"
+require "isodoc/lawgr/init"

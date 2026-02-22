@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <include href="biblio-standoc.rng">
+    <define name="DocumentType">
+      <choice>
+        <value>act</value>
+        <value>pd</value>
+        <value>ap</value>
+        <value>egk</value>
+        <value>other</value>
+      </choice>
+    </define>
+    <define name="editorialgroup">
+      <element name="editorialgroup">
+        <zeroOrMore>
+          <ref name="technical-committee"/>
+        </zeroOrMore>
+      </element>
+    </define>
+    <define name="BibDataExtensionType">
+      <optional>
+        <attribute name="schema-version"/>
+      </optional>
+      <optional>
+        <ref name="doctype"/>
+      </optional>
+      <optional>
+        <ref name="docsubtype"/>
+      </optional>
+      <optional>
+        <ref name="editorialgroup"/>
+      </optional>
+      <zeroOrMore>
+        <ref name="ics"/>
+      </zeroOrMore>
+      <optional>
+        <ref name="fek"/>
+      </optional>
+    </define>
+  </include>
+  <define name="fek">
+    <element name="fek">
+      <optional>
+        <element name="number">
+          <text/>
+        </element>
+      </optional>
+      <optional>
+        <element name="series">
+          <text/>
+        </element>
+      </optional>
+      <optional>
+        <element name="year">
+          <text/>
+        </element>
+      </optional>
+    </element>
+  </define>
+</grammar>

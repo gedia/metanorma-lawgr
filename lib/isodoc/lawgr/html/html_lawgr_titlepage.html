@@ -1,0 +1,32 @@
+<div class="coverpage">
+  <div class="coverpage-doc-identity">
+    {{ doctitle }}
+  </div>
+
+  <div class="coverpage-metadata">
+    <table class="coverpage-metadata-table">
+      <tr>
+        <td class="coverpage-metadata-key">{{ doctype_label }}</td>
+        <td class="coverpage-metadata-value">{{ docnumber }}</td>
+      </tr>
+      {% if fek_number %}
+      <tr>
+        <td class="coverpage-metadata-key">ΦΕΚ</td>
+        <td class="coverpage-metadata-value">{{ fek_series }} {{ fek_number }}/{{ fek_year }}</td>
+      </tr>
+      {% endif %}
+      {% if pubdate %}
+      <tr>
+        <td class="coverpage-metadata-key">Ημερομηνία</td>
+        <td class="coverpage-metadata-value">{{ pubdate }}</td>
+      </tr>
+      {% endif %}
+      {% if publisher %}
+      <tr>
+        <td class="coverpage-metadata-key">Εκδότης</td>
+        <td class="coverpage-metadata-value">{{ publisher }}</td>
+      </tr>
+      {% endif %}
+    </table>
+  </div>
+</div>

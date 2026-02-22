@@ -1,0 +1,67 @@
+= Metanorma processor for Greek Legislation (Lawgr)
+
+image:https://github.com/metanorma/metanorma-lawgr/workflows/rake/badge.svg["Build Status", link="https://github.com/metanorma/metanorma-lawgr/actions?query=workflow%3Arake"]
+
+== Functionality
+
+This is the https://www.metanorma.org[Metanorma] processor for authoring
+Greek legislation documents.
+
+It provides:
+
+* AsciiDoc-to-XML conversion for Greek law structural hierarchy
+  (Book, Part, Section, Chapter, Article, Subarticle, Paragraph)
+* Proper Greek numeral algorithm for sub-paragraph enumerations
+  (περίπτωση / υποπερίπτωση / στοιχείο)
+* Derived numbering at all structural levels
+* ΦΕΚ (Official Gazette) metadata
+* HTML output with Greek law formatting
+
+== Quick start
+
+Install the gem:
+
+[source,sh]
+----
+gem install metanorma-lawgr
+----
+
+Author a document:
+
+[source,asciidoc]
+----
+= ΝΟΜΟΣ ΥΠ' ΑΡΙΘ. 4330
+:docnumber: 4330
+:doctype: act
+:language: el
+:script: Grek
+:fek-number: 59
+:fek-series: Α'
+:fek-year: 2015
+:mn-document-class: lawgr
+
+[heading=article]
+== Σκοπός
+
+Σκοπός του παρόντος νόμου είναι...
+----
+
+Compile:
+
+[source,sh]
+----
+metanorma compile -t lawgr document.adoc
+----
+
+== Document types
+
+* `act` — Νόμος (Law / Act of Parliament)
+* `pd` — Προεδρικό Διάταγμα (Presidential Decree)
+* `ap` — Πράξη Κανονιστικού Χαρακτήρα (Regulatory Act)
+* `egk` — Εγκύκλιος (Information Circular)
+* `other` — Λοιπά Νομικά Έγγραφα (Other Legal Documents)
+
+== Documentation
+
+See `DESIGN-ng.adoc` in the https://github.com/metanorma/docs-projects[docs-projects]
+repository for the full design document.

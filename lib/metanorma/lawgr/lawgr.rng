@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns='https://www.metanorma.org/ns/lawgr' xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <!--
+    Metanorma Lawgr (Greek Legislation) RelaxNG schema.
+    Extends isodoc.rng (the base Metanorma grammar, not isostandard.rng).
+  -->
+  <include href="relaton-lawgr.rng"/>
+  <include href="isodoc.rng">
+    <start>
+      <ref name="lawgr-standard"/>
+    </start>
+    <define name="TextElement">
+      <choice>
+        <text/>
+        <ref name="em"/>
+        <ref name="eref"/>
+        <ref name="erefstack"/>
+        <ref name="strong"/>
+        <ref name="stem"/>
+        <ref name="sub"/>
+        <ref name="sup"/>
+        <ref name="tt"/>
+        <ref name="strike"/>
+        <ref name="smallcap"/>
+        <ref name="xref"/>
+        <ref name="br"/>
+        <ref name="hyperlink"/>
+        <ref name="bookmark"/>
+      </choice>
+    </define>
+    <define name="sections">
+      <element name="sections">
+        <oneOrMore>
+          <choice>
+            <ref name="clause"/>
+            <ref name="floating-title"/>
+          </choice>
+        </oneOrMore>
+      </element>
+    </define>
+    <define name="preface">
+      <element name="preface">
+        <optional>
+          <ref name="abstract"/>
+        </optional>
+        <optional>
+          <ref name="foreword"/>
+        </optional>
+        <optional>
+          <ref name="introduction"/>
+        </optional>
+        <zeroOrMore>
+          <ref name="clause"/>
+        </zeroOrMore>
+      </element>
+    </define>
+    <define name="Clause-Section">
+      <optional>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="language"/>
+      </optional>
+      <optional>
+        <attribute name="script"/>
+      </optional>
+      <optional>
+        <attribute name="inline-header">
+          <data type="boolean"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="obligation">
+          <choice>
+            <value>normative</value>
+            <value>informative</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="type"/>
+      </optional>
+      <optional>
+        <attribute name="unnumbered">
+          <data type="boolean"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="number"/>
+      </optional>
+      <optional>
+        <attribute name="branch-number"/>
+      </optional>
+      <optional>
+        <attribute name="ordinal"/>
+      </optional>
+      <optional>
+        <ref name="section-title"/>
+      </optional>
+      <group>
+        <zeroOrMore>
+          <ref name="BasicBlock"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <choice>
+            <ref name="clause-subsection"/>
+            <ref name="terms"/>
+            <ref name="definitions"/>
+            <ref name="floating-title"/>
+          </choice>
+        </zeroOrMore>
+      </group>
+    </define>
+    <define name="Annex-Section" combine="interleave">
+      <optional>
+        <attribute name="unnumbered">
+          <data type="boolean"/>
+        </attribute>
+      </optional>
+    </define>
+  </include>
+  <define name="lawgr-standard">
+    <element name="lawgr-standard">
+      <ref name="Root-Attributes"/>
+      <ref name="bibdata"/>
+      <optional>
+        <ref name="misccontainer"/>
+      </optional>
+      <optional>
+        <ref name="boilerplate"/>
+      </optional>
+      <optional>
+        <ref name="preface"/>
+      </optional>
+      <oneOrMore>
+        <ref name="sections"/>
+      </oneOrMore>
+      <zeroOrMore>
+        <ref name="annex"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="bibliography"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="colophon"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="indexsect"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="colophon">
+    <element name="colophon">
+      <ref name="Basic-Section"/>
+    </element>
+  </define>
+</grammar>
