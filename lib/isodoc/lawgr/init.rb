@@ -6,13 +6,13 @@ require_relative "i18n"
 module IsoDoc
   module Lawgr
     module Init
-      def metadata_init(lang, script, locale, labels)
-        @meta = Metadata.new(lang, script, locale, labels)
+      def metadata_init(lang, script, locale, i18n)
+        @meta = Metadata.new(lang, script, locale, i18n)
       end
 
-      def xref_init(lang, script, _klass, labels, options)
+      def xref_init(lang, script, _klass, i18n, options)
         html = HtmlConvert.new(language: lang, script: script)
-        @xrefs = Xref.new(lang, script, html, labels, options)
+        @xrefs = Xref.new(lang, script, html, i18n, options)
       end
 
       def i18n_init(lang, script, locale, i18nyaml = nil)

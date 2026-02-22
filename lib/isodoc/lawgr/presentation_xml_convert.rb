@@ -17,96 +17,93 @@ module IsoDoc
       # from document structure, never from authored titles.
       def clause1(elem)
         ctype = elem["type"]
-        lbl = @xrefs.anchor(elem["id"], :label)
+        level = @xrefs.anchor(elem["id"], :level, false) ||
+          (elem.ancestors("clause, annex").size + 1)
+        lbl = @xrefs.anchor(elem["id"], :label, false)
         case ctype
         when "book", "part", "tmima", "chapter"
-          prefix_structural_label(elem, lbl, ctype)
+          prefix_structural_label(elem, lbl, level)
         when "article"
-          prefix_article_label(elem, lbl)
+          prefix_article_label(elem, lbl, level)
         when "subarticle"
-          prefix_subarticle_label(elem, lbl)
+          prefix_subarticle_label(elem, lbl, level)
         when "paragraph"
-          prefix_paragraph_label(elem, lbl)
+          prefix_paragraph_label(elem, lbl, level)
         else
           super
         end
       end
 
-      def prefix_structural_label(elem, lbl, _ctype)
-        return unless lbl
-
-        t = elem.at(ns("./title"))
-        if t && !t.text.strip.empty?
-          prefix_name(elem, "<br/>",
-                      "<strong>#{lbl}</strong>", "title")
+      def prefix_structural_label(elem, lbl, level)
+        if lbl
+          t = elem.at(ns("./title"))
+          if t && !t.text.strip.empty?
+            prefix_name(elem, { caption: "<br/>" },
+                        "<strong>#{lbl}</strong>", "title")
+          else
+            prefix_name(elem, {}, "<strong>#{lbl}</strong>", "title")
+          end
         else
-          prefix_name(elem, "", "<strong>#{lbl}</strong>", "title")
+          prefix_name(elem, {}, nil, "title")
         end
+        t = elem.at(ns("./fmt-title")) and t["depth"] = level
       end
 
-      def prefix_article_label(elem, lbl)
-        return unless lbl
-
-        t = elem.at(ns("./title"))
-        if t && !t.text.strip.empty?
-          prefix_name(elem, ": ", lbl, "title")
+      def prefix_article_label(elem, lbl, level)
+        if lbl
+          t = elem.at(ns("./title"))
+          if t && !t.text.strip.empty?
+            prefix_name(elem, { caption: "<span class='fmt-caption-delim'>: </span>" },
+                        lbl, "title")
+          else
+            prefix_name(elem, {}, lbl, "title")
+          end
         else
-          prefix_name(elem, "", lbl, "title")
+          prefix_name(elem, {}, nil, "title")
         end
+        t = elem.at(ns("./fmt-title")) and t["depth"] = level
       end
 
-      def prefix_subarticle_label(elem, lbl)
-        return unless lbl
-
-        t = elem.at(ns("./title"))
-        if t && !t.text.strip.empty?
-          prefix_name(elem, ". ", lbl, "title")
+      def prefix_subarticle_label(elem, lbl, level)
+        if lbl
+          t = elem.at(ns("./title"))
+          if t && !t.text.strip.empty?
+            prefix_name(elem, { caption: "<span class='fmt-caption-delim'>. </span>" },
+                        lbl, "title")
+          else
+            prefix_name(elem, {}, lbl, "title")
+          end
         else
-          prefix_name(elem, "", lbl, "title")
+          prefix_name(elem, {}, nil, "title")
         end
+        t = elem.at(ns("./fmt-title")) and t["depth"] = level
       end
 
-      def prefix_paragraph_label(elem, lbl)
-        return unless lbl
-
-        # Check if this paragraph should be unnumbered
-        # (single paragraph in article)
-        return if elem["unnumbered"] == "true"
-
-        t = elem.at(ns("./title"))
-        if t && !t.text.strip.empty?
-          prefix_name(elem, ". ", lbl, "title")
+      def prefix_paragraph_label(elem, lbl, level)
+        if lbl && elem["unnumbered"] != "true"
+          t = elem.at(ns("./title"))
+          if t && !t.text.strip.empty?
+            prefix_name(elem, { caption: "<span class='fmt-caption-delim'>. </span>" },
+                        lbl, "title")
+          else
+            prefix_name(elem, { label: "." }, lbl, "title")
+          end
         else
-          prefix_name(elem, "", "#{lbl}.", "title")
+          prefix_name(elem, {}, nil, "title")
         end
+        t = elem.at(ns("./fmt-title")) and t["depth"] = level
       end
 
-      # Select ordered list type based on nesting depth within
-      # a paragraph context:
-      # Depth 1 → lowergreek (proper Greek numerals: α, β… στ…)
-      # Depth 2 → double Greek (αα, αβ… βα, ββ…)
-      # Depth 3+ → lowerroman (i, ii, iii…)
+      # Use standard list types for now.
+      # TODO: proper Greek numeral list support requires extending
+      # IsoDoc::XrefGen::Counter#listlabel with custom types.
+      # For MVP, depth 1 = alphabet (a,b,c), depth 2+ = roman (i,ii,iii).
       def ol_depth(node)
-        depth = node.ancestors("ol").size + 1
+        depth = node.ancestors("ul, ol").size + 1
         case depth
-        when 1 then :lowergreek
-        when 2 then :lowergreek_double
-        else :lowerroman
-        end
-      end
-
-      def ol_label(node, idx)
-        depth = node.ancestors("ol").size + 1
-        case depth
-        when 1
-          Metanorma::Lawgr::GreekNumerals.to_greek_lower(idx + 1)
-        when 2
-          parent_idx = node.parent.parent.xpath(ns("./li"))
-            .index(node.parent) + 1
-          Metanorma::Lawgr::GreekNumerals
-            .to_greek_double(parent_idx, idx + 1)
-        else
-          RomanNumerals.to_roman(idx + 1).downcase
+        when 1 then :alphabet
+        when 2 then :alphabet
+        else :roman
         end
       end
 

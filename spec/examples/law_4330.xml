@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metanorma xmlns="https://www.metanorma.org/ns/standoc" type="semantic" version="0.0.1" schema-version="v2.1.5" flavor="lawgr">
+<bibdata type="standard">
+<title type="main" language="el" format="text/plain">ΝΟΜΟΣ ΥΠ' ΑΡΙΘ. 4330: Τροποποίηση διατάξεων Κώδικα Φορολογίας Εισοδήματος και άλλες διατάξεις</title>
+<docidentifier primary="true">4330</docidentifier><docnumber>4330</docnumber><date type="published"><on>2015-06-16</on></date><contributor><role type="author"/><organization>
+<name>ΕΘΝΙΚΟ ΤΥΠΟΓΡΑΦΕΙΟ</name>
+</organization></contributor><contributor><role type="publisher"/><organization>
+<name>ΕΘΝΙΚΟ ΤΥΠΟΓΡΑΦΕΙΟ</name>
+</organization></contributor><language>el</language><script>Grek</script><status><stage>published</stage></status><copyright><from>2015</from><owner><organization>
+<name>ΕΘΝΙΚΟ ΤΥΠΟΓΡΑΦΕΙΟ</name>
+</organization></owner></copyright><ext><doctype>act</doctype><flavor>lawgr</flavor><fek><number>59</number><series>Α'</series><year>2015</year></fek></ext></bibdata><metanorma-extension><semantic-metadata><stage-published>true</stage-published></semantic-metadata>
+<presentation-metadata><toc-heading-levels>2</toc-heading-levels><html-toc-heading-levels>2</html-toc-heading-levels><doc-toc-heading-levels>2</doc-toc-heading-levels><pdf-toc-heading-levels>2</pdf-toc-heading-levels></presentation-metadata></metanorma-extension>
+<preface><clause id="_9e6b4c1b-60e5-2b25-a38d-0a5b3556b98d" inline-header="false" obligation="informative">
+<title id="_5d1bfa53-fd86-2b48-0d1c-eedd2681e997">Εκδίδομε τον ακόλουθο νόμο</title>
+<p id="_6c0075d2-788e-68a0-b935-4d9dd34ea85a">Ο ΠΡΟΕΔΡΟΣ ΤΗΣ ΕΛΛΗΝΙΚΗΣ ΔΗΜΟΚΡΑΤΙΑΣ</p>
+
+<p id="_bf598bef-e837-e282-435e-dd83008567a4">Εκδίδομε τον ακόλουθο νόμο που ψήφισε η Βουλή:</p>
+</clause></preface><sections>
+
+<clause id="_a87b7953-b804-12b8-6549-125936d62b94" inline-header="false" obligation="normative">
+<title id="_17fff417-4d80-9317-ff34-049da05bc57c">Γενικές διατάξεις</title>
+<clause id="_943bc4ab-4f61-a1a1-172f-c3d311f6007d" inline-header="false" obligation="normative">
+<title id="_5488620c-1e11-f315-e8b3-85166ea4005f">Σκοπός</title>
+<clause id="_32624f72-44d7-2082-6b0a-910c54acb939" unnumbered="true" inline-header="false" obligation="normative"><p id="_3c10e436-8d42-7bd4-957d-363cd5c81930">Σκοπός του παρόντος νόμου είναι η τροποποίηση διατάξεων του Κώδικα Φορολογίας Εισοδήματος.</p>
+</clause>
+</clause>
+
+<clause id="_dd982a02-d73d-19d7-7d7b-7d21c957b6c8" inline-header="false" obligation="normative">
+<title id="_1bf58302-1967-3540-c188-3a5f452f800b">Πεδίο εφαρμογής</title>
+<clause id="_5d5a9f3e-d632-8ba6-0c89-680f5f0bcd8b" inline-header="false" obligation="normative"><p id="_ae648427-097f-f0e1-0c11-711022c13ea5">Ο παρών κώδικας εφαρμόζεται στα φυσικά και νομικά πρόσωπα.</p>
+</clause>
+
+<clause id="_c5c820da-4c5b-9083-82e4-5a46a769cf98" inline-header="false" obligation="normative"><p id="_9a3455e6-5c41-a020-ee17-0536a9b49298">Εξαιρούνται τα πρόσωπα που αναφέρονται στο Άρθρο 5.</p>
+</clause>
+</clause>
+</clause>
+
+<clause id="_6601fcd1-45bc-2bd5-43f9-2cf97f6e6a6a" inline-header="false" obligation="normative">
+<title id="_a0ef555c-3882-4ac6-3e53-2230f0d55a74">Ειδικές διατάξεις</title>
+<clause id="_1451908c-a234-9767-e33a-e9a92c41c5af" inline-header="false" obligation="normative">
+<title id="_1f45c253-55a9-2c9f-edc1-9ccb01da0999">Φορολογία εισοδήματος</title>
+<clause id="_d06caab9-c77f-1e74-7acd-ca85f3e4090b" inline-header="false" obligation="normative">
+<title id="_0be7c100-3ba7-2829-1214-30380617ecec">Φορολογητέο εισόδημα</title>
+<clause id="_5d27fd03-7b4a-4d11-b444-19bda8f00e55" inline-header="false" obligation="normative"><p id="_a3e08338-aa5f-1653-a6fa-1cc6de68399b">Φορολογητέο εισόδημα είναι το εισόδημα που απομένει μετά την αφαίρεση των δαπανών:</p>
+
+<ol id="_aff5852a-5c5e-d0fd-48f4-75a3c7b58f01" type="lowergreek"><li><p id="_68ecf3c9-6ec6-d06a-9cc1-5e2177e23ee5">δαπάνες μισθοδοσίας</p>
+</li>
+<li><p id="_19579c5d-b498-fe75-c6b2-f476f9ce0cd9">δαπάνες ενοικίων</p>
+</li>
+<li><p id="_20125b2b-3d0f-ab94-49c5-bbaff1302c44">δαπάνες λειτουργίας</p>
+<ol id="_d2775328-92fd-43c9-fec3-cc5fecac03bf" type="alphabet"><li><p id="_9b7d974b-8e77-dd23-51af-1b0ffedf84a4">πρώτη υποπερίπτωση λειτουργίας</p>
+</li>
+<li><p id="_62c500a9-8d20-9bf7-0e80-abca17cb2011">δεύτερη υποπερίπτωση λειτουργίας</p>
+</li>
+</ol>
+</li>
+</ol>
+</clause>
+
+<clause id="_534f699b-8247-49b0-c584-ba41a27f20d6" inline-header="false" obligation="normative"><p id="_34b36c51-15d1-cc76-67f0-7d6ff9d3a534">Για κάθε μία εκ των ανωτέρω περιπτώσεων τεκμηριώνεται η δαπάνη.</p>
+</clause>
+</clause>
+
+<clause id="_b608c099-ba2c-f956-7488-c7171c0bb0dd" inline-header="false" obligation="normative">
+<title id="_9ddaec4f-2c18-7640-9451-31e28e8ef7d1">Φορολογικοί συντελεστές</title>
+<clause id="_302fd68a-bd7f-830e-da20-ed66022e4c2f" inline-header="false" obligation="normative"><p id="_1ff5440d-97d8-3388-188b-56f2071c45fd">Οι φορολογικοί συντελεστές καθορίζονται ως εξής.</p>
+</clause>
+</clause>
+</clause>
+</clause>
+
+<clause id="_0b2ab7f4-208c-143b-1a9c-0569e8506b02" type="entry-into-force" inline-header="false" obligation="normative">
+<title id="_93c1844e-d206-a98f-78fd-a10aa20959ee">Έναρξη ισχύος</title>
+<clause id="_c938d408-9592-3f7d-3400-317d87d0c81e" inline-header="false" obligation="normative"><clause id="_a745831c-0b21-2042-971b-8dd26ff677fc" unnumbered="true" inline-header="false" obligation="normative"><p id="_60904809-3e74-f96d-d7dc-8af26a427e9c">Η ισχύς του παρόντος νόμου αρχίζει από τη δημοσίευσή του στην Εφημερίδα της Κυβερνήσεως.</p>
+</clause>
+</clause>
+</clause>
+
+
+</sections>
+<colophon><clause id="_7132c4d7-7a80-9862-8638-002e22a9e23d" inline-header="false" obligation="normative">
+<title id="_f8a920be-688c-f7c7-d1cc-cb47c5e52ecf">Υπογραφές</title>
+<p id="_c9c1695b-193c-e3eb-a686-01ccb1756932">Αθήνα, 16 Ιουνίου 2015<br/> Ο ΠΡΟΕΔΡΟΣ ΤΗΣ ΔΗΜΟΚΡΑΤΙΑΣ<br/> ΠΡΟΚΟΠΙΟΣ Β. ΠΑΥΛΟΠΟΥΛΟΣ</p>
+</clause></colophon></metanorma>
