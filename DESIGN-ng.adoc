@@ -67,6 +67,11 @@ Authors never hardcode numbers in section titles.
 | Παράγραφος
 | Arabic within article (1, 2…); optionally dot-separated from article via `:inheritnumbering:` (5.1, 5.2…); hidden when article has only one
 | 1.
+
+| Custom
+| —
+| Uppercase Greek letter + period (Α., Β., Γ.…); resets per parent; NOT inherited by children
+| Α. Φυσική Πρόσβαση
 |===
 
 Paragraphs may *nest recursively*.
@@ -75,6 +80,9 @@ For example, Article 5 → Subarticle 5.2 → Paragraph 5.2.8 → Paragraph 5.2.
 
 NOTE: *Subarticle* (Υποάρθρο) is not a normative element but is seen in practice when articles are divided into discrete sections bearing optional titles.
 It affects paragraph numbering and must be modellable.
+
+NOTE: *Custom* is a non-normative grouping clause used for labelled sub-sections (e.g. "Α. Φυσική Πρόσβαση") within subarticles or paragraphs.
+Its numbering uses uppercase Greek letters that reset per parent container and are *not* inherited by child paragraphs — children continue the parent's paragraph numbering sequence transparently.
 
 === Structural numbering rule
 
@@ -635,6 +643,55 @@ When organisational levels consume the upper AsciiDoc section tiers, use the `le
 
 The displayed paragraph numbers (5.2.8.1.1, 5.2.8.2.2, etc.) are derived from the article/subarticle/paragraph ancestry — see <<Paragraph numbering rule>>.
 
+=== Custom clauses
+
+Custom clauses group related paragraphs under a labelled sub-heading (e.g. "Α. Φυσική Πρόσβαση") without affecting the paragraph numbering chain.
+They are typically used inside subarticles or paragraphs. These are non-normative, but have been seen in the wild (especially in regulatory texts).
+
+[source,asciidoc]
+----
+[heading=subarticle]
+==== Φυσική Πρόσβαση και Περιβαλλοντική Ασφάλεια
+
+[heading=custom]
+===== Φυσική Πρόσβαση
+
+[heading=paragraph]
+====== {empty}
+
+Ο πάροχος καθορίζει τα απαιτούμενα μέτρα...
+
+[heading=paragraph]
+====== {empty}
+
+Ο πάροχος διαθέτει και εφαρμόζει διαδικασία...
+
+[heading=custom]
+===== Περιβαλλοντική Ασφάλεια
+
+[heading=paragraph]
+====== {empty}
+
+Ο πάροχος εκτιμά και αντιμετωπίζει τους κινδύνους...
+----
+
+This renders as:
+____
+5.1. Φυσική Πρόσβαση και Περιβαλλοντική Ασφάλεια +
+{nbsp}{nbsp}Α. Φυσική Πρόσβαση +
+{nbsp}{nbsp}{nbsp}{nbsp}5.1.1. Ο πάροχος καθορίζει… +
+{nbsp}{nbsp}{nbsp}{nbsp}5.1.2. Ο πάροχος διαθέτει… +
+{nbsp}{nbsp}Β. Περιβαλλοντική Ασφάλεια +
+{nbsp}{nbsp}{nbsp}{nbsp}5.1.3. Ο πάροχος εκτιμά…
+____
+
+Key behaviours:
+
+* Numbering uses uppercase Greek letters from `GREEK_UPPER_LETTERS` (Α, Β, Γ…), resetting per parent container
+* The custom clause's numbering is *not* inherited by children — child paragraphs continue the parent's paragraph counter (5.1.1, 5.1.2 under Α; 5.1.3 under Β)
+* Custom clauses can be optional-titled; the label renders as "Α. Title" or just "Α." if untitled
+* Children are rendered with cascading indentation (see <<Cascading indentation>>)
+
 === Sub-paragraph enumerations (περίπτωση / υποπερίπτωση / στοιχείο)
 
 Ordered lists within paragraphs map to the three-level scheme.
@@ -902,6 +959,7 @@ Reuses StanDoc's `ClauseSection` with `type` constrained to:
 | `article` | Άρθρο
 | `subarticle` | Υποάρθρο
 | `paragraph` | Παράγραφος
+| `custom` | Non-normative grouping clause (Α., Β., Γ.…)
 |===
 
 The `type` attribute is always a *structural* type derived from the `heading` attribute.
@@ -940,7 +998,7 @@ The rendering pipeline follows standard Metanorma architecture:
 `IsoDoc::Lawgr::PresentationXMLConvert` overrides:
 
 * `ol_depth` — selects list type based on nesting depth (currently maps to `:alphabet` / `:roman`; proper Greek numeral list types are deferred)
-* `clause1` — dispatches to structural label methods based on clause `type`: `prefix_structural_label`, `prefix_article_label`, `prefix_subarticle_label`, `prefix_paragraph_label`
+* `clause1` — dispatches to structural label methods based on clause `type`: `prefix_structural_label`, `prefix_article_label`, `prefix_subarticle_label`, `prefix_custom_label`, `prefix_paragraph_label`
 * `add_toc_variant_title` — injects `<variant-title type="toc">` for untitled paragraphs (showing "Παράγραφος _n_") and untitled articles (showing "Άρθρο _n_") so the navigation sidebar displays meaningful labels instead of bare numbers
 * `single_paragraph_suppression` — suppresses paragraph numbering when an article has only one paragraph *(not yet implemented)*
 
@@ -948,11 +1006,14 @@ The rendering pipeline follows standard Metanorma architecture:
 
 * `main_anchor_names` — reads `:inheritnumbering:` from document metadata, then dispatches to `lawgr_section_names`
 * `lawgr_article_names` — numbers articles sequentially across the whole law
+* `lawgr_subarticle_names` — numbers subarticles within articles and dispatches to child paragraphs and custom clauses
 * `lawgr_paragraph_names` — numbers paragraphs within each article; supports flat (default) and hierarchical (`:inheritnumbering:`) modes
+* `lawgr_custom_names` / `lawgr_custom_anchor` — assigns uppercase-Greek numbering to custom clauses; the parent's paragraph counter is passed through transparently so child paragraphs continue the parent sequence
 
 `IsoDoc::Lawgr::BaseConvert` overrides:
 
-* `clause_attrs` — adds CSS classes (`lawgr-article`, `lawgr-paragraph`, etc.) to clause `<div>` elements based on the XML `type` attribute, enabling targeted CSS styling
+* `clause_attrs` — adds CSS classes (`lawgr-article`, `lawgr-paragraph`, `lawgr-custom`, etc.) to clause `<div>` elements based on the XML `type` attribute; also sets CSS custom properties for cascading indentation (see <<Cascading indentation>>)
+* `precompute_paragraph_widths` — scans all paragraph, subarticle, and custom labels in the presentation XML before rendering to compute maximum label widths per numbering depth; stores them as `@paragraph_indent_by_segments`, `@subarticle_max_num_width`, and `@custom_max_num_width`
 
 === i18n
 
@@ -981,10 +1042,67 @@ Custom HTML template and plain CSS stylesheet (`htmlstyle.css`) providing:
 
 * *Font:* Inter (Google Fonts), with system sans-serif fallbacks
 * *Navigation sidebar:* fixed left sidebar with table of contents generated server-side from heading elements; toggle button to collapse/expand; paragraph TOC entries show "Παράγραφος _n_" via `variant-title` mechanism
-* *Hanging-indent paragraph layout:* paragraph numbers float left in a gutter; the first content block flows inline next to the number; subsequent blocks maintain the same left indent (CSS class `lawgr-paragraph`)
+* *Hanging-indent paragraph layout:* paragraph numbers float left in a gutter; the first content block flows inline next to the number; subsequent blocks maintain the same left indent (CSS class `lawgr-paragraph`); numbers are *left-aligned* within their gutter for correct cross-level alignment
 * *Structural labels:* uppercase centred rendering for top-level elements (ΒΙΒΛΙΟ, ΜΕΡΟΣ, ΤΜΗΜΑ, ΚΕΦΑΛΑΙΟ); centred article headings
+* *Cascading indentation:* CSS custom properties (`--lawgr-sub-num-width`, `--lawgr-custom-num-width`, `--lawgr-num-width`) set per-`div` by `clause_attrs` control the hanging-indent width at each level; nested elements inherit the parent's content position so each child's numbering starts where the parent's text begins (see <<Cascading indentation>>)
+* *Deep paragraph headings (h7, h8):* since HTML only defines `h1`–`h6`, deeper paragraph headings are rendered as `<h7>` / `<h8>` (unknown elements); the CSS adds `display: block` and the same float/indent rules as standard headings
+* *Navbar toggle:* `scripts_override.html` overrides the base isodoc toggle script to (a) animate the toggle button position in sync with the navbar, and (b) maintain a minimum body `margin-left` (toggle width + gap) when collapsed, so content never overlaps the widget
 * *Cover page:* template with ΦΕΚ publication metadata
 * *Responsive:* sidebar collapses on narrow viewports; print styles hide navigation
+
+[[cascading-indentation]]
+=== Cascading indentation
+
+Each structural level contributes a `padding-left` to its `<div>`, creating a hanging indent for its label.
+The label (number or letter) is pulled back into the gutter via negative `margin-left`.
+Because child elements are placed inside the parent's content area (after the padding), each child's label naturally starts at the parent's *text* position — not the parent's *label* position.
+
+The CSS custom properties are:
+
+[cols="2,3,2", options="header"]
+|===
+| CSS property | Set on | Computed from
+
+| `--lawgr-sub-num-width`
+| `div.lawgr-subarticle`
+| Max subarticle label width (e.g. "5.2" → 4.6ch)
+
+| `--lawgr-custom-num-width`
+| `div.lawgr-custom`
+| Max custom label width (e.g. "Α" → 2.6ch)
+
+| `--lawgr-num-width`
+| `div.lawgr-paragraph`
+| Max paragraph label width per segment depth (e.g. "5.2.8.1" → 9.6ch)
+|===
+
+Width computation formula: `label.length + 1.6` (1 char for trailing period + 0.6ch gap).
+All widths are pre-computed by `precompute_paragraph_widths` before any `clause_attrs` calls.
+
+Example cascade for Article 5, Subarticle 5.2:
+
+----
+x=0       5.2. Ασφάλεια Λογικής Πρόσβασης      (sub-num-width: 4.6ch)
+x=4.6ch     Α. Λογική Πρόσβαση στα ΠΕΣ         (custom-num-width: 2.6ch)
+x=7.2ch       5.2.1. Content text...             (num-width: 7.6ch)
+x=14.8ch        5.2.8.1. Title...                (num-width: 9.6ch)
+x=24.4ch          5.2.8.1.1. Content text...     (num-width: 10.6ch)
+----
+
+=== Apostrophes in AsciiDoc source
+
+In AsciiDoc, the backtick-apostrophe sequence (pass:[`']) is a smart-quote marker for a right single quotation mark.
+However, when two such sequences appear on the same line, the parser may misinterpret the backticks as monospace delimiters, wrapping the intervening text in `<tt>` tags.
+
+To avoid this, use the Unicode right single quotation mark (U+2019, `'`) directly in the source:
+
+----
+// WRONG — may trigger monospace interpretation:
+της υπ`' αρ. 165/2011 ... (Β`' 2715)
+
+// CORRECT — literal Unicode apostrophe:
+της υπ' αρ. 165/2011 ... (Β' 2715)
+----
 
 
 == Cross-references
@@ -1064,7 +1182,8 @@ metanorma-lawgr/
 │           └── html/
 │               ├── html_lawgr_titlepage.html
 │               ├── html_lawgr_intro.html
-│               └── htmlstyle.css          # plain CSS (Inter font, nav sidebar, hanging-indent paragraphs)
+│               ├── htmlstyle.css          # plain CSS (Inter font, nav sidebar, hanging-indent paragraphs, cascading indent)
+│               └── scripts_override.html  # navbar toggle fix (body margin + button position sync)
 ├── spec/                                # RSpec tests
 └── Gemfile
 ----
@@ -1081,10 +1200,12 @@ metanorma-lawgr/
 * Flat paragraph numbering within articles (default), with opt-in hierarchical numbering via `:inheritnumbering:`
 * Greek numeral algorithm (`GreekNumerals` module) — utility implemented; ordered-list integration deferred
 * i18n labels (Greek and English)
-* HTML output with Inter font, navigation sidebar, hanging-indent paragraph layout, structural labels
-* Navigation sidebar with meaningful TOC entries ("Παράγραφος _n_" for untitled paragraphs via `variant-title` mechanism)
+* Custom clause type (`heading=custom`) with uppercase-Greek numbering, transparent to child paragraph numbering
+* HTML output with Inter font, navigation sidebar, hanging-indent paragraph layout, structural labels, cascading indentation via CSS custom properties
+* Navigation sidebar with meaningful TOC entries ("Παράγραφος _n_" for untitled paragraphs via `variant-title` mechanism); toggle button with body margin override (`scripts_override.html`)
 * Basic metadata extraction (law number, ΦΕΚ, date, type)
-* CSS classes on clause divs (`lawgr-article`, `lawgr-paragraph`, etc.) for targeted styling
+* CSS classes on clause divs (`lawgr-article`, `lawgr-paragraph`, `lawgr-custom`, etc.) for targeted styling; per-div CSS custom properties for cascading indent widths
+* Deep paragraph support (h7/h8 elements) for nesting beyond HTML's h1–h6 limit
 * Cover page template with ΦΕΚ publication metadata
 
 === Deferred
