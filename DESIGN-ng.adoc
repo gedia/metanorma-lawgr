@@ -1,0 +1,1059 @@
+= Metanorma Lawgr: Design Document
+:doctype: article
+:toc: macro
+:toclevels: 4
+
+toc::[]
+
+== Introduction
+
+This document describes the design of *metanorma-lawgr*, a Metanorma flavour for authoring Greek legislation.
+It extends and supersedes the original `DESIGN.adoc` in this repository.
+
+Upstream Metanorma builds on AsciiDoc to provide a model for technical specifications, standards, and other normative documents.
+This project extends that model to support the specificities of Greek law, following the architectural patterns established by existing Metanorma flavours (ISO, IEC, BSI, etc.) while diverging where legislation demands it.
+
+The design draws on:
+
+* The official _Codification Methodology Manual_ (Εγχειρίδιο Μεθοδολογίας για την Κωδικοποίηση της Νομοθεσίας, 2020) published by the Central Codification Committee (Κ.Ε.Κ.).
+* An Akoma Ntoso 3.0 sample of Law 4330/2015 (`law_4330_2015.xml`).
+* The LegalParser companion (PCI 2016) which provides a context-free grammar for Greek legal documents.
+* The reference Metanorma repositories: `basicdoc-models`, `metanorma-model-standoc`, `metanorma-model-iso`, `metanorma-standoc`, `metanorma-iso`, and `coradoc`.
+
+
+== Greek law structural elements
+
+Greek law consists of the following structural hierarchy, from outermost to innermost.
+Titles are optional at every level except Article.
+
+All numbering in the table below is *derived by the presentation layer* from document structure.
+Authors never hardcode numbers in section titles.
+
+[cols="2,2,3,2", options="header"]
+|===
+| Level | Greek name | Numbering style | Rendered example
+
+| Book
+| ΒΙΒΛΙΟ
+| Greek ordinal words, uppercase neuter (ΠΡΩΤΟ, ΔΕΥΤΕΡΟ…)
+| ΒΙΒΛΙΟ ΠΡΩΤΟ
+
+| Part
+| ΜΕΡΟΣ
+| Uppercase Greek letter with keraia (Α', Β'…)
+| ΜΕΡΟΣ Α'
+
+| Section
+| ΤΜΗΜΑ
+| Uppercase Roman (I, II…)
+| ΤΜΗΜΑ I
+
+| Chapter
+| ΚΕΦΑΛΑΙΟ
+| Uppercase Greek letter with keraia (Α', Β'…)
+| ΚΕΦΑΛΑΙΟ Α'
+
+| Article
+| Άρθρο
+| Arabic, continuous across whole law
+| Άρθρο 1
+
+| Subarticle
+| Υποάρθρο
+| Arabic, dot-separated from article (e.g. 1.1)
+| —
+
+| Paragraph
+| Παράγραφος
+| Arabic, dot-separated (1, 2… or 5.2.8.1); hidden when article has only one
+| 1.
+|===
+
+Paragraphs may *nest recursively*.
+A paragraph can contain both text and child paragraphs, each of which may in turn contain further child paragraphs.
+For example, Article 5 → Subarticle 5.2 → Paragraph 5.2.8 → Paragraph 5.2.8.1 → Paragraph 5.2.8.1.1 is a valid structure.
+
+NOTE: *Subarticle* (Υποάρθρο) is not a normative element but is seen in practice when articles are divided into discrete sections bearing optional titles.
+It affects paragraph numbering and must be modellable.
+
+=== Structural numbering rule
+
+All numbering labels (at every level) are *derived by the presentation layer* from element position in the document tree.
+Authors provide only optional descriptive titles; the converter generates the numbering prefix.
+
+==== Book ordinals
+
+Books are numbered with Greek ordinal words in the neuter gender.
+The presentation layer provides a built-in lookup table.
+The `twitter_cldr` gem (already used by `metanorma-un` for English ordinals) supports Greek locale and may be able to generate these programmatically; this should be evaluated during implementation as an alternative to a hardcoded table.
+
+[cols="1,2", options="header"]
+|===
+| Position | Ordinal
+
+| 1 | ΠΡΩΤΟ
+| 2 | ΔΕΥΤΕΡΟ
+| 3 | ΤΡΙΤΟ
+| 4 | ΤΕΤΑΡΤΟ
+| 5 | ΠΕΜΠΤΟ
+| 6 | ΕΚΤΟ
+| 7 | ΕΒΔΟΜΟ
+| 8 | ΟΓΔΟΟ
+| 9 | ΕΝΑΤΟ
+| 10 | ΔΕΚΑΤΟ
+|===
+
+For positions beyond the table (rare in practice), the author can override via the `ordinal` attribute:
+
+[source,asciidoc]
+----
+[heading=book,ordinal=ΕΝΔΕΚΑΤΟ]
+= Ειδικές διατάξεις
+----
+
+This renders as: *ΒΙΒΛΙΟ ΕΝΔΕΚΑΤΟ: Ειδικές διατάξεις*
+
+==== Part, Section, Chapter, Article
+
+* *Part* (ΜΕΡΟΣ): uppercase Greek letter with keraia, derived from position (Α', Β', Γ'…)
+* *Section* (ΤΜΗΜΑ): uppercase Roman numeral, derived from position (I, II, III…)
+* *Chapter* (ΚΕΦΑΛΑΙΟ): uppercase Greek letter with keraia, derived from position (Α', Β', Γ'…)
+* *Article* (Άρθρο): Arabic numeral, continuous across the whole law, derived from position
+
+All four use the `{empty}` or descriptive-title-only convention.
+The `number` attribute (inherited from StanDoc) can override auto-numbering when needed (e.g. for amendment documents that must follow an existing article scheme).
+
+==== Paragraph numbering
+
+The displayed number of a paragraph is derived exclusively from its position within the *article/subarticle/paragraph* ancestry.
+Organisational levels (Book, Part, Section, Chapter) exist in the model and have their own numbering, but their numbers are *not* incorporated into paragraph numbering.
+
+For example, given the hierarchy:
+____
+ΒΙΒΛΙΟ ΠΡΩΤΟ → ΜΕΡΟΣ Α' → ΚΕΦΑΛΑΙΟ Β' → Άρθρο 5 → Υποάρθρο 5.2 → Παράγραφος 5.2.8 → Παράγραφος 5.2.8.1 → Παράγραφος 5.2.8.1.1
+____
+The displayed number of the deepest paragraph is *5.2.8.1.1* — the Book, Part, and Chapter numbers play no role.
+
+The numbering components are: `{article}.{subarticle?}.{para}.{sub-para}…`
+
+=== Sub-paragraph enumeration
+
+Within a paragraph, ordered enumerations follow a strict three-level scheme:
+
+[cols="2,2,3,3", options="header"]
+|===
+| Level | Greek name | Numbering | Notes
+
+| 1st (case)
+| περίπτωση
+| Proper Greek lowercase numerals (α, β… στ, ζ… ι, ια…)
+| See <<greek-numerals>> for algorithm
+
+| 2nd (subcase)
+| υποπερίπτωση
+| Double Greek lowercase — first letter = parent, second = ordinal (αα, αβ… βα, ββ…)
+| Merges with parent number in presentation
+
+| 3rd (element)
+| στοιχείο
+| Lowercase Latin (i, ii, iii…)
+| Standard AsciiDoc `lowerroman` suffices
+|===
+
+No further levels are formally defined, but may be used in practice.
+
+When an article has a single paragraph, the paragraph number is suppressed in rendered output.
+
+Each grammatical sentence within a paragraph is called an *εδάφιο* (or informally *περίοδος*).
+Amendments may reference specific εδάφια.
+This is deferred from the prototype since automated sentence boundary detection is unreliable; a future iteration may allow explicit sentence markup.
+
+Multiple ordered lists within a single paragraph are not normatively defined but occur in practice.
+We assign implicit ordinals to such lists (list 1, list 2) so they can be referenced.
+
+=== Semantic text body sections
+
+The text body of a codified law is divided into semantically distinct ordered categories.
+Each may contain any elements from the structural hierarchy above.
+
+. *Γενικές διατάξεις* — General provisions (scope, definitions, general principles)
+. *Ουσιαστικές διατάξεις* — Substantive provisions
+. *Οργανωτικές και διαδικαστικές διατάξεις* — Organisational, procedural provisions and deadlines
+. *Ποινικές και διοικητικές κυρώσεις / δικονομικές διατάξεις* — Penal/administrative sanctions and procedural provisions
+. *Εξουσιοδοτικές διατάξεις* — Delegating provisions
+. *Μεταβατικές διατάξεις* — Transitional provisions
+. *Καταργούμενες / διατηρούμενες διατάξεις* — Repealed/retained provisions
+. *Έναρξη ισχύος* — Entry into force
+
+=== Document parts
+
+In addition to the text body, a Greek law may have:
+
+* *Introductory part* (coverpage, preface, preamble) — modelled as Metanorma `preface` sections
+* *Endpart* (conclusions, signatures) — modelled as Metanorma `colophon` sections
+
+The internal structure of these is not rigidly defined; we assume they may contain any structural elements, similarly to the text body.
+
+
+== Architecture decisions
+
+=== Model inheritance
+
+After examining how `metanorma-iso` extends `metanorma-standoc`, and how `metanorma-standoc` extends `basicdoc-models`:
+
+* *Inherit directly from StanDoc, not from ISO.*
+Greek law is not an ISO-family standard.
+ISO's model adds ISO-specific metadata (stages, TC/SC/WG, document schemes) that are irrelevant to legislation.
+* *Reuse from StanDoc:*
+** `StandardDocument` structure (bibdata, preface, sections, annex, bibliography, colophon)
+** `ClauseSection` with its `type` attribute — this is how we distinguish structural levels
+** `StandardSection` with its `number`, `unnumbered`, and `inline-header` attributes
+** All BasicBlock types (paragraphs, tables, figures, notes, admonitions, ordered/unordered lists, etc.)
+** All TextElement inline types
+** The cleanup, validation, and rendering pipeline architecture
+* *Extend for lawgr:*
+** Custom section types for the Greek law hierarchy
+** Custom ordered-list types for Greek numeral schemes
+** Greek law-specific metadata (ΦΕΚ number, law type, signers, etc.)
+** Greek i18n labels
+
+=== Toolchain
+
+*Ruby*, matching the existing Metanorma ecosystem.
+
+The gem is `metanorma-lawgr` and follows the same structure as `metanorma-iso`:
+
+* `lib/metanorma/lawgr/` — AsciiDoc→XML converter (inheriting `Metanorma::Standoc::Converter`)
+* `lib/isodoc/lawgr/` — XML→HTML/PDF renderer (inheriting `IsoDoc::HtmlConvert`, `IsoDoc::PresentationXMLConvert`)
+* `lib/metanorma-lawgr.rb` — entry point, Metanorma registry registration
+
+=== Grammar / schema
+
+Following the pattern documented in `metanorma-model-iso/README.adoc`:
+
+* `lawgr.rnc` — extends `isodoc.rnc` (the base Metanorma grammar, *not* `isostandard.rnc`)
+* `relaton-lawgr.rnc` — extends `biblio-standoc.rnc` with Greek law metadata fields
+* `lawgr-compile.rnc` — wraps `lawgr.rnc` and `relaton-lawgr.rnc`
+
+This is the documented pattern for non-ISO Metanorma flavours:
+____
+`{FLAVOUR}.rnc` extends `isodoc.rnc` to a Metanorma flavour that does not inherit from ISO.
+____
+
+=== Output formats
+
+* *Primary:* HTML (via `IsoDoc::Lawgr::HtmlConvert`)
+* *Good-to-have:* PDF (via XSL-FO / `IsoDoc::Lawgr::PdfConvert`)
+
+
+== AsciiDoc authoring syntax
+
+The syntax follows standard Metanorma AsciiDoc conventions.
+AsciiDoc section depth maps to the structural hierarchy, disambiguated by `heading` attributes where needed.
+
+=== Section depth and nesting limits
+
+Standard Asciidoctor supports 6 section levels (`=` through `======`, levels 0–5).
+The XML model has no depth limit — `<clause>` elements nest arbitrarily.
+The constraint is purely at the AsciiDoc syntax layer.
+
+==== The `level` attribute for deep nesting
+
+Metanorma's StanDoc provides a built-in mechanism for sections deeper than 5 levels: the `level` attribute.
+All sections beyond level 5 are written with `======` (the deepest AsciiDoc syntax), and the `[level=N]` attribute declares the actual desired depth.
+During the cleanup phase, StanDoc's `sections_level_cleanup` rearranges these flat sibling sections into the correct nested structure by moving each clause with `level >= 6` inside its preceding sibling.
+
+This is the *primary mechanism* for deep nesting in lawgr and requires no parser extensions.
+
+In practice, most Greek laws do *not* use all organisational levels (Book, Part, Section, Chapter) simultaneously.
+Typical combinations and their depth budgets:
+
+[cols="3,1", options="header"]
+|===
+| Typical structure | AsciiDoc levels used
+
+| Chapter → Article → Paragraph → nested paragraphs
+| 4–5 levels (no `level` attribute needed)
+
+| Article → Subarticle → Paragraph → nested paragraphs
+| 4–5 levels (no `level` attribute needed)
+
+| Book → Part → Chapter → Article → Paragraph → nested paragraphs
+| 6+ levels (use `level` attribute for depth > 5)
+|===
+
+Example with deep nesting:
+
+[source,asciidoc]
+----
+[heading=book]
+= {empty}
+
+[heading=part]
+== {empty}
+
+[heading=chapter]
+=== {empty}
+
+[heading=article]
+==== {empty}
+
+[heading=subarticle]
+===== Λογική πρόσβαση
+
+[heading=paragraph]
+====== {empty}
+
+Ο πάροχος διατηρεί και εφαρμόζει τις παρακάτω διαδικασίες:
+
+[level=7,heading=paragraph]
+====== Διαδικασία Διαχείρισης Χρηστών ΠΕΣ
+
+[level=8,heading=paragraph]
+====== {empty}
+
+Στη Διαδικασία Διαχείρισης Χρηστών ΠΕΣ περιγράφεται με σαφήνεια
+ο τρόπος προσθήκης νέων χρηστών ΠΕΣ...
+
+[level=8,heading=paragraph]
+====== {empty}
+
+Για κάθε μία εκ των ενεργειών...
+
+[level=7,heading=paragraph]
+====== Διαδικασία Ελέγχου Ορθής Εφαρμογής
+
+[level=8,heading=paragraph]
+====== {empty}
+
+Στη Διαδικασία Ελέγχου Ορθής Εφαρμογής...
+
+[heading=paragraph]
+====== {empty}
+
+Ο πάροχος εφαρμόζει...
+----
+
+All sections beyond level 5 use `======` syntax but declare their actual depth via `[level=N]`.
+StanDoc's cleanup phase rearranges them into the correct nesting.
+
+==== File-per-article with `leveloffset` (optional)
+
+As an alternative authoring pattern, large laws can split articles into separate files and use Asciidoctor's `leveloffset` on `include::` directives.
+`leveloffset` adjusts the effective `node.level` after syntax parsing, so each included file can start at level 0 while being placed at the correct depth in the parent.
+
+[source,asciidoc]
+----
+// parent.adoc
+[heading=chapter]
+=== {empty}
+
+\include::articles/article5.adoc[leveloffset=+3]
+\include::articles/article6.adoc[leveloffset=+3]
+----
+
+[source,asciidoc]
+----
+// articles/article5.adoc — self-contained, starts at level 0
+[heading=article]
+= {empty}
+
+[heading=subarticle]
+== Λογική πρόσβαση
+
+[heading=paragraph]
+=== {empty}
+
+[heading=paragraph]
+==== Διαδικασία Διαχείρισης Χρηστών ΠΕΣ
+
+[heading=paragraph]
+===== {empty}
+
+Στη Διαδικασία Διαχείρισης Χρηστών ΠΕΣ...
+----
+
+This pattern improves authoring ergonomics for large laws and avoids the need for `level` attributes entirely, since each file has its full 6-level budget.
+The two mechanisms (`level` attribute and `leveloffset`) can be combined as needed.
+
+=== Document header
+
+[source,asciidoc]
+----
+= ΝΟΜΟΣ ΥΠ' ΑΡΙΘ. 4330: Τροποποίηση διατάξεων Κώδικα Φορολογίας Εισοδήματος και άλλες διατάξεις
+:docnumber: 4330
+:doctype: act
+:copyright-year: 2015
+:published-date: 2015-06-16
+:language: el
+:script: Grek
+:fek-number: 59
+:fek-series: Α'
+:fek-year: 2015
+:publisher: ΕΘΝΙΚΟ ΤΥΠΟΓΡΑΦΕΙΟ
+:mn-document-class: lawgr
+----
+
+=== Structural sections
+
+Section depth determines the structural level.
+The `heading` attribute may be used to explicitly declare the type when section depth alone is ambiguous.
+
+[source,asciidoc]
+----
+[heading=book]
+= Γενικές διατάξεις
+
+[heading=part]
+== Πεδίο εφαρμογής
+
+[heading=section]
+=== Ορισμοί
+
+[heading=chapter]
+==== Βασικοί ορισμοί
+
+[heading=article]
+===== Σκοπός
+
+Σκοπός του παρόντος είναι...
+
+[heading=article]
+===== Πεδίο εφαρμογής
+
+[heading=paragraph]
+====== {empty}
+
+Ο παρών κώδικας εφαρμόζεται...
+
+[heading=paragraph]
+====== {empty}
+
+Εξαιρούνται...
+----
+
+This renders as:
+____
+*ΒΙΒΛΙΟ ΠΡΩΤΟ: Γενικές διατάξεις* +
+ΜΕΡΟΣ Α': Πεδίο εφαρμογής +
+ΤΜΗΜΑ I: Ορισμοί +
+ΚΕΦΑΛΑΙΟ Α': Βασικοί ορισμοί +
+Άρθρο 1: Σκοπός +
+Άρθρο 2: Πεδίο εφαρμογής — 1. Ο παρών… 2. Εξαιρούνται…
+____
+
+=== Skipped organisational levels
+
+Not all laws use every organisational level.
+The `heading` attribute disambiguates each element's type regardless of which levels are present.
+The presentation layer numbers each level independently — skipped levels simply don't appear.
+
+==== Parts only (no Books, no Chapters)
+
+[source,asciidoc]
+----
+[heading=part]
+== Γενικές διατάξεις
+
+[heading=article]
+=== Σκοπός
+
+Σκοπός του παρόντος είναι...
+
+[heading=article]
+=== Πεδίο εφαρμογής
+
+...
+
+[heading=part]
+== Ειδικές διατάξεις
+
+[heading=article]
+=== Φορολογικές ρυθμίσεις
+
+...
+----
+
+This renders as:
+____
+ΜΕΡΟΣ Α': Γενικές διατάξεις +
+Άρθρο 1: Σκοπός +
+Άρθρο 2: Πεδίο εφαρμογής +
+ΜΕΡΟΣ Β': Ειδικές διατάξεις +
+Άρθρο 3: Φορολογικές ρυθμίσεις
+____
+
+==== Parts with mixed structure (some Parts have Chapters, some do not)
+
+[source,asciidoc]
+----
+[heading=part]
+== Γενικές διατάξεις
+
+// Articles directly under Part — no chapters here
+[heading=article]
+=== Σκοπός
+
+...
+
+[heading=article]
+=== Ορισμοί
+
+...
+
+[heading=part]
+== Ειδικές διατάξεις
+
+// This Part has Chapters
+[heading=chapter]
+=== Φορολογία εισοδήματος
+
+[heading=article]
+==== Φορολογητέο εισόδημα
+
+...
+
+[heading=article]
+==== Φορολογικοί συντελεστές
+
+...
+
+[heading=chapter]
+=== Φόρος Προστιθέμενης Αξίας
+
+[heading=article]
+==== Αντικείμενο του φόρου
+
+...
+----
+
+This renders as:
+____
+ΜΕΡΟΣ Α': Γενικές διατάξεις +
+Άρθρο 1: Σκοπός +
+Άρθρο 2: Ορισμοί +
+ΜΕΡΟΣ Β': Ειδικές διατάξεις +
+ΚΕΦΑΛΑΙΟ Α': Φορολογία εισοδήματος +
+Άρθρο 3: Φορολογητέο εισόδημα +
+Άρθρο 4: Φορολογικοί συντελεστές +
+ΚΕΦΑΛΑΙΟ Β': Φόρος Προστιθέμενης Αξίας +
+Άρθρο 5: Αντικείμενο του φόρου
+____
+
+NOTE: Because Articles are numbered continuously across the whole law, Articles under Part Α' (which has no chapters) and Articles under Part Β' / Chapter Α' all share one continuous sequence.
+The `heading` attribute ensures the converter places each element at the correct structural type, even though the AsciiDoc nesting depth differs between the two Parts.
+
+=== Articles and paragraphs
+
+An article is the fundamental unit.
+Paragraphs within an article are numbered subsections.
+Paragraphs may nest recursively — child paragraphs are modelled as subsections of their parent paragraph.
+
+NOTE: *Numbers are never hardcoded* in section titles at any level.
+The presentation layer derives all numbering from document structure (see <<Structural numbering rule>>).
+Authors provide only optional *descriptive titles*; untitled elements use `{empty}` as the section title.
+
+Simple case (flat paragraphs):
+
+[source,asciidoc]
+----
+[heading=article]
+== Υποχρεώσεις τρίτων
+
+[heading=paragraph]
+=== {empty}
+
+Η παρ. 1 του άρθρου 54Α του Ν. 4174/2013 αντικαθίσταται ως ακολούθως...
+
+[heading=paragraph]
+=== {empty}
+
+Οι τυχόν παραλείψεις ή σφάλματα...
+----
+
+When an article has a single paragraph, use `[%unnumbered]`:
+
+[source,asciidoc]
+----
+[heading=article]
+== {empty}
+
+[%unnumbered,heading=paragraph]
+=== {blank}
+
+Υπόχρεος για την απόδοση του Φόρου Προστιθέμενης Αξίας...
+----
+
+=== Deeply nested paragraphs
+
+Paragraphs nest to arbitrary depth.
+The `heading=paragraph` attribute ensures the converter treats every level as a paragraph regardless of AsciiDoc depth.
+
+When the article stands alone (no organisational levels above), plain section nesting suffices:
+
+[source,asciidoc]
+----
+[heading=article]
+== {empty}
+
+[heading=subarticle]
+=== Λογική πρόσβαση
+
+[heading=paragraph]
+==== {empty}
+
+Ο πάροχος διατηρεί και εφαρμόζει τις παρακάτω διαδικασίες:
+
+[heading=paragraph]
+===== Διαδικασία Διαχείρισης Χρηστών ΠΕΣ
+
+[heading=paragraph]
+====== {empty}
+
+Στη Διαδικασία Διαχείρισης Χρηστών ΠΕΣ περιγράφεται με σαφήνεια
+ο τρόπος προσθήκης νέων χρηστών ΠΕΣ...
+
+[heading=paragraph]
+====== {empty}
+
+Για κάθε μία εκ των ενεργειών...
+----
+
+When organisational levels consume the upper AsciiDoc section tiers, use the `level` attribute or file-per-article with `leveloffset` to go deeper — see <<The `level` attribute for deep nesting>> and <<File-per-article with `leveloffset` (optional)>>.
+
+The displayed paragraph numbers (5.2.8.1.1, 5.2.8.2.2, etc.) are derived from the article/subarticle/paragraph ancestry — see <<Paragraph numbering rule>>.
+
+=== Sub-paragraph enumerations (περίπτωση / υποπερίπτωση / στοιχείο)
+
+Ordered lists within paragraphs map to the three-level scheme.
+Custom list styles are used:
+
+[source,asciidoc]
+----
+[heading=paragraph]
+====== {empty}
+
+Εισαγωγικό εδάφιο:
+
+[lowergreek]
+. πρώτη περίπτωση
+.. πρώτη υποπερίπτωση
+.. δεύτερη υποπερίπτωση
+... πρώτο στοιχείο (lowerroman automatically)
+... δεύτερο στοιχείο
+. δεύτερη περίπτωση
+. τρίτη περίπτωση
+----
+
+The `lowergreek` style triggers the proper Greek numeral algorithm (see <<greek-numerals>>).
+Nesting depth determines the sub-paragraph level:
+
+* Depth 1 → περίπτωση (proper Greek lowercase: α, β… στ, ζ… ι, ια…)
+* Depth 2 → υποπερίπτωση (double Greek: αα, αβ… βα, ββ…)
+* Depth 3 → στοιχείο (lowercase Latin/Roman: i, ii, iii…)
+
+=== Semantic text body sections
+
+Use the `type` attribute on top-level body clauses:
+
+[source,asciidoc]
+----
+[type=general-provisions]
+== Γενικές διατάξεις
+
+...
+
+[type=substantive-provisions]
+== Ουσιαστικές διατάξεις
+
+...
+
+[type=transitional-provisions]
+== Μεταβατικές διατάξεις
+
+...
+
+[type=entry-into-force]
+== Έναρξη ισχύος
+
+...
+----
+
+=== Preface and conclusions
+
+[source,asciidoc]
+----
+[.preface]
+== Εκδίδομε τον ακόλουθο νόμο
+
+Ο ΠΡΟΕΔΡΟΣ ΤΗΣ ΕΛΛΗΝΙΚΗΣ ΔΗΜΟΚΡΑΤΙΑΣ
+...
+
+// Main body here
+
+[.colophon]
+== Υπογραφές
+
+Αθήνα, 16 Ιουνίου 2015 +
+Ο ΠΡΟΕΔΡΟΣ ΤΗΣ ΔΗΜΟΚΡΑΤΙΑΣ +
+ΠΡΟΚΟΠΙΟΣ Β. ΠΑΥΛΟΠΟΥΛΟΣ
+----
+
+=== Cross-references
+
+Internal references within the same document use standard `xref`:
+
+[source,asciidoc]
+----
+Σύμφωνα με το <<art-5-para-1>> του παρόντος...
+----
+
+References to other laws authored in the same flavour use `eref`:
+
+[source,asciidoc]
+----
+Σύμφωνα με το eref:[4172-2013,clause=72]{Ν. 4172/2013, Άρθρο 72}...
+----
+
+No external database fetching is implemented.
+Bibliography entries for referenced laws are authored manually in a `[bibliography]` section.
+
+
+[[greek-numerals]]
+== Greek numeral system
+
+Standard AsciiDoc's `lowergreek` cycles through the Greek alphabet (α, β, γ, δ, ε, ζ…) which is incorrect for Greek legal numbering.
+
+Greek law uses *proper Greek lowercase numerals* which are a positional system:
+
+[cols="1,1,3", options="header"]
+|===
+| Value | Numeral | Notes
+
+| 1–5 | α, β, γ, δ, ε |
+| 6 | στ | digraph, not ζ
+| 7–9 | ζ, η, θ |
+| 10 | ι |
+| 11–15 | ια, ιβ, ιγ, ιδ, ιε |
+| 16 | ιστ | digraph at ones position
+| 17–19 | ιζ, ιη, ιθ |
+| 20 | κ |
+| 21 | κα |
+| … | … |
+|===
+
+The algorithm:
+
+. Ones: α=1, β=2, γ=3, δ=4, ε=5, στ=6, ζ=7, η=8, θ=9
+. Tens: ι=10, κ=20, λ=30, μ=40, ν=50, ξ=60, ο=70, π=80, (ϟ=90 — rarely needed)
+. Combine: tens + ones, e.g. 16 = ι + στ = ιστ, 23 = κ + γ = κγ
+
+For uppercase variant, the same letters are capitalised.
+
+=== Double Greek (υποπερίπτωση)
+
+The first letter identifies the parent περίπτωση, the second is the ordinal within the parent:
+
+* Parent α: αα, αβ, αγ…
+* Parent β: βα, ββ, βγ…
+* Parent στ: στα, στβ, στγ…
+
+NOTE: When the parent is a digraph (στ), the prefix is also the digraph, so υποπερίπτωση entries under στ are: στα, στβ, στγ, etc.
+
+=== Implementation
+
+Two new ordered-list types are added to the Metanorma `ol` vocabulary:
+
+* `greek_lower` — proper Greek lowercase numerals (for περίπτωση)
+* `greek_lower_double` — double Greek (for υποπερίπτωση, auto-prefixed with parent)
+
+These are rendered by `IsoDoc::Lawgr::PresentationXMLConvert#ol_depth`, which selects the type based on nesting depth within a paragraph context.
+
+A utility module `Metanorma::Lawgr::GreekNumerals` implements:
+
+[source,ruby]
+----
+module Metanorma
+  module Lawgr
+    module GreekNumerals
+      ONES = ["", "α", "β", "γ", "δ", "ε", "στ", "ζ", "η", "θ"].freeze
+      TENS = ["", "ι", "κ", "λ", "μ", "ν", "ξ", "ο", "π", "ϟ"].freeze
+
+      def self.to_greek_lower(n)
+        return "" if n <= 0
+        tens = n / 10
+        ones = n % 10
+        "#{TENS[tens]}#{ONES[ones]}"
+      end
+
+      def self.to_greek_upper(n)
+        to_greek_lower(n).upcase
+      end
+
+      def self.to_greek_double(parent_n, child_n)
+        "#{to_greek_lower(parent_n)}#{to_greek_lower(child_n)}"
+      end
+    end
+  end
+end
+----
+
+
+== Document model
+
+=== LawgrDocument
+
+`LawgrDocument` extends `StandardDocument` from StanDoc.
+
+[source]
+----
+class LawgrDocument < StandardDocument
+  +bibdata: LawgrBibliographicItem
+  +preface: LawgrPreface[0..1]
+  +sections: LawgrSections
+  +colophon: StandardHierarchicalSection[0..*]
+end
+----
+
+=== LawgrBibliographicItem
+
+Extends `StandardBibData` with Greek law metadata:
+
+[source]
+----
+class LawgrBibliographicItem < StandardBibData
+  +fek-number: String[0..1]           // ΦΕΚ issue number (e.g. "59")
+  +fek-series: String[0..1]           // ΦΕΚ series (Α', Β', etc.)
+  +fek-year: String[0..1]             // ΦΕΚ year of publication
+  +signers: LawgrSigner[0..*]         // Signers with role
+end
+----
+
+=== LawgrDocumentType
+
+The `:doctype:` attribute classifies the legal document.
+These correspond to the principal categories of documents published in the Official Gazette (ΦΕΚ):
+
+[source]
+----
+enum LawgrDocumentType {
+  act                   // Νόμος (Law / Act of Parliament)
+  pd                    // Προεδρικό Διάταγμα (Presidential Decree)
+  ap                    // Πράξη Κανονιστικού Χαρακτήρα (Regulatory Act)
+  egk                   // Εγκύκλιος (Information Circular)
+  other                 // Λοιπά Νομικά Έγγραφα (Other Legal Documents)
+}
+----
+
+In the document header, use:
+
+[source,asciidoc]
+----
+:doctype: act
+----
+
+=== LawgrSections
+
+[source]
+----
+class LawgrSections
+  +clause: LawgrClause[1..*]    // structural hierarchy elements
+end
+----
+
+=== LawgrClause
+
+Reuses StanDoc's `ClauseSection` with `type` constrained to:
+
+[cols="2,3", options="header"]
+|===
+| type value | Structural element
+
+| `book` | ΒΙΒΛΙΟ
+| `part` | ΜΕΡΟΣ
+| `tmima` | ΤΜΗΜΑ (Section)
+| `chapter` | ΚΕΦΑΛΑΙΟ
+| `article` | Άρθρο
+| `subarticle` | Υποάρθρο
+| `paragraph` | Παράγραφος
+| `general-provisions` | Γενικές διατάξεις
+| `substantive-provisions` | Ουσιαστικές διατάξεις
+| `organisational-provisions` | Οργανωτικές και διαδικαστικές διατάξεις
+| `sanctions` | Ποινικές/διοικητικές κυρώσεις
+| `delegating-provisions` | Εξουσιοδοτικές διατάξεις
+| `transitional-provisions` | Μεταβατικές διατάξεις
+| `repealed-provisions` | Καταργούμενες/διατηρούμενες διατάξεις
+| `entry-into-force` | Έναρξη ισχύος
+|===
+
+
+== Rendering
+
+=== Pipeline
+
+The rendering pipeline follows standard Metanorma architecture:
+
+. *AsciiDoc source* → `Metanorma::Lawgr::Converter` → *Semantic XML*
+. *Semantic XML* → `IsoDoc::Lawgr::PresentationXMLConvert` → *Presentation XML*
+. *Presentation XML* → `IsoDoc::Lawgr::HtmlConvert` → *HTML*
+. *Presentation XML* → `IsoDoc::Lawgr::PdfConvert` → *PDF* (good-to-have)
+
+=== Presentation XML customisations
+
+`IsoDoc::Lawgr::PresentationXMLConvert` overrides:
+
+* `ol_depth` — selects Greek numeral type based on nesting depth
+* `clause1` — renders structural labels (ΒΙΒΛΙΟ ΠΡΩΤΟ, ΜΕΡΟΣ Α', Άρθρο 1, etc.)
+* `paragraph_numbering` — computes the dot-separated display number for each paragraph by walking only the article/subarticle/paragraph ancestry (see <<Paragraph numbering rule>>); organisational ancestors (Book, Part, Section, Chapter) are excluded
+* `single_paragraph_suppression` — suppresses paragraph numbering when an article has only one paragraph
+
+=== i18n
+
+`i18n-el.yaml` provides Greek labels:
+
+[source,yaml]
+----
+clause: Διάταξη
+book: Βιβλίο
+part: Μέρος
+section: Τμήμα
+chapter: Κεφάλαιο
+article: Άρθρο
+subarticle: Υποάρθρο
+paragraph: Παράγραφος
+case: περίπτωση
+subcase: υποπερίπτωση
+element: στοιχείο
+edafio: εδάφιο
+table_of_contents: Πίνακας Περιεχομένων
+----
+
+=== HTML output
+
+Custom HTML template and SCSS stylesheet providing:
+
+* Uppercase rendering for top-level structural labels (ΒΙΒΛΙΟ, ΜΕΡΟΣ, ΤΜΗΜΑ, ΚΕΦΑΛΑΙΟ)
+* Proper indentation for the article/paragraph hierarchy
+* Cover page template with ΦΕΚ publication metadata
+* Table of contents following the structural hierarchy
+
+
+== Cross-references
+
+=== Internal references
+
+Standard Metanorma `xref` targeting element IDs:
+
+[source,asciidoc]
+----
+<<art-5-para-1>>
+----
+
+Rendered as: "Παράγραφος 1 του Άρθρου 5" (or abbreviated per context).
+
+The `IsoDoc::Lawgr::Xref` class overrides `anchor_struct` to produce Greek law reference labels using the i18n labels.
+
+=== Law-to-law references
+
+References to other Greek laws use standard Metanorma `eref` with manually authored bibliography entries.
+No external Relaton database fetching.
+
+[source,asciidoc]
+----
+[bibliography]
+== Παραπομπές
+
+* [[[law-4172-2013,Ν. 4172/2013]]] Ν. 4172/2013 (Α' 167)
+* [[[law-2859-2000,Ν. 2859/2000]]] Ν. 2859/2000
+
+// In text:
+Σύμφωνα με το <<law-4172-2013,clause=72>>...
+----
+
+
+== Gem structure
+
+[source]
+----
+metanorma-lawgr/
+├── metanorma-lawgr.gemspec
+├── lib/
+│   ├── metanorma-lawgr.rb              # entry point, registry registration
+│   ├── metanorma/
+│   │   ├── lawgr.rb                     # module definition
+│   │   └── lawgr/
+│   │       ├── version.rb
+│   │       ├── processor.rb             # Metanorma::Lawgr::Processor
+│   │       ├── converter.rb             # requires all converter modules
+│   │       ├── base.rb                  # XML_ROOT_TAG, html_converter, etc.
+│   │       ├── front.rb                 # metadata extraction from doc header
+│   │       ├── section.rb               # section type dispatch overrides
+│   │       ├── cleanup.rb               # section ordering, single-para suppression
+│   │       ├── validate.rb              # structural validation
+│   │       ├── greek_numerals.rb        # GreekNumerals utility module
+│   │       ├── lawgr.rnc               # RelaxNG Compact grammar
+│   │       ├── lawgr.rng               # compiled RelaxNG
+│   │       ├── isodoc.rng              # base Metanorma grammar (copied)
+│   │       ├── basicdoc.rng            # BasicDoc grammar (copied)
+│   │       ├── biblio.rng              # Relaton grammar (copied)
+│   │       ├── biblio-standoc.rng      # StanDoc biblio grammar (copied)
+│   │       ├── relaton-lawgr.rng       # law-specific bibdata extensions
+│   │       └── boilerplate.adoc        # (if needed)
+│   └── isodoc/
+│       └── lawgr/
+│           ├── base_convert.rb
+│           ├── html_convert.rb          # IsoDoc::Lawgr::HtmlConvert
+│           ├── pdf_convert.rb           # IsoDoc::Lawgr::PdfConvert (stub)
+│           ├── presentation_xml_convert.rb
+│           ├── presentation_xref.rb     # Greek law xref label generation
+│           ├── xref.rb                  # IsoDoc::Lawgr::Xref
+│           ├── metadata.rb
+│           ├── i18n.rb
+│           ├── i18n-el.yaml
+│           ├── i18n-en.yaml
+│           ├── init.rb
+│           └── html/
+│               ├── html_lawgr_titlepage.html
+│               ├── html_lawgr_intro.html
+│               ├── style-lawgr.scss
+│               └── htmlstyle.scss
+├── spec/                                # RSpec tests
+└── Gemfile
+----
+
+
+== Prototype scope
+
+=== In scope (MVP)
+
+* Gem skeleton with Metanorma registry integration
+* `Metanorma::Lawgr::Converter` inheriting from StanDoc, registered as `lawgr`
+* Section type dispatch for the full Greek law hierarchy (Book through Paragraph, with recursive nesting)
+* Dot-separated paragraph numbering derived from article/subarticle/paragraph ancestry
+* Greek numeral algorithm (`GreekNumerals` module)
+* Custom ordered-list rendering for περίπτωση / υποπερίπτωση / στοιχείο
+* Single-paragraph suppression
+* i18n labels (Greek)
+* Basic HTML output with structural hierarchy rendering
+* Basic metadata extraction (law number, ΦΕΚ, date, type, signers)
+* Internal cross-references
+* Manual bibliography for law-to-law references
+
+=== Deferred
+
+* PDF output
+* εδάφιο (sentence-level) modelling
+* Amendment authoring syntax
+* Akoma Ntoso XML export
+* Relaton database fetching
+* Structural validation rules (continuous article numbering, etc.)
+* Cover page / ΦΕΚ header template polish
+* Word (`.doc`) output
+
+
+== Other useful resources
+
+* `codification-manual.txt` — pdftotext output of the Κ.Ε.Κ. codification methodology manual (2020)
+* `./LegalParser` — companion for the PCI 2016 paper _Towards Automatic Structuring and Semantic Indexing of Legal Documents_ (Koniaris, Papastefanatos, Vassiliou). No code provided, but useful for the EBNF grammar and parsing strategy.
+* `./legalparser-paper.txt` — the above paper as plain text
+* `./law_4330_2015.xml` — Akoma Ntoso 3.0 XML of Law 4330/2015, used as reference for metadata and structure mapping
