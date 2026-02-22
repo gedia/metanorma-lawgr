@@ -12,10 +12,10 @@ module IsoDoc
 
       def default_fonts(options)
         {
-          bodyfont: '"Times New Roman", serif',
-          headerfont: '"Times New Roman", serif',
-          monospacefont: '"Courier New", monospace',
-          normalfontsize: "15px",
+          bodyfont: '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
+          headerfont: '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
+          monospacefont: '"JetBrains Mono", "Fira Code", "Courier New", monospace',
+          normalfontsize: "16px",
           footnotefontsize: "0.9em",
         }
       end
@@ -30,7 +30,7 @@ module IsoDoc
 
       def googlefonts
         <<~HEAD.freeze
-          <link href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         HEAD
       end
 
