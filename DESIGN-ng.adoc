@@ -127,7 +127,7 @@ This renders as: *ΒΙΒΛΙΟ ΕΝΔΕΚΑΤΟ: Ειδικές διατάξει
 * *Chapter* (ΚΕΦΑΛΑΙΟ): uppercase Greek letter with keraia, derived from position (Α', Β', Γ'…)
 * *Article* (Άρθρο): Arabic numeral, continuous across the whole law, derived from position
 
-All four use the `{empty}` or descriptive-title-only convention.
+All four use the `{``empty``}` or descriptive-title-only convention.
 The `number` attribute (inherited from StanDoc) can override auto-numbering when needed (e.g. for amendment documents that must follow an existing article scheme).
 
 ==== Paragraph numbering
@@ -570,7 +570,7 @@ Paragraphs may nest recursively — child paragraphs are modelled as subsections
 
 NOTE: *Numbers are never hardcoded* in section titles at any level.
 The presentation layer derives all numbering from document structure (see <<Structural numbering rule>>).
-Authors provide only optional *descriptive titles*; untitled elements use `{empty}` as the section title.
+Authors provide only optional *descriptive titles*; untitled elements use `{``empty``}` as the section title.
 
 Simple case (flat paragraphs):
 
