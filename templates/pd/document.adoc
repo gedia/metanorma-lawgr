@@ -1,0 +1,27 @@
+= Τίτλος Προεδρικού Διατάγματος
+:docnumber: 0000
+:edition: 1
+:revdate: 2025-01-01
+:language: el
+:script: Grek
+:doctype: pd
+:mn-document-class: lawgr
+:mn-output-extensions: xml,html
+:local-cache-only:
+:data-uri-image:
+
+// Uncomment for hierarchical paragraph numbering (e.g. 3.1, 3.2):
+// :inheritnumbering: true
+
+\include::sections/00-preamble.adoc[]
+
+// Main body — add or remove section files as needed.
+// Each file should represent one unit at the same structural level
+// (e.g. one Part, one Chapter, or one Article group).
+\include::sections/01-section.adoc[]
+
+\include::sections/02-section.adoc[]
+
+\include::sections/03-section.adoc[]
+
+\include::sections/99-colophon.adoc[]
