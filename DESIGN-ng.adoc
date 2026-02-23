@@ -8,7 +8,6 @@ toc::[]
 == Introduction
 
 This document describes the design of *metanorma-lawgr*, a Metanorma flavour for authoring Greek legislation.
-It extends and supersedes the original `DESIGN.adoc` in this repository.
 
 Upstream Metanorma builds on AsciiDoc to provide a model for technical specifications, standards, and other normative documents.
 This project extends that model to support the specificities of Greek law, following the architectural patterns established by existing Metanorma flavours (ISO, IEC, BSI, etc.) while diverging where legislation demands it.
