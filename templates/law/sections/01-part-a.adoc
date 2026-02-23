@@ -1,0 +1,36 @@
+// ΜΕΡΟΣ Α — General provisions.
+// Each part groups related articles.
+
+[heading=part,type=general-provisions]
+== ΓΕΝΙΚΕΣ ΔΙΑΤΑΞΕΙΣ
+
+[heading=article]
+=== Αντικείμενο και Πεδίο Εφαρμογής
+
+[heading=paragraph]
+===== {empty}
+
+Ο παρών Κανονισμός θεσπίζει...
+
+[heading=paragraph]
+===== {empty}
+
+Ο Κανονισμός εφαρμόζεται σε...
+
+[heading=article]
+=== Ορισμοί
+
+[heading=paragraph]
+===== {empty}
+
+Για τους σκοπούς του παρόντος Κανονισμού, ισχύουν οι ακόλουθοι ορισμοί:
+
+[heading=paragraph]
+===== Ορισμός Α
+
+«...»: ...
+
+[heading=paragraph]
+===== Ορισμός Β
+
+«...»: ...

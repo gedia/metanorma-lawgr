@@ -1,0 +1,46 @@
+// ΜΕΡΟΣ Β — Substantive provisions.
+
+[heading=part,type=substantive-provisions]
+== Ουσιαστικές Διατάξεις
+
+[heading=article]
+=== Τίτλος Άρθρου
+
+[heading=subarticle]
+==== Τίτλος Υποάρθρου
+
+[heading=paragraph]
+===== {empty}
+
+Κείμενο παραγράφου...
+
+[heading=paragraph]
+===== {empty}
+
+Κείμενο παραγράφου με περιπτώσεις:
+
+[lowergreek]
+. Πρώτη περίπτωση,
+. Δεύτερη περίπτωση,
+. Τρίτη περίπτωση.
+
+[heading=paragraph]
+===== {empty}
+
+Κείμενο παραγράφου με custom κατηγορίες:
+
+[heading=custom]
+====== Κατηγορία Πρώτη
+
+[heading=paragraph]
+======= {empty}
+
+Κείμενο υπό την κατηγορία.
+
+[heading=custom]
+====== Κατηγορία Δεύτερη
+
+[heading=paragraph]
+======= {empty}
+
+Κείμενο υπό τη δεύτερη κατηγορία.
