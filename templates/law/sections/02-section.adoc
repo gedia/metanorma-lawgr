@@ -1,4 +1,7 @@
-// ΜΕΡΟΣ Β — Substantive provisions.
+// Section 2 — Another unit at the same structural level as Section 1.
+//
+// This example shows a Part with subarticles, ordered lists,
+// and custom clauses.  Adapt freely.
 
 [heading=part,type=substantive-provisions]
 == Ουσιαστικές Διατάξεις

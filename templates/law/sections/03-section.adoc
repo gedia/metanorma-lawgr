@@ -1,4 +1,6 @@
-// ΜΕΡΟΣ Γ — Transitional and final provisions.
+// Section 3 — Another unit at the same structural level.
+//
+// This example shows transitional/final provisions.  Adapt freely.
 
 [heading=part]
 == Μεταβατικές και Τελικές Διατάξεις
@@ -26,5 +28,3 @@
 ===== {empty}
 
 Η ισχύς του παρόντος Κανονισμού αρχίζει από τη δημοσίευσή του στην Εφημερίδα της Κυβερνήσεως.
-
-Η απόφαση αυτή να δημοσιευθεί στην Εφημερίδα της Κυβερνήσεως.

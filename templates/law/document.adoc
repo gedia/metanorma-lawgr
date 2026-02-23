@@ -15,8 +15,13 @@
 
 \include::sections/00-preamble.adoc[]
 
-\include::sections/01-part-a.adoc[]
+// Main body — add or remove section files as needed.
+// Each file should represent one unit at the same structural level
+// (e.g. one Part, one Chapter, or one Article group).
+\include::sections/01-section.adoc[]
 
-\include::sections/02-part-b.adoc[]
+\include::sections/02-section.adoc[]
 
-\include::sections/03-part-c.adoc[]
+\include::sections/03-section.adoc[]
+
+\include::sections/99-colophon.adoc[]

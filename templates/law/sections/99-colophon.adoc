@@ -1,0 +1,13 @@
+// Colophon — Closing text after the final article.
+//
+// This section typically contains the publication directive and
+// signer information.  Adapt to your law's requirements.
+
+Η απόφαση αυτή να δημοσιευθεί στην Εφημερίδα της Κυβερνήσεως.
+
+// Signer block (adapt names, titles, location, date):
+//
+// Αθήνα, ___ 2025
+//
+// Ο Πρόεδρος
+// ΟΝΟΜΑΤΕΠΩΝΥΜΟ

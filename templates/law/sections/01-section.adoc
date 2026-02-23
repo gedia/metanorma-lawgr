@@ -1,0 +1,41 @@
+// Section 1 — Choose the structural level that fits your law.
+//
+// Each section file (01, 02, 03…) should represent ONE unit at the
+// same level of the law's hierarchy.  For example, if your law is
+// divided into Parts (Μέρη), each file is one Part.  If it is divided
+// into Chapters (Κεφάλαια), each file is one Chapter.
+//
+// Delete, rename, or add section files as needed.  The numbering
+// (01-, 02-, 03-…) only controls the include order in document.adoc.
+//
+// Below is an example using Parts → Articles → Paragraphs.
+// Adapt or replace entirely to match your law's structure.
+
+[heading=part,type=general-provisions]
+== ΓΕΝΙΚΕΣ ΔΙΑΤΑΞΕΙΣ
+
+[heading=article]
+=== Αντικείμενο και Πεδίο Εφαρμογής
+
+[heading=paragraph]
+===== {empty}
+
+Ο παρών Κανονισμός θεσπίζει...
+
+[heading=paragraph]
+===== {empty}
+
+Ο Κανονισμός εφαρμόζεται σε...
+
+[heading=article]
+=== Ορισμοί
+
+[heading=paragraph]
+===== {empty}
+
+Για τους σκοπούς του παρόντος Κανονισμού, ισχύουν οι ακόλουθοι ορισμοί:
+
+[heading=paragraph]
+===== Ορισμός Α
+
+«...»: ...
