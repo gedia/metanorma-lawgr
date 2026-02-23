@@ -20,6 +20,7 @@ module IsoDoc
         @inheritnumbering = xml.at(
           ns("//bibdata/ext/inheritnumbering")
         )&.text&.strip == "true"
+        @structural_counters = {}
         n = clause_counter
         clause_order_main(xml).each do |a|
           xml.xpath(ns(a[:path])).each do |c|
@@ -46,16 +47,48 @@ module IsoDoc
       # Structural containers (parts, books, etc.) are transparent
       # for article numbering: they get their own anchor but do not
       # consume a number from the article counter.
+      # Each structural type has its own sequential counter; parts
+      # are labelled ΜΕΡΟΣ Α, Β, Γ… (uppercase Greek letters).
       def lawgr_structural_names(clause, article_num, lvl)
+        ctype = clause["type"]
+        @structural_counters[ctype] ||= clause_counter(0)
+        @structural_counters[ctype].increment(clause)
+        idx = @structural_counters[ctype].print.to_i
+        lbl = structural_label(ctype, idx, clause)
         c = clause_title(clause)
         title = c ? semx(clause, c, "title") : nil
         @anchors[clause["id"]] =
-          { label: nil, xref: title, title: title,
+          { label: lbl, xref: lbl, title: title,
             level: lvl, type: "clause",
-            elem: @labels["clause"] }
+            elem: @labels[ctype] || @labels["clause"] }
         clause.xpath(ns(subclauses)).each do |child|
           lawgr_section_names(child, article_num, lvl + 1)
         end
+      end
+
+      # Greek uppercase without accents (accents are dropped in
+      # all-caps Greek text per typographic convention).
+      def greek_upcase(str)
+        str.upcase
+          .unicode_normalize(:nfd)
+          .gsub(/\p{Mn}/, "")
+          .unicode_normalize(:nfc)
+      end
+
+      # Build the label for a structural section.
+      # Parts:    ΜΕΡΟΣ Α, ΜΕΡΟΣ Β   (uppercase Greek letters)
+      # Chapters: ΚΕΦΑΛΑΙΟ Α, Β      (uppercase Greek letters)
+      # Books:    ΒΙΒΛΙΟ ΠΡΩΤΟ       (ordinal words)
+      # Tmima:    ΤΜΗΜΑ Α            (uppercase Greek letters)
+      def structural_label(ctype, idx, clause)
+        type_label = greek_upcase(@labels[ctype] || ctype)
+        if ctype == "book"
+          ordinal = Metanorma::Lawgr::GreekNumerals.book_ordinal(idx)
+          num = ordinal || Metanorma::Lawgr::GreekNumerals::GREEK_UPPER_LETTERS[idx - 1] || idx.to_s
+        else
+          num = Metanorma::Lawgr::GreekNumerals::GREEK_UPPER_LETTERS[idx - 1] || idx.to_s
+        end
+        labelled_autonum(type_label, semx(clause, num))
       end
 
       def lawgr_article_names(clause, num, lvl)

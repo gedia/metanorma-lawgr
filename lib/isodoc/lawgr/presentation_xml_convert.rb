@@ -40,11 +40,12 @@ module IsoDoc
         if lbl
           t = elem.at(ns("./title"))
           if t && !t.text.strip.empty?
-            prefix_name(elem, { caption: "<br/>" },
-                        "<strong>#{lbl}</strong>", "title")
+            prefix_name(elem, { caption: "<span class='fmt-caption-delim'> — </span>" },
+                        lbl, "title")
           else
-            prefix_name(elem, {}, "<strong>#{lbl}</strong>", "title")
+            prefix_name(elem, {}, lbl, "title")
           end
+          add_toc_variant_title(elem, lbl)
         else
           prefix_name(elem, {}, nil, "title")
         end
