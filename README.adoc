@@ -63,4 +63,4 @@ metanorma compile -t lawgr document.adoc
 
 == Documentation
 
-See xref:DESIGN-ng.adoc for the full design document.
+See xref:DESIGN-ng.adoc[DESIGN-ng] for the full design document.
