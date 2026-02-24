@@ -1,5 +1,4 @@
 require "isodoc/lawgr/html_convert"
-require "isodoc/lawgr/pdf_convert"
 require "isodoc/lawgr/presentation_xml_convert"
 require "isodoc/lawgr/xref"
 require "isodoc/lawgr/metadata"

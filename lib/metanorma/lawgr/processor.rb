@@ -32,9 +32,6 @@ module Metanorma
         when :html
           IsoDoc::Lawgr::HtmlConvert.new(options)
             .convert(inname, isodoc_node, nil, outname)
-        when :pdf
-          IsoDoc::Lawgr::PdfConvert.new(options)
-            .convert(inname, isodoc_node, nil, outname)
         when :presentation
           IsoDoc::Lawgr::PresentationXMLConvert.new(options)
             .convert(inname, isodoc_node, nil, outname)

@@ -26,8 +26,6 @@ module Metanorma
         presentation_xml_converter(node).convert("#{@filename}.xml")
         html_converter(node).convert("#{@filename}.presentation.xml",
                                      nil, false, "#{@filename}.html")
-        pdf_converter(node)&.convert("#{@filename}.presentation.xml",
-                                     nil, false, "#{@filename}.pdf")
       end
 
       def presentation_xml_converter(node)
@@ -41,11 +39,6 @@ module Metanorma
         IsoDoc::Lawgr::HtmlConvert.new(html_extract_attributes(node))
       end
 
-      def pdf_converter(node)
-        return nil if node.attr("no-pdf")
-
-        IsoDoc::Lawgr::PdfConvert.new(pdf_extract_attributes(node))
-      end
     end
   end
 end
