@@ -594,6 +594,15 @@ ol > li > .ol-label {
   text-align: left;
 }
 
+ol.uppergreek > li {
+  padding-left: 3em;
+}
+
+ol.uppergreek > li > .ol-label {
+  min-width: 3em;
+  margin-left: -3em;
+}
+
 ol.ol-roman > li,
 ol.ol-roman-upper > li {
   padding-left: 3em;

@@ -129,20 +129,11 @@ module IsoDoc
         t = elem.at(ns("./fmt-title")) and t["depth"] = level
       end
 
-      # Greek law list depth: depth 1 uses proper Greek lowercase
-      # numerals (α, β… στ, ζ…); deeper levels use roman.
-      def ol_depth(node)
-        depth = node.ancestors("ul, ol").size + 1
-        case depth
-        when 1 then :lowergreek
-        else :roman
-        end
-      end
-
-      # Label format templates — add lowergreek with closing paren.
+      # Label format templates — add Greek types with closing paren.
       def ol_label_template(_elem)
         super.merge(
           lowergreek: %{%<span class="fmt-label-delim">)</span>},
+          uppergreek: %{%<span class="fmt-label-delim">)</span>},
         )
       end
 

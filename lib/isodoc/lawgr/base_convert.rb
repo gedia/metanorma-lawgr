@@ -95,9 +95,9 @@ module IsoDoc
       def ol_attrs(node)
         attrs = super
         xml_type = node["type"]
-        if xml_type == "lowergreek"
+        if xml_type == "lowergreek" || xml_type == "uppergreek"
           attrs.delete(:type)
-          attrs[:class] = "lowergreek"
+          attrs[:class] = xml_type
         elsif OL_CLASS[xml_type]
           attrs[:class] = OL_CLASS[xml_type]
         end

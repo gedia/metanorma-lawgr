@@ -40,6 +40,36 @@ module Metanorma
       def title_validate(_root)
         nil
       end
+
+      # Default ordered-list type follows the Greek law three-level
+      # scheme when the author has not set an explicit style:
+      #   depth 1–2  →  lowergreek  (α, β… στ, ζ…)
+      #   depth 3+   →  roman       (i, ii, iii…)
+      # An explicit style (e.g. [arabic]) is left untouched.
+      def ol_attrs(node)
+        attrs = super
+        unless node.attributes[1] # no author-specified style
+          depth = ol_nesting_depth(node)
+          attrs[:type] = depth <= 2 ? "lowergreek" : "roman"
+          attrs.delete(:"explicit-type")
+        end
+        attrs
+      end
+
+      private
+
+      def ol_nesting_depth(node)
+        depth = 0
+        cursor = node.parent
+        while cursor
+          if cursor.respond_to?(:context) &&
+              %i[olist ulist].include?(cursor.context)
+            depth += 1
+          end
+          cursor = cursor.respond_to?(:parent) ? cursor.parent : nil
+        end
+        depth + 1
+      end
     end
   end
 end

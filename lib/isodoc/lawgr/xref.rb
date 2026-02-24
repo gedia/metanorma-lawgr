@@ -213,15 +213,21 @@ module IsoDoc
         end
       end
 
-      # Override list_item_value to produce proper Greek lowercase
-      # numerals (α, β… στ, ζ… ι, ια…) for :lowergreek lists,
-      # bypassing Counter#listlabel which doesn't know this type.
+      # Override list_item_value to produce proper Greek
+      # numerals for :lowergreek (α, β… στ, ζ… ι, ια…) and
+      # :uppergreek (Α, Β… ΣΤ, Ζ… Ι, ΙΑ…) lists, bypassing
+      # Counter#listlabel which doesn't know these types.
       def list_item_value(entry, counter, depth, opts)
-        if entry.parent["type"] == "lowergreek"
+        type = entry.parent["type"]
+        if type == "lowergreek" || type == "uppergreek"
           counter.increment(entry)
           idx = counter.print&.to_i
           return [nil, nil] if idx.nil? || idx <= 0
-          label = Metanorma::Lawgr::GreekNumerals.to_greek_lower(idx)
+          label = if type == "uppergreek"
+                    Metanorma::Lawgr::GreekNumerals.to_greek_upper(idx)
+                  else
+                    Metanorma::Lawgr::GreekNumerals.to_greek_lower(idx)
+                  end
           s = semx(entry, label)
           [label,
            list_item_anchor_label(s, opts[:list_anchor], opts[:prev_label],
