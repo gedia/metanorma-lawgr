@@ -26,6 +26,7 @@
         <ref name="br"/>
         <ref name="hyperlink"/>
         <ref name="bookmark"/>
+        <ref name="eb"/>
       </choice>
     </define>
     <define name="sections">
@@ -149,6 +150,18 @@
       <zeroOrMore>
         <ref name="indexsect"/>
       </zeroOrMore>
+    </element>
+  </define>
+  <define name="eb">
+    <element name="eb">
+      <optional>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="edafio-n"/>
+      </optional>
     </element>
   </define>
   <define name="colophon">

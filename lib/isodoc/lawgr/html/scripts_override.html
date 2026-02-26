@@ -1,11 +1,9 @@
 <script>
-// lawgr: fix toggle button + body margin when navbar collapses/expands.
-// The base isodoc script animates nav left and body marginLeft but
-// (a) leaves #toggle at its fixed CSS position, and
-// (b) sets body marginLeft to 0 on collapse, hiding content behind toggle.
-//
-// We override both: toggle slides in sync, and body always keeps a
-// minimum margin = toggleWidth + gap so content never overlaps the widget.
+// lawgr: unified toggle handler for the navigation sidebar.
+// The base isodoc script binds its own #toggle click handler that
+// animates nav left + body marginLeft.  We remove it and replace
+// with a single handler that also slides #toggle in sync and
+// keeps a minimum body margin so content never overlaps the widget.
 (function() {
   var jqToggle = $('#toggle');
   var jqNav = $('nav');
@@ -16,20 +14,36 @@
   var toggleWidth = jqToggle.outerWidth() || 30;
   var gap = parseInt(jqBody.css('margin-left')) - navWidth - toggleWidth;
   if (gap < 0) gap = 12;
-  var navExpanded = jqNav.is(':visible');
+  var speed = 'slow';
+
+  // Remove base isodoc toggle handler to prevent double animation.
+  jqToggle.off('click');
 
   jqToggle.on('click', function() {
-    navExpanded = !navExpanded;
+    var isVisible = jqNav.is(':visible');
 
-    var targetLeft = navExpanded ? navWidth + 'px' : '0px';
-    jqToggle.stop(true, true).animate({ left: targetLeft }, 'slow');
+    var navLeft      = isVisible ? '-' + navWidth + 'px' : '0px';
+    var toggleLeft   = isVisible ? '0px' : navWidth + 'px';
+    var bodyMargin   = isVisible
+      ? (toggleWidth + gap) + 'px'
+      : (navWidth + toggleWidth + gap) + 'px';
 
-    var targetMargin = navExpanded
-      ? (navWidth + toggleWidth + gap) + 'px'
-      : (toggleWidth + gap) + 'px';
-    jqBody.stop(true, true).animate({ marginLeft: targetMargin }, 'slow');
+    // Stop any in-flight animations.
+    jqNav.stop(true, true);
+    jqToggle.stop(true, true);
+    jqBody.stop(true, true);
 
-    var arrow = navExpanded ? '\u25C0' : '\u25B6';
+    // Show nav before sliding it in.
+    if (!isVisible) { jqNav.show(); }
+
+    // Slide nav, toggle, and body in sync.
+    jqNav.animate({ left: navLeft }, speed, function() {
+      if (isVisible) { jqNav.hide(); }
+    });
+    jqToggle.animate({ left: toggleLeft }, speed);
+    jqBody.animate({ marginLeft: bodyMargin }, speed);
+
+    var arrow = isVisible ? '\u25B6' : '\u25C0';
     jqToggle.find('span').text(arrow);
   });
 })();

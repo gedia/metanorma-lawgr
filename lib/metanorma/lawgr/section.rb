@@ -56,6 +56,19 @@ module Metanorma
         attrs
       end
 
+      # Override open-block handling: wrap `[.ed]` open blocks in an
+      # `<edafio-group>` element so cleanup can treat their contents as
+      # a single εδάφιο.  All other roles delegate to the default handler.
+      def open(node)
+        if open_role(node) == "ed"
+          noko do |xml|
+            xml.send("edafio-group") { |g| g << node.content }
+          end
+        else
+          super
+        end
+      end
+
       private
 
       def ol_nesting_depth(node)

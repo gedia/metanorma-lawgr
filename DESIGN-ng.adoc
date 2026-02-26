@@ -179,8 +179,7 @@ No further levels are formally defined, but may be used in practice.
 When an article has a single paragraph, the paragraph number is suppressed in rendered output.
 
 Each grammatical sentence within a paragraph is called an *εδάφιο* (or informally *περίοδος*).
-Amendments may reference specific εδάφια.
-This is deferred from the prototype since automated sentence boundary detection is unreliable; a future iteration may allow explicit sentence markup.
+Amendments may reference specific εδάφια (see <<edafio-annotation>>).
 
 Multiple ordered lists within a single paragraph are not normatively defined but occur in practice.
 We assign implicit ordinals to such lists (list 1, list 2) so they can be referenced.
@@ -1001,6 +1000,7 @@ The rendering pipeline follows standard Metanorma architecture:
 * `clause1` — dispatches to structural label methods based on clause `type`: `prefix_structural_label`, `prefix_article_label`, `prefix_subarticle_label`, `prefix_custom_label`, `prefix_paragraph_label`
 * `add_toc_variant_title` — injects `<variant-title type="toc">` for untitled paragraphs (showing "Παράγραφος _n_") and untitled articles (showing "Άρθρο _n_") so the navigation sidebar displays meaningful labels instead of bare numbers
 * `single_paragraph_suppression` — suppresses paragraph numbering when an article has only one paragraph *(not yet implemented)*
+** workaround: write body directly under article, without introducing a [type=paragraph] section
 
 `IsoDoc::Lawgr::Xref` overrides:
 
@@ -1049,7 +1049,7 @@ Custom HTML template and plain CSS stylesheet (`htmlstyle.css`) providing:
 * *Structural labels:* uppercase centred rendering for top-level elements (ΒΙΒΛΙΟ, ΜΕΡΟΣ, ΤΜΗΜΑ, ΚΕΦΑΛΑΙΟ); centred article headings
 * *Cascading indentation:* CSS custom properties (`--lawgr-sub-num-width`, `--lawgr-custom-num-width`, `--lawgr-num-width`) set per-`div` by `clause_attrs` control the hanging-indent width at each level; nested elements inherit the parent's content position so each child's numbering starts where the parent's text begins (see <<Cascading indentation>>)
 * *Deep paragraph headings (h7, h8):* since HTML only defines `h1`–`h6`, deeper paragraph headings are rendered as `<h7>` / `<h8>` (unknown elements); the CSS adds `display: block` and the same float/indent rules as standard headings
-* *Navbar toggle:* `scripts_override.html` overrides the base isodoc toggle script to (a) animate the toggle button position in sync with the navbar, and (b) maintain a minimum body `margin-left` (toggle width + gap) when collapsed, so content never overlaps the widget
+* *Navbar toggle:* `scripts_override.html` replaces the base isodoc toggle script with a unified handler that (a) slides the `nav` panel via CSS `left` animation, (b) animates the toggle button position in sync, and (c) maintains a minimum body `margin-left` (toggle width + gap) when collapsed, so content never overlaps the widget. The base handler is removed first via `$('#toggle').off('click')` to prevent double animation
 * *Cover page:* template with ΦΕΚ publication metadata
 * *Responsive:* sidebar collapses on narrow viewports; print styles hide navigation
 
@@ -1141,6 +1141,692 @@ No external Relaton database fetching.
 ----
 
 
+[[edafio-annotation]]
+== Εδάφιο (sentence-level) annotation
+
+Εδάφια annotations are invisible in the rendered output — the document renders exactly as it would without them.
+
+
+=== Background
+
+Greek law's lowest level of structure is the *εδάφιο* (informally *περίοδος*): a single grammatical sentence, typically delimited by a full stop.
+Amendments and legal commentary routinely reference specific εδάφια, e.g. "το δεύτερο εδάφιο της παρ. 3 του άρθρου 9".
+
+Automated sentence-boundary detection by punctuation is unreliable: the full stop appears in law references ("ν. 1234/2022"), abbreviations, and initialisms.
+Instead, metanorma-lawgr uses *source line breaks* as εδάφιο delimiters.
+In AsciiDoc, single line breaks within a paragraph block are semantically meaningless — they are joined with a space in the output — so repurposing them as εδάφιο boundaries introduces zero visual change.
+
+
+=== Scope
+
+An *eligible clause* for εδάφιο processing is one of:
+
+. *Paragraph clause* — `<clause type="paragraph">`, regardless of nesting depth or whether paragraph numbering is suppressed (single-paragraph articles).
+. *Article or subarticle without paragraph children (implicit p1)* — `<clause type="article">` or `<clause type="subarticle">` that has no `<clause type="paragraph">` children. The direct body content is treated as if it belonged to a single implicit paragraph (p1).
+
+The structures that are broken down into εδάφια are exclusively:
+
+. *Body text of eligible clauses* — direct `<p>` children of any eligible clause.
+. *Ordered list items* — `<p>` children of `<li>` elements within eligible clauses, regardless of list nesting level.
+
+The following are *not* subject to εδάφιο annotation:
+
+* Titles / headings of any structural element (article, subarticle, custom, paragraph, etc.)
+* Content outside eligible clauses (e.g. preface, bibliography, articles that have paragraph children)
+* Unordered list items
+
+
+==== Single AsciiDoc paragraph constraint
+
+Current style specifications (ΕΓΧΕΙΡΙΔΙΟ ΜΕΘΟΔΟΛΟΓΙΑΣ ΓΙΑ ΤΗΝ ΚΩΔΙΚΟΠΟΙΗΣΗ ΤΗΣ ΝΟΜΟΘΕΣΙΑΣ 2020) do not allow more than one AsciiDoc paragraph block within a single lawgr paragraph.
+Without lists, a `<clause type="paragraph">` contains exactly one `<p>` element; all εδάφια within it are delimited by `<eb/>` markers (from source line breaks).
+
+This processor does not enforce this constraint, and allows any number of AsciiDoc paragraphs within a lawgr paragraph. This is not uncommon in practice, especially for older laws. In this case, εδάφια are numbered contiguously across all `<p>` children of the clause (numbering is not restarted for each `<p>`).
+
+
+=== Numbering
+
+Εδάφια are numbered with *Arabic numerals* (1, 2, 3…) internally for identification, scoped to their immediate parent:
+
+* For paragraph body text: numbered sequentially across all direct `<p>` children of the eligible clause (contiguous numbering even when lists intervene).
+* For articles/subarticles without paragraphs (implicit p1): same as paragraph body text, using `p1` as the paragraph segment in the quick-ref tag.
+* For list items: numbered sequentially within each `<li>`.
+
+When cited in cross-references, εδάφια are rendered as *ordinal words* (πρώτο, δεύτερο, τρίτο…) per the official legislative drafting guidelines (see <<cross-reference-labels>>).
+
+
+[[cross-reference-labels]]
+=== Cross-reference labels
+
+Labels follow the standardised citation order prescribed by legislative drafting guidelines (Εγχειρίδιο Νομοπαρασκευαστικής Μεθοδολογίας and ΕΓΧΕΙΡΙΔΙΟ ΜΕΘΟΔΟΛΟΓΙΑΣ ΓΙΑ ΤΗΝ ΚΩΔΙΚΟΠΟΙΗΣΗ ΤΗΣ ΝΟΜΟΘΕΣΙΑΣ):
+
+____
+εδάφιο → στοιχείο → υποπερίπτωση → περίπτωση → παράγραφος → άρθρο
+____
+
+Each subdivision is cited in genitive case, building from innermost to outermost scope:
+
+[cols="2,2,3",options="header"]
+|===
+| Subdivision | Citation form | Numbering
+
+| εδάφιο | _τακτικό_ εδάφιο | ordinal word (πρώτο, δεύτερο, τρίτο…)
+| στοιχείο | του στοιχείου _x_ | lowerroman (i, ii, iii…)
+| υποπερίπτωση | της υποπερ. _x_ | doublegreek (γα, γβ…)
+| περίπτωση | της περ. _x_ | lowergreek (α, β, γ…)
+| παράγραφος | της παρ. _n_ | Arabic (1, 2, 3…)
+| άρθρο | του άρθρου _n_ | Arabic (1, 2, 3…)
+|===
+
+
+==== Εδάφιο ordinal words
+
+Εδάφια are cited using Greek ordinal words in neuter gender, lowercase.
+The implementation uses a hardcoded table derived from `GreekNumerals::BOOK_ORDINALS` (downcased):
+
+____
+πρώτο, δεύτερο, τρίτο, τέταρτο, πέμπτο, έκτο, έβδομο, όγδοο, ένατο, δέκατο
+____
+
+Proper support to construct any ordinal words in Greek should be implemented at some point in the future, however.
+
+
+==== Label examples
+
+Articles, prepositions etc should not be part of the label, as the author should be able to choose freely when citing depending on the context. A definite article (in parentheses) is used in the examples for clarity.
+
+When an "υποπερίπτωση" is cited, in theory the "περίπτωση" level could be ommited, as `[doublegreek]` notation conveys this information already. However, we will not implement this at this stage for simplicity.
+
+Paragraph-level εδάφιο, multi-paragraph article::
+  *(το) δεύτερο εδάφιο της παρ. 2 του άρθρου 5* +
+  Quick-ref tag: `a5p2e2`
+
+Paragraph-level εδάφιο, single-paragraph article or article without explicit paragraphs (implicit p1)::
+  *(το) δεύτερο εδάφιο του άρθρου 5* +
+  Quick-ref tag: `a5p1e2` +
+  NOTE: The `p1` segment is always present — whether the paragraph clause exists (single-paragraph article) or is implicit (article without paragraph children).
+
+Εδάφιο in level-1 list item (περίπτωση)::
+  *(το) δεύτερο εδάφιο της περ. γ της παρ. 3 του άρθρου 9* +
+  Quick-ref tag: `a9p3li3e2`
+
+Εδάφιο in level-2 list item (υποπερίπτωση)::
+  *(το) πρώτο εδάφιο της υποπερ. γα της παρ. 3 του άρθρου 9* +
+  Quick-ref tag: `a9p3li3li1e1` +
+  NOTE: doublegreek rendering is not yet implemented, but at this processing stage the full list tree is available.
+
+Εδάφιο in level-3 list item (στοιχείο)::
+  *(το) πρώτο εδάφιο του στοιχείου iv της υποπερ. γα της περ. γ της παρ. 3 του άρθρου 9* +
+  Quick-ref tag: `a9p3li3li1li4e1`
+
+Εδάφιο in paragraph under subarticle::
+  *(το) δεύτερο εδάφιο της παρ. 3.1.5 του άρθρου 3* +
+  Quick-ref tag: `a3.1p5e2` +
+  Subarticle 1 extends the `a` segment; paragraph 5 is in the `p` segment.
+
+Εδάφιο numbering is list-item-scoped.
+One ordered list per lawgr paragraph is assumed for cross-referencing purposes.
+
+εδάφιο tags and structured clause IDs share a *unified numbering scheme* (see <<structured-clause-ids>>):
+
+* Both `article` and `subarticle` contribute to the *`a` segment* with dot notation (e.g. `a3.1`).
+  Article numbering is contiguous across the entire document, matching the human-readable rendering.
+* Only `type="paragraph"` clauses contribute to the *`p` segment* (e.g. `p5`).
+  Paragraph numbering restarts when a higher-level type is encountered (article, subarticle).
+  Nested paragraphs add dot-separated levels (e.g. `p1.2`).
+  When an article or subarticle has no paragraph children, an implicit `p1` is used.
+* εδάφιο tags start at the *article level* and omit higher-level structural prefixes (book, part, tmima, chapter).
+  Structured clause IDs include the full hierarchy.
+
+
+=== Examples
+
+==== Example 1 — single εδάφιο
+
+[source,asciidoc]
+----
+[heading=article]
+=== Σκοπός -- Πεδίο Εφαρμογής
+
+[heading=paragraph]
+==== {empty}
+
+Με τον παρόντα Κανονισμό καθορίζονται τα τεχνικά και οργανωτικά μέτρα που πρέπει να λαμβάνουν όλα τα πρόσωπα που παρέχουν δημόσια δίκτυα ηλεκτρονικών επικοινωνιών ή διαθέσιμες στο κοινό υπηρεσίες ηλεκτρονικών επικοινωνιών (εφεξής καλούμενοι για λόγους συντομίας «οι πάροχοι»), για τη διασφάλιση του απορρήτου των επικοινωνιών, με την κατάλληλη διαχείριση του κινδύνου όσον αφορά στην ασφάλεια των δικτύων και υπηρεσιών τους.
+----
+
+* The heading `=== Σκοπός -- Πεδίο Εφαρμογής` is a title — no εδάφια.
+* The paragraph body is a single source line — *one εδάφιο* (εδάφιο 1).
+* Output is unchanged.
+
+
+==== Example 2 — paragraph with lists and continuation
+
+[source,asciidoc]
+----
+[heading=paragraph]
+==== {empty}
+
+Οι υπόχρεοι οφείλουν να:
+
+. κάνουν το ένα
+. κάνουν το άλλο
+. κάνουν και το παράλλο
++
+Tο παράλλο κρίνεται ιδιαίτερα σημαντικό επειδή λόγος.
+Επιπρόσθετα δεν μπορούν να μην το κάνουν.
+
+Θα πρέπει επίσης να λάβουν υπόψη:
+
+[start=4]
+. ένα ονοματικό σύνολο
+. και ένα δεύτερο ονοματικό σύνολο
+----
+
+Rendered output (arabic numberals for clarity, — εδάφια are invisible):
+
+====
+*(Αριθμός Παραγράφου)* Οι υπόχρεοι οφείλουν να:
+
+. κάνουν το ένα
+. κάνουν το άλλο
+. κάνουν και το παράλλο.
++
+Tο παράλλο κρίνεται ιδιαίτερα σημαντικό επειδή λόγος.
+Επιπρόσθετα δεν μπορούν να μην το κάνουν.
+
+Θα πρέπει επίσης να λάβουν υπόψη:
+
+[start=4]
+. ένα ονοματικό σύνολο
+. και ένα δεύτερο ονοματικό σύνολο
+====
+
+
+===== Εδάφια in paragraph body
+
+The paragraph clause contains two direct `<p>` elements (separated by the first ordered list block). Each is one εδάφιο:
+
+[cols="1,6",options="header"]
+|===
+| # | Text
+| 1 | Οι υπόχρεοι οφείλουν να:
+| 2 | Θα πρέπει επίσης να λάβουν υπόψη:
+|===
+
+
+===== Εδάφια in ordered list items
+
+The block contains two `<ol>` elements. Note item 3 comprises of a more complex structure through the employment of list continuation.
+Because the second list uses `[start=4]` with contiguous numbering from the first list (which has 3 items), they are treated as a single logical list.
+
+[cols="1,1,1,5",options="header"]
+|===
+| Item | Εδ. # | Source | Text
+
+| 1 | 1 | single line | κάνουν το ένα
+| 2 | 1 | single line | κάνουν το άλλο
+| 3 | 1 | first content line | κάνουν και το παράλλο
+| 3 | 2 | line after continuation | Tο παράλλο κρίνεται ιδιαίτερα σημαντικό επειδή λόγος.
+| 3 | 3 | line break in continuation | Επιπρόσθετα δεν μπορούν να μην το κάνουν.
+| 4 | 1 | single line | ένα ονοματικό σύνολο
+| 5 | 1 | single line | και ένα δεύτερο ονοματικό σύνολο
+|===
+
+Source lines consisting only of whitespace and/or the `+` character (e.g. the bare ` +` continuation line in item 3) are formatting artifacts and are not counted as εδάφια.
+
+If the second list restarted numbering at 1 (no `[start=]` or `[start=1]`), it would be treated as a separate list, and its items would be numbered independently.
+
+
+==== Example 3 — explicit author markup (block-level)
+
+When automatic line-break detection is insufficient — for example when an εδάφιο spans introductory text, an ordered list, and trailing text — the author can use block-level `[.ed]` open blocks to group content into a single εδάφιο.
+
+===== Multi-block εδάφιο with trailing text
+
+A common pattern in Greek law: introductory text followed by a list of obligations, with trailing text that completes the sentence but does not start a new εδάφιο (signalled by lowercase initial).
+
+[source,asciidoc]
+----
+[heading=paragraph]
+==== {empty}
+
+[.ed]
+--
+Κατά το στάδιο της Προμήθειας/Ανάπτυξης... ο πάροχος:
+
+. Πραγματοποιεί αρχικά Αποτίμηση Κινδύνου...
+. συντάσσει κατάλογο...
+.. κανόνων ασφάλειας...
+.. ελάχιστων κανόνων...
+.. παραμέτρων διαμόρφωσης...
+
+ώστε να επιτυγχάνεται η συμμόρφωση...
+--
+
+Οι ως άνω κανόνες γίνονται αποδεκτοί...
+----
+
+The `[.ed]` open block (delimited by `--`) groups its entire content — introductory `<p>`, `<ol>`, and trailing `<p>` — into a single εδάφιο (e1).
+The paragraph after the block is a separate εδάφιο (e2), detected automatically.
+
+[cols="1,5",options="header"]
+|===
+| ID | Content
+| e1 | The entire open block: intro text + list + trailing text
+| e1li1 | Πραγματοποιεί αρχικά Αποτίμηση Κινδύνου...
+| e1li2 | συντάσσει κατάλογο...
+| e1li2li1 | κανόνων ασφάλειας...
+| e1li2li2 | ελάχιστων κανόνων...
+| e1li2li3 | παραμέτρων διαμόρφωσης...
+| e2 | Οι ως άνω κανόνες γίνονται αποδεκτοί...
+|===
+
+===== Inline list items modelled as block lists
+
+When the original law text contains inline enumerations (e.g. (α)... (β)... (γ)...), model them as proper AsciiDoc ordered lists inside an `[.ed]` open block:
+
+[source,asciidoc]
+----
+[heading=paragraph]
+==== {empty}
+
+[.ed]
+--
+Ο πάροχος καταρτίζει... μηχανισμούς και συστήματα
+
+. περιγράφεται ο λογικός διαχωρισμός...,
+. περιγράφεται η αρχιτεκτονική... και
+. καταγράφονται όλα τα ΠΕΣ...
+--
+
+Ο πάροχος διατηρεί τις προηγούμενες εκδόσεις...
+----
+
+[cols="1,5",options="header"]
+|===
+| ID | Content
+| e1 | Ο πάροχος καταρτίζει... (including the list)
+| e1li1 | περιγράφεται ο λογικός διαχωρισμός...
+| e1li2 | περιγράφεται η αρχιτεκτονική...
+| e1li3 | καταγράφονται όλα τα ΠΕΣ...
+| e2 | Ο πάροχος διατηρεί τις προηγούμενες εκδόσεις...
+|===
+
+When `[.ed]` open blocks are present in a paragraph clause, the TreeProcessor skips automatic line-break processing for all blocks inside the open block — the author has taken full control of εδάφιο boundaries within those blocks.
+The open block produces a temporary `<edafio-group>` wrapper in the XML, which the cleanup phase uses to number the group as a single εδάφιο, then unwraps (see <<xml-representation>>).
+
+NOTE: For the rare case where a list item inside an `[.ed]` open block needs multiple εδάφια (where lines breaks would normally be used outside an explicit open block for automatic εδάφιο detection), use inline `[.ed]#text#` spans within that list item to mark explicit boundaries: `.. [.ed]#First εδάφιο.# [.ed]#Second εδάφιο.#`
+
+
+=== Implementation
+
+==== Architecture overview
+
+The εδάφιο feature is implemented across three pipeline stages:
+
+. *Asciidoctor TreeProcessor* — captures line-break boundaries from the parsed AST before they are lost
+. *Custom inline macro* — produces an invisible boundary marker in the XML
+. *XML cleanup* — scopes, numbers, and assigns IDs to εδάφια
+
+This avoids a source-level preprocessor, which cannot know AST context and risks breaking inline markup that spans line breaks.
+
+
+==== Stage 1: TreeProcessor
+
+An Asciidoctor `TreeProcessor` extension runs after the document AST is fully parsed but before conversion to Standoc XML.
+
+For every paragraph block (`:paragraph` context) and list-item block in the AST:
+
+. If the block is inside an `[.ed]` open block, or contains inline `[.ed]` role spans, *skip it* — the author controls εδάφιο boundaries.
+. Otherwise, examine `block.lines` (the original source lines, preserved in the AST).
+. If the block has more than one content line, insert an `eb:[]` inline macro between content lines.
+
+===== Line-break insertion rules
+
+Given source lines `L1`, `L2`, …, `Ln`:
+
+* If `Li` ends with ` +` (hard line break), the marker is prepended to the *next* content line: `eb:[] L(i+1)`. The ` +` must remain at end-of-line for AsciiDoc to recognise it.
+* If `Li` does NOT end with ` +`, the marker is appended to `Li`: `Li eb:[]`.
+* Lines consisting only of whitespace and/or `+` are skipped — they are continuation formatting, not εδάφιο boundaries.
+* No marker is added after the last content line.
+
+===== Example transformation
+
+Source lines in AST node:
+----
+["κάνουν και το παράλλο +",
+ " +",
+ "Tο παράλλο κρίνεται ιδιαίτερα σημαντικό.",
+ "Επιπρόσθετα δεν μπορούν να μην το κάνουν."]
+----
+
+After TreeProcessor:
+----
+["κάνουν και το παράλλο +",
+ " +",
+ "eb:[] Tο παράλλο κρίνεται ιδιαίτερα σημαντικό. eb:[]",
+ "Επιπρόσθετα δεν μπορούν να μην το κάνουν."]
+----
+
+Two markers → three εδάφια in this list item.
+
+===== Inline markup safety
+
+Because markers are inserted *between* lines (not wrapped around them), inline markup spanning line breaks is unaffected:
+
+[source,asciidoc]
+----
+This is *bold text that
+continues here*.
+----
+
+Becomes:
+
+----
+This is *bold text that eb:[]
+continues here*.
+----
+
+The `\*...*` delimiters still match. The `eb:[]` macro is an inline element inside the bold span — invisible in output.
+
+
+==== Stage 2: Inline macro extension
+
+Register `eb` as a custom Asciidoctor inline macro:
+
+[source,ruby]
+----
+class EbInlineMacro < Asciidoctor::Extensions::InlineMacroProcessor
+  named :eb
+  def process(parent, target, attrs)
+    # Produces <eb/> in the Standoc XML
+  end
+end
+----
+
+[[xml-representation]]
+==== XML representation
+
+A custom element `<eb/>` (short for εδάφιο break) is added to the lawgr RelaxNG schema.
+It is a self-closing empty element that marks the boundary between two consecutive εδάφια within the same `<p>`.
+
+Example Standoc XML fragment for a paragraph with two εδάφια:
+
+Before cleanup:
+
+[source,xml]
+----
+<clause type="paragraph">
+  <p>Πρώτο εδάφιο. <eb/> Δεύτερο εδάφιο.</p>
+</clause>
+----
+
+After cleanup (IDs and numbering assigned):
+
+[source,xml]
+----
+<clause type="paragraph" id="a1p1">
+  <p edafio-count="2">
+    <eb edafio-n="1" id="a1p1e1"/>Πρώτο εδάφιο.
+    <eb edafio-n="2" id="a1p1e2"/> Δεύτερο εδάφιο.
+  </p>
+</clause>
+----
+
+NOTE: The first εδάφιο in each `<p>` also receives an `<eb>` marker (inserted at the start of the `<p>` content), so all εδάφια — including the first — are uniformly represented by `<eb>` elements with `id` and `edafio-n` attributes.
+
+For paragraph body text split by block elements (e.g. an ordered list between two `<p>` elements), no `<eb/>` is needed — the `<p>` elements are themselves distinct εδάφια.
+
+When the author uses `[.ed]` open blocks, the converter wraps the block content in a temporary `<edafio-group>` element.
+During cleanup, all `<p>` elements inside the group are treated as a single εδάφιο — only the first `<p>` receives an `<eb/>` marker.
+After numbering, the `<edafio-group>` wrapper is unwrapped (children moved to parent, wrapper removed), so it does not appear in the final XML.
+
+Before cleanup (with explicit `[.ed]` open block):
+
+[source,xml]
+----
+<clause type="paragraph">
+  <edafio-group>
+    <p>Introductory text:</p>
+    <ol><li><p>item α</p></li><li><p>item β</p></li></ol>
+    <p>trailing text.</p>
+  </edafio-group>
+  <p>Next εδάφιο.</p>
+</clause>
+----
+
+After cleanup (group unwrapped, IDs assigned):
+
+[source,xml]
+----
+<clause type="paragraph" id="a1p1">
+  <p><eb edafio-n="1" id="a1p1e1"/>Introductory text:</p>
+  <ol><li><p><eb edafio-n="1" id="a1p1li1e1"/>item α</p></li>
+      <li><p><eb edafio-n="1" id="a1p1li2e1"/>item β</p></li></ol>
+  <p>trailing text.</p>
+  <p edafio-count="2"><eb edafio-n="2" id="a1p1e2"/>Next εδάφιο.</p>
+</clause>
+----
+
+NOTE: The trailing `<p>` inside the group does *not* receive its own `<eb/>` marker — it is a continuation of e1. It renders as a separate HTML paragraph but belongs to the same εδάφιο structurally.
+
+
+==== Stage 3: XML cleanup
+
+In `cleanup.rb`, after the full Standoc XML is built:
+
+. *Strip out-of-scope markers:* Remove `<eb/>` elements that appear outside eligible clauses (paragraph clauses, and articles/subarticles without paragraph children) and outside `<li>` elements within those clauses.
+
+. *Count εδάφια per parent:*
+* For each eligible clause: each direct `<p>` child contributes 1 + (number of `<eb/>` markers it contains) εδάφια.
+* For each `<li>`: same logic on its `<p>` children.
+
+. *Contiguous list merging:* When two consecutive `<ol>` elements within the same eligible clause have contiguous numbering (second list's `start` attribute equals first list's item count + 1), treat them as a single logical list for εδάφιο cross-referencing.
+
+. *Assign IDs:* Each εδάφιο receives a structured quick-ref ID (e.g. `a5p2e2`) derived from its enclosing article index, paragraph path (dot notation), and sequential εδάφιο number. An `<eb>` marker is inserted at the start of each `<p>` for the first εδάφιο, and existing `<eb/>` markers receive IDs for subsequent εδάφια. For `<edafio-group>` wrappers, the entire group counts as one εδάφιο — only the first `<p>` inside the group receives an `<eb>` marker. All εδάφια are thus uniformly represented by `<eb>` elements.
+
+. *Unwrap groups:* After numbering, `<edafio-group>` wrapper elements are removed: their children are moved to the parent element. This ensures `<edafio-group>` does not appear in the final XML or affect schema validation.
+
+
+==== Xref integration
+
+`IsoDoc::Lawgr::Xref` generates εδάφιο anchors and labels in the numbering phase.
+For paragraph clauses, anchors are registered via `lawgr_paragraph_anchor`.
+For articles and subarticles without paragraph children (implicit p1), anchors are registered directly after child processing in `lawgr_article_names` and `lawgr_subarticle_names`.
+Labels follow the patterns defined in <<cross-reference-labels>>.
+
+
+==== HTML rendering
+
+In the HTML output, `<eb/>` elements are rendered as invisible anchor points.
+The `parse` method in `IsoDoc::Lawgr::BaseConvert` is overridden to dispatch `<eb/>` elements to a custom `eb_parse` method, which renders them as empty `<a>` elements:
+
+[source,html]
+----
+<a id="a5p2e2"></a>
+----
+
+These anchors are invisible but serve as targets for cross-references and URL fragments (e.g. `document.html#a5p2e2`).
+
+
+==== Unsupported constructs
+
+The following AsciiDoc features are incompatible with line-break-based εδάφιο detection and must produce an *error* when encountered in a lawgr document:
+
+* `[%hardbreaks]` option on any block
+* `:hardbreaks-option:` document attribute
+* `[verse]` blocks within paragraph clauses
+
+These constructs repurpose line breaks for visual formatting, making it impossible to distinguish author formatting from εδάφιο boundaries.
+
+
+==== Schema changes
+
+The lawgr RelaxNG schema (`lawgr.rnc`) is extended with:
+
+[source,rnc]
+----
+eb = element eb {
+  attribute id { xsd:ID }?,
+  attribute edafio-n { text }?
+}
+----
+
+The `id` attribute receives the structured quick-ref tag (e.g. `a5p2e2`).
+The `edafio-n` attribute carries the sequential εδάφιο number within its parent scope.
+This element is permitted as inline content within `<p>` elements.
+
+==== Warning
+
+This feature may break things, we should be ready for a revert at any point.
+
+
+=== Authoring guide
+
+==== Default: line breaks as εδάφιο boundaries
+
+Write one εδάφιο per source line within a paragraph or list item.
+Single line breaks are used as εδάφιο delimiters — they have no effect on the rendered output.
+
+[source,asciidoc]
+----
+[heading=paragraph]
+==== {empty}
+
+Πρώτο εδάφιο.
+Δεύτερο εδάφιο.
+Τρίτο εδάφιο.
+----
+
+This produces three εδάφια in a single rendered paragraph: "Πρώτο εδάφιο. Δεύτερο εδάφιο. Τρίτο εδάφιο."
+
+Hard line breaks are preserved:
+
+[source,asciidoc]
+----
+Πρώτο εδάφιο. +
+Δεύτερο εδάφιο.
+----
+
+This renders with a visual line break between the two εδάφια, exactly as standard AsciiDoc.
+
+
+==== Explicit markup: `[.ed]` open blocks
+
+For complex cases where line-break detection produces incorrect results — such as an εδάφιο spanning introductory text, an ordered list, and trailing text — use `[.ed]` open blocks to group content into a single εδάφιο:
+
+[source,asciidoc]
+----
+[.ed]
+--
+Introductory text:
+
+. List item α
+. List item β
+
+Trailing text that continues the εδάφιο.
+--
+
+Next εδάφιο (auto-detected).
+----
+
+Everything inside the open block (`--` delimiters) is treated as *one* εδάφιο.
+List items within the block still receive their own `li` sub-references.
+Automatic line-break processing is *disabled* for all blocks inside the open block.
+
+IMPORTANT: Do not nest `[.ed]` open blocks inside each other. Each open block corresponds to exactly one εδάφιο.
+
+NOTE: For the rare case where a list item inside an `[.ed]` open block has multiple lines that should be separate εδάφια, use inline `[.ed]#text#` spans: `.. [.ed]#First εδάφιο.# [.ed]#Second εδάφιο.#`
+
+
+==== List items with continuation
+
+For list items with multiple εδάφια, use list continuation (`\+`) to add content lines.
+Each content line (after excluding blank/`+`-only lines) is an εδάφιο:
+
+[source,asciidoc]
+----
+. Πρώτο εδάφιο στοιχείου.
++
+Δεύτερο εδάφιο στοιχείου.
+Τρίτο εδάφιο στοιχείου.
+----
+
+This list item has three εδάφια.
+The bare ` +` line is a formatting artifact and is ignored.
+
+
+[[structured-clause-ids]]
+== Structured Clause IDs
+
+In addition to εδάφιο annotation, metanorma-lawgr replaces the default UUID-based clause IDs with human-readable structured IDs that encode each clause's position in the document hierarchy.
+This runs during `sections_cleanup`, after `heading_to_type` converts AsciiDoc heading attributes to clause types, and before εδάφιο cleanup.
+
+
+=== Prefix mapping
+
+[cols="2,1,3",options="header"]
+|===
+| Clause type | Prefix | Example
+
+| `book` | `b` | `b1`
+| `part` | `pt` | `pt2`
+| `tmima` | `t` | `t1`
+| `chapter` | `c` | `c3`
+| `article` | `a` | `a5`
+| `subarticle` | _(dot notation)_ | `a5.1`
+| `paragraph` | `p` | `a5.1p3`
+|===
+
+
+=== Composition rules
+
+Structured IDs are composed by concatenating three segments:
+
+. *Higher-level prefix* — book (`b`), part (`pt`), tmima (`t`), chapter (`c`): each contributes its prefix and 1-based position among same-type siblings within its parent.
+. *Article segment* (`a`) — article + subarticle positions joined with dots. Article numbering is *contiguous across the entire document* (not restarted per part/chapter), matching the human-readable rendering.
+. *Paragraph segment* (`p`) — paragraph positions joined with dots. Paragraph numbering restarts at each article or subarticle boundary. Nested paragraphs add additional dot-separated levels.
+
+Additional rules:
+
+* *Custom* clauses (non-normative grouping headings like Α., Β., Γ.) are *transparent*: they do not contribute a path segment and retain their UUID-based IDs. Their structural children are counted at the nearest structural ancestor level.
+* Clause types not in the prefix mapping (e.g. semantic types like `entry-into-force`) are also treated as transparent.
+* Only clauses with a recognised structural type receive structured IDs. Transparent clauses keep their original UUIDs.
+
+
+=== Structured ID examples
+
+[cols="3,2",options="header"]
+|===
+| Structural path | ID
+
+| Part 2 | `pt2`
+| Article 3 within Part 2 | `pt2a3`
+| Subarticle 1 of Article 3 within Part 2 | `pt2a3.1`
+| Paragraph 5 within that subarticle | `pt2a3.1p5`
+| Tmima 1 within Part 1 | `pt1t1`
+| Article 1 within Chapter 2 of Book 3 | `b3c2a1`
+| Full hierarchy (unlikely) | `b1pt1t1c1a1.1p1`
+|===
+
+
+=== Relationship to εδάφιο tags
+
+Structured clause IDs and εδάφιο quick-ref tags share the *same unified numbering scheme*.  The only difference is scope:
+
+* *Clause IDs* include the full hierarchy from root: `pt2a3.1p5`.
+* *Εδάφιο tags* omit the higher-level prefix and start at the article segment: `a3.1p5e2`.
+
+Both use contiguous document-wide article numbering and the same paragraph restart semantics.
+The `clause_structured_path` method in `cleanup.rb` is the single source of truth for both systems.
+
+
+=== Cross-reference updating
+
+When clause IDs are replaced, all attribute values in the document that match an old UUID are updated to the corresponding new structured ID.
+This covers `xref target`, `origin bibitemid`, `source`, and any other attribute that referenced the clause by its original UUID.
+
+
 == Gem structure
 
 [source]
@@ -1158,7 +1844,8 @@ metanorma-lawgr/
 │   │       ├── base.rb                  # XML_ROOT_TAG, html_converter, etc.
 │   │       ├── front.rb                 # metadata extraction from doc header
 │   │       ├── section.rb               # section type dispatch overrides
-│   │       ├── cleanup.rb               # section ordering, single-para suppression
+│   │       ├── cleanup.rb               # section ordering, structured IDs, εδάφιο cleanup
+│   │       ├── edafio_tree_processor.rb  # TreeProcessor, EbInlineMacro, EdafioInline
 │   │       ├── validate.rb              # structural validation
 │   │       ├── greek_numerals.rb        # GreekNumerals utility module
 │   │       ├── lawgr.rnc               # RelaxNG Compact grammar
@@ -1188,6 +1875,8 @@ metanorma-lawgr/
 │               ├── htmlstyle.css          # plain CSS (Inter font, nav sidebar, hanging-indent paragraphs, cascading indent)
 │               └── scripts_override.html  # navbar toggle fix (body margin + button position sync)
 ├── spec/                                # RSpec tests
+│   └── metanorma/
+│       └── edafio_spec.rb           # εδάφιο annotation tests
 └── Gemfile
 ----
 
@@ -1204,6 +1893,8 @@ metanorma-lawgr/
 * Greek numeral algorithm (`GreekNumerals` module) — utility implemented and integrated for περίπτωση (depth-1 ordered lists) via `list_item_value` override
 * i18n labels (Greek and English)
 * Custom clause type (`heading=custom`) with uppercase-Greek numbering, transparent to child paragraph numbering
+* Structured clause IDs — human-readable hierarchy-based IDs replacing UUIDs on structural clauses (see <<structured-clause-ids>>)
+* Εδάφιο (sentence-level) annotation — invisible sentence-level markers with numbering, structured IDs, and cross-references; automatic line-break detection and explicit `[.ed]` block markup (see <<edafio-annotation>>)
 * HTML output with Inter font, navigation sidebar, hanging-indent paragraph layout, structural labels, cascading indentation via CSS custom properties
 * Navigation sidebar with meaningful TOC entries ("Παράγραφος _n_" for untitled paragraphs via `variant-title` mechanism); toggle button with body margin override (`scripts_override.html`)
 * Basic metadata extraction (law number, ΦΕΚ, date, type)
@@ -1215,8 +1906,6 @@ metanorma-lawgr/
 
 * PDF output
 * Double-Greek ordered-list rendering for υποπερίπτωση (depth-2 lists: αα, αβ… βα, ββ…) — requires parent-ordinal threading through `list_item_anchor_names`
-* Single-paragraph suppression (hiding paragraph number when article has only one)
-* εδάφιο (sentence-level) modelling
 * Amendment authoring syntax
 * Akoma Ntoso XML export
 * Relaton database fetching
@@ -1225,10 +1914,50 @@ metanorma-lawgr/
 * Internal cross-references (xref rendering)
 * Word (`.doc`) output
 
+=== Vision
+
+* Amendment support should allow for:
+** Generating any version of a law, incorporating all amendments up to an arbitrary date or amendment number (no skipping of amendments allowed, only omission of later amendments)
+** Generating the amendment text as if it were to be published in the official gazzette of the republic
+** Side-by-side comparison of two versions of a law, ISO redlines-like or github-style
+*** rendering should relay a visual cue to easily identify deletions (e.g. white area in "after" view), changes (e.g. both "before" and "after" views have content at the same horizontal position), and insertions (e.g. white area in "before" view)
+* Implementation of a db-backed bibliography and references system drawing inspiration from Relaton
+** Potentially extend Relaton DB integration functionality to allow for quote extraction and citation generation, in addition to structural metadata extraction
+** Some mechanism for the handling of references after amendments have been introduced:
+*** auto-updating references to reflect the new law structure, when safe
+**** even then, mark them as auto-updated, only a human reviewer can clear the review-required flag
+*** mark reference as review-required when unsafe
+*** reverse lookup of references impacted by an amendment
+**** references should be date-tagged or version-tagged to allow for invalidation and auto-updating
+* Produce Akomo-Ntoso compliant export of any entity that is an Akomo Ntoso target
+** probably difficult to implement
+** will likely require enrichment of document-level metadata and potential restructuring or one-to-one mapping of ontological entities between the two models
+** kind of a holy grail for me though
+* To the extent that the design of metanorma-lawgr can be useful to a wider ecosystem, incorporate anything that is scope-relevant and is needed to support the lifecycle of lawmaking:
+** Drafting, reviewing, deliberation, approval, publication, repeal, etc.
+** Facilitating the formation of a formal codex where:
+*** the latest version of a law is always available both to humans (highly presentation-centric) and to machines (highly structure-centric)
+*** dynamic presentation of codification nomenclature based on included metadata, e.g.:
+**** codification tree based on legal subject
+**** codification tree based on legislative body (parliament, regulator)
+**** filter by law subject attributes, either self-provided or drawn from other government databases, for example:
+***** law subject has a licence to engage in telecom services by EETT, so these laws apply to them
+***** law subject owns property so these laws apply to them
+****** some of their property is connected to the electrical grid, so these additional laws apply to them
+****** hopefully you see where I'm getting with this by now
+** single source of truth for all uses:
+*** regulatory/legal compliance for law subjects with references and auto-alerting
+*** machine-controlled derived outputs to include in legacy workflows (e.g. diavgeia, FEK, government websites etc.)
+*** everything is available via API for consumption by other systems
+*** integration with Case Management Systems for the modernization of the judicial process
+
 
 == Other useful resources
 
-* `codification-manual.txt` — pdftotext output of the Κ.Ε.Κ. codification methodology manual (2020)
-* `./LegalParser` — companion for the PCI 2016 paper _Towards Automatic Structuring and Semantic Indexing of Legal Documents_ (Koniaris, Papastefanatos, Vassiliou). No code provided, but useful for the EBNF grammar and parsing strategy.
-* `./legalparser-paper.txt` — the above paper as plain text
-* `./law_4330_2015.xml` — Akoma Ntoso 3.0 XML of Law 4330/2015, used as reference for metadata and structure mapping
+* `codification-manual` — the Κ.Ε.Κ. codification methodology manual (2020) issued by the General Secretariat for Legal and Parliamentary Affairs (GSLegal).
+** source: https://gslegal.gov.gr/wp-content/uploads/2022/10/%CE%A4%CE%B5%CE%BB%CE%B9%CE%BA%CF%8C-%CE%B5%CE%B3%CF%87%CE%B5%CE%B9%CF%81%CE%AF%CE%B4%CE%B9%CE%BF-%CE%BC%CE%B5%CE%B8%CE%BF%CE%B4%CE%BF%CE%BB%CE%BF%CE%B3%CE%AF%CE%B1%CF%82-%CE%BA%CF%89%CE%B4%CE%B9%CE%BA%CE%BF%CF%80%CE%BF%CE%AF%CE%B7%CF%83%CE%B7%CF%82.pdf[download]
+* `LegalParser` — companion for the Panhellenic Conference on Informatics (PCI) 2016 paper _Towards Automatic Structuring and Semantic Indexing of Legal Documents_ (Koniaris, Papastefanatos, Vassiliou).
+** source: https://github.com/mkoniari/LegalParser[github repo]
+** No code provided, but useful for the EBNF grammar and parsing strategy.
+** paper available at: http://dx.doi.org/10.1145/3003733.3003801[the ACM Digital Library]
+** `samples/law_4330_2015.xml` — Akoma Ntoso 3.0 XML of Law 4330/2015, used as reference for metadata and structure mapping

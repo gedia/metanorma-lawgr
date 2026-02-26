@@ -100,6 +100,10 @@ module IsoDoc
         clause.xpath(ns(subclauses)).each do |c|
           lawgr_child_of_article(c, sub_num, lvl + 1, article_num_str)
         end
+        # Article without paragraph children → implicit p1 εδάφια
+        unless clause.at(ns("./clause[@type='paragraph']"))
+          lawgr_edafio_anchors(clause, lvl + 1)
+        end
       end
 
       def lawgr_article_anchor(clause, lbl, value, level)
@@ -141,6 +145,10 @@ module IsoDoc
           else
             lawgr_paragraph_names(c, para_num, lvl + 1, display)
           end
+        end
+        # Subarticle without paragraph children → implicit p1 εδάφια
+        unless clause.at(ns("./clause[@type='paragraph']"))
+          lawgr_edafio_anchors(clause, lvl + 1)
         end
       end
 
@@ -244,6 +252,49 @@ module IsoDoc
           { label: lbl, xref: labelled_autonum(@labels["paragraph"], lbl),
             title: title, level: level, type: "clause",
             elem: @labels["paragraph"] }
+        lawgr_edafio_anchors(clause, level + 1)
+      end
+
+      EDAFIO_LABEL = "εδάφιο".freeze
+
+      # Register xref anchors for every εδάφιο inside an eligible
+      # clause (paragraph, or article/subarticle without paragraphs).
+      # IDs were assigned during cleanup:
+      #   - <eb id="…e1" edafio-n="1"/> at the start of each <p>
+      #   - <eb id="…eN" edafio-n="N"/> between sentences for N > 1
+      def lawgr_edafio_anchors(clause, level)
+        # Body εδάφια (direct <p> children of the clause)
+        edafio_register_p_group(clause.xpath(ns("./p")), level)
+        # List-item εδάφια
+        clause.xpath(ns(".//li")).each do |li|
+          edafio_register_p_group(li.xpath(ns("./p")), level)
+        end
+      end
+
+      # Given a NodeSet of <p> elements, register anchors for every
+      # <eb id="..."/> within them.
+      def edafio_register_p_group(p_nodes, level)
+        p_nodes.each do |p|
+          count = p["edafio-count"]&.to_i
+          next unless count && count > 0
+          p.xpath(ns("./eb[@id]")).each do |eb|
+            n = eb["edafio-n"]&.to_i
+            next unless n && n > 0
+            edafio_register_anchor(eb["id"], n, level)
+          end
+        end
+      end
+
+      def edafio_register_anchor(id, n, level)
+        return unless id
+
+        ordinal = Metanorma::Lawgr::GreekNumerals.edafio_ordinal(n)
+        lbl = "<semx element='autonum' source='#{id}'>#{ordinal}</semx>"
+        @anchors[id] =
+          { label: lbl,
+            xref: labelled_autonum(EDAFIO_LABEL, lbl),
+            level: level, type: "edafio",
+            elem: EDAFIO_LABEL }
       end
     end
   end

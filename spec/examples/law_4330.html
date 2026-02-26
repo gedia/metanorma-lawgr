@@ -1,0 +1,1525 @@
+
+<!DOCTYPE html>
+<html lang="el" xml:lang="el"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><style>/* metanorma-lawgr HTML stylesheet
+ * Greek legislative document presentation
+ * Inspired by metanorma-iso and kodiko.gr patterns
+ */
+
+/* ===== 1. Reset / Normalize ===== */
+html {
+  font-family: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+b, strong {
+  font-weight: 700;
+}
+
+sub, sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+
+img {
+  border: 0;
+  vertical-align: middle;
+  max-width: 100%;
+  height: auto;
+}
+
+hr {
+  box-sizing: content-box;
+  height: 0;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  border: 0;
+  border-top: 1px solid #ddd;
+}
+
+/* ===== 2. Base Typography ===== */
+html {
+  font-size: 10px;
+}
+
+body {
+  font-family: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background-color: #fff;
+}
+
+html, body, div, span, applet, object, iframe,
+p, blockquote,
+a, abbr, acronym, address, big, cite,
+del, dfn, em, img, ins, q, s,
+small, strike, strong, sub, sup, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  font-family: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+}
+
+code, pre, tt, kbd, samp {
+  font-family: "Courier New", monospace;
+  font-variant-ligatures: none;
+}
+
+code *, pre *, tt *, kbd *, samp * {
+  font-family: "Courier New", monospace !important;
+  font-variant-ligatures: none;
+}
+
+p code, dt code, li code, label code,
+caption code, th code, td code,
+p tt, dt tt, li tt, label tt,
+caption tt, th tt, td tt {
+  font-size: 0.8em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-top: 1.2em;
+  margin-bottom: 0.4em;
+  line-height: 1.3;
+}
+
+h1 { font-size: 1.6em; }
+h2 { font-size: 1.35em; }
+h3 { font-size: 1.15em; }
+h4 { font-size: 1.05em; }
+h5 { font-size: 1em; }
+h6 { font-size: 0.95em; }
+
+h2 p, .h2 p { display: inline; }
+
+p {
+  margin-top: 0.6em;
+  margin-bottom: 0.6em;
+}
+
+li p {
+  margin-bottom: 0.6em;
+  line-height: 1.2;
+}
+
+/* ===== 3. Links ===== */
+a {
+  color: #2a6496;
+  text-decoration: none;
+}
+
+a:focus,
+a:hover {
+  color: #193c5a;
+  text-decoration: underline;
+}
+
+a:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+a.header {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.header:hover {
+  color: #a53221 !important;
+  background: inherit;
+  box-shadow: none;
+}
+
+a.anchor {
+  position: absolute;
+  z-index: 1001;
+  width: 1.5ex;
+  margin-left: -1.5ex;
+  display: block;
+  text-decoration: none !important;
+  visibility: hidden;
+  text-align: center;
+  font-weight: 400;
+}
+
+a.anchor::before {
+  content: "\00A7";
+  font-size: 0.85em;
+  display: block;
+  padding-top: 0.1em;
+}
+
+h1:hover > a.anchor,
+h2:hover > a.anchor,
+h3:hover > a.anchor,
+h4:hover > a.anchor,
+h5:hover > a.anchor,
+h6:hover > a.anchor {
+  visibility: visible;
+}
+
+/* ===== 4. Layout ===== */
+body {
+  margin-left: 320px;
+  margin-right: 2em;
+}
+
+body main {
+  margin: 0 3em 0 1em;
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    margin-left: 2em;
+  }
+  body main {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+@media print {
+  body {
+    margin-left: 2em;
+    margin-right: 2em;
+    font-size: 12pt;
+    color: #000;
+  }
+  body main {
+    margin: 0;
+  }
+}
+
+/* ===== 5. Navigation Sidebar ===== */
+@media screen and (min-width: 768px) {
+  nav {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 278px;
+    font-size: 0.9em;
+    overflow: auto;
+    padding: 0 0 0 20px;
+    background-color: #f7f7f7;
+    border-right: 1px solid #e0e0e0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  nav {
+    position: relative;
+    width: auto;
+    font-size: 0.9em;
+    padding: 0;
+    background-color: #f7f7f7;
+    margin-bottom: 2em;
+  }
+}
+
+@media print {
+  nav {
+    position: relative;
+    width: auto;
+    font-size: 0.9em;
+    overflow: auto;
+    padding: 0;
+    background-color: white;
+  }
+}
+
+nav {
+  line-height: 1.2em;
+}
+
+#toc ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#toc ul li a {
+  padding: 5px 10px;
+}
+
+#toc ul a {
+  text-decoration: none;
+  display: block;
+  color: #333;
+}
+
+#toc ul a:hover {
+  box-shadow: none;
+  color: black;
+  background: #eee;
+}
+
+#toc .h2 { padding-left: 30px; }
+#toc .h3 { padding-left: 50px; }
+#toc .h4 { padding-left: 70px; }
+#toc .h5 { padding-left: 90px; }
+#toc .h6 { padding-left: 110px; }
+
+#toc .toc-active,
+#toc li:hover {
+  box-shadow: 0px 1px 0px 0px #333 !important;
+  background: none;
+}
+
+#toc li::before {
+  content: " ";
+  display: none;
+}
+
+#toc-list ul {
+  margin-bottom: 0.25em;
+}
+
+#toc-list ol li {
+  list-style-type: none;
+}
+
+@media screen and (min-width: 768px) {
+  #toggle {
+    position: fixed;
+    top: 0;
+    left: 278px;
+    height: 100%;
+    width: 30px;
+    background-color: #f7f7f7;
+    color: black !important;
+    cursor: pointer;
+    z-index: 100;
+    border-right: 1px solid #e0e0e0;
+  }
+  #toggle span {
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #toggle { display: none; }
+}
+
+@media print {
+  #toggle { display: none; }
+}
+
+@media screen and (min-width: 768px) {
+  .rule.toc {
+    display: none;
+  }
+  h1.toc-contents {
+    margin-top: 1em;
+  }
+  ul#toc-list {
+    padding: 0;
+    margin: 0;
+  }
+}
+
+/* ===== 6. Document Title & Cover ===== */
+.title-section {
+  padding-left: 2em;
+  padding-top: 2em;
+}
+
+p.zzSTDTitle1 {
+  font-size: 1.6em;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.5em;
+}
+
+p.zzSTDTitle2 {
+  font-size: 1.3em;
+  font-weight: 400;
+  text-align: center;
+  margin-bottom: 1.5em;
+}
+
+/* ===== 7. Greek Law Structural Headings ===== */
+/* ΒΙΒΛΙΟ – Book level */
+h1[data-type="book"],
+.book-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.5em;
+  font-weight: 700;
+  margin-top: 2.5em;
+  margin-bottom: 0.8em;
+  padding-bottom: 0.4em;
+  border-bottom: 2px solid #333;
+}
+
+/* ΜΕΡΟΣ – Part level */
+h2[data-type="part"],
+.part-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.3em;
+  font-weight: 700;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+}
+
+/* ΤΜΗΜΑ – Section level */
+h2[data-type="tmima"],
+.tmima-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.2em;
+  font-weight: 700;
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+}
+
+/* ΚΕΦΑΛΑΙΟ – Chapter level */
+h2[data-type="chapter"],
+.chapter-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.15em;
+  font-weight: 700;
+  margin-top: 1.6em;
+  margin-bottom: 0.5em;
+}
+
+/* Άρθρο – Article level */
+h3[data-type="article"],
+.article-title {
+  font-weight: 700;
+  font-size: 1.05em;
+  margin-top: 1.5em;
+  margin-bottom: 0.4em;
+  text-align: center;
+}
+
+/* Subarticle – hanging-indent layout.
+ * --lawgr-sub-num-width is set per-div by the HTML converter,
+ * calculated from the widest subarticle label.  The heading is
+ * pulled back so the number sits at the container's left edge
+ * while all other child content (paragraphs, bare <p> tags)
+ * starts at the title-text position. */
+div.lawgr-subarticle {
+  padding-left: var(--lawgr-sub-num-width, 4ch);
+  margin-top: 1em;
+}
+
+div.lawgr-subarticle > h3 {
+  margin-left: calc(-1 * var(--lawgr-sub-num-width, 4ch));
+  font-weight: 600;
+  font-size: 1em;
+  margin-top: 0;
+  margin-bottom: 0.3em;
+}
+
+/* Custom clause – "Α. Title" with hanging-indent layout.
+ * --lawgr-custom-num-width is set per-div by the HTML converter.
+ * The heading is pulled back so the label sits at the container's
+ * left edge while all child content (paragraphs) starts at the
+ * title-text position. */
+div.lawgr-custom {
+  padding-left: var(--lawgr-custom-num-width, 3ch);
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+div.lawgr-custom > h3,
+div.lawgr-custom > h4,
+div.lawgr-custom > h5,
+div.lawgr-custom > h6 {
+  margin-left: calc(-1 * var(--lawgr-custom-num-width, 3ch));
+  font-weight: 700;
+  font-size: 1em;
+  margin-top: 0;
+  margin-bottom: 0.3em;
+}
+
+/* ===== Lawgr Paragraph hanging-indent layout ===== */
+/* The paragraph number (h2/h3/…) floats left; all content aligns to its right.
+ * --lawgr-num-width is set per-div by the HTML converter, calculated from
+ * the widest label at each numbering depth.  Fallback is 3em. */
+div.lawgr-paragraph {
+  position: relative;
+  padding-left: var(--lawgr-num-width, 3em);
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+div.lawgr-paragraph::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+div.lawgr-paragraph > h2,
+div.lawgr-paragraph > h3,
+div.lawgr-paragraph > h4,
+div.lawgr-paragraph > h5,
+div.lawgr-paragraph > h6,
+div.lawgr-paragraph > h7,
+div.lawgr-paragraph > h8 {
+  display: block;
+  float: left;
+  margin-left: calc(-1 * var(--lawgr-num-width, 3em));
+  width: calc(var(--lawgr-num-width, 3em) - 0.3em);
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 1em;
+  font-weight: 600;
+  line-height: 1.6;
+  text-align: left;
+}
+
+/* First content element flows next to the number */
+div.lawgr-paragraph > h2 + *,
+div.lawgr-paragraph > h3 + *,
+div.lawgr-paragraph > h4 + *,
+div.lawgr-paragraph > h5 + *,
+div.lawgr-paragraph > h6 + *,
+div.lawgr-paragraph > h7 + *,
+div.lawgr-paragraph > h8 + * {
+  margin-top: 0;
+}
+
+/* All content blocks within a lawgr-paragraph inherit the left indent */
+div.lawgr-paragraph > p,
+div.lawgr-paragraph > div,
+div.lawgr-paragraph > blockquote,
+div.lawgr-paragraph > table,
+div.lawgr-paragraph > ul,
+div.lawgr-paragraph > ol {
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
+}
+
+/* Extra spacing when nesting level changes: first child paragraph
+ * inside a parent paragraph gets more top margin so it doesn't
+ * feel crammed against the parent's content. */
+div.lawgr-paragraph > div.lawgr-paragraph:first-of-type {
+  margin-top: 1.2em;
+}
+
+/* Lawgr Article styling */
+div.lawgr-article {
+  margin-top: 1.8em;
+}
+
+div.lawgr-article > h1,
+div.lawgr-article > h2 {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1em;
+  margin-bottom: 0.6em;
+}
+
+/* ===== 8. Lists ===== */
+ul, ol {
+  margin-left: 2em;
+}
+
+
+ul > li {
+  list-style: none;
+}
+
+ul > li > p:first-child::before {
+  content: "\2014";
+  display: inline-block;
+  width: 1em;
+  margin-left: -1.5em;
+  margin-right: 0.5em;
+}
+
+/* Ordered-list labels are rendered as inline <span class="ol-label">
+ * by li_parse (all types: arabic, roman, greek, etc.).  No CSS
+ * counters needed.  Hanging indent keeps wrapped lines aligned. */
+ol > li {
+  list-style: none;
+  padding-left: 2.5em;
+}
+
+ol > li > .ol-label {
+  display: inline-block;
+  min-width: 2.5em;
+  margin-left: -2.5em;
+  text-align: left;
+}
+
+ol.uppergreek > li {
+  padding-left: 3em;
+}
+
+ol.uppergreek > li > .ol-label {
+  min-width: 3em;
+  margin-left: -3em;
+}
+
+ol.ol-roman > li,
+ol.ol-roman-upper > li {
+  padding-left: 3em;
+}
+
+ol.ol-roman > li > .ol-label,
+ol.ol-roman-upper > li > .ol-label {
+  min-width: 3em;
+  margin-left: -3em;
+}
+
+ol > li > p:first-of-type {
+  display: inline;
+}
+
+ol > li > p::before {
+  content: "";
+  display: none;
+}
+
+/* ===== 9. Tables ===== */
+table {
+  width: 100%;
+  font-weight: 300;
+  margin: 1em 0 2em 0;
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+  background-color: transparent;
+}
+
+table, table th, table td {
+  border: 1px solid black;
+  font-size: 0.95em;
+}
+
+table th, table td {
+  padding: 0.8em;
+  line-height: 1.42857143;
+  vertical-align: top;
+}
+
+table th {
+  font-weight: 700;
+  vertical-align: bottom;
+  background-color: #f5f5f5;
+}
+
+td > p:first-child, th > p:first-child {
+  margin-top: 0;
+}
+
+td > p:last-child, th > p:last-child {
+  margin-bottom: 0;
+}
+
+p.TableTitle {
+  text-align: center;
+  margin-top: 2.5em;
+  font-weight: 700;
+  font-size: 1.1em;
+}
+
+.table-bordered,
+.table-bordered > tbody > tr > td,
+.table-bordered > tbody > tr > th,
+.table-bordered > thead > tr > td,
+.table-bordered > thead > tr > th {
+  border: 1px solid #ddd;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+
+/* ===== 10. Notes & Admonitions ===== */
+.Note, .note {
+  background-color: #fff495;
+  color: #47430c;
+  padding: 0.5em 1em;
+  margin: 1.5em 0;
+  text-align: left;
+  border-left: 4px solid #e6d800;
+}
+
+.Note p, .note p {
+  margin: 0.3em 0;
+}
+
+.Admonition, .admonition {
+  background-color: #ffcccc;
+  padding: 0.5em 1em;
+  margin: 1.5em 0;
+  text-align: left;
+  border-left: 4px solid #cc0000;
+}
+
+.Admonition p, .admonition p {
+  margin: 0.3em 0;
+}
+
+.AdmonitionTitle,
+.RecommendationTitle {
+  font-weight: 700;
+  font-size: 1em;
+  text-align: center;
+}
+
+/* ===== 11. Examples ===== */
+.example {
+  background-color: #e1eef1;
+  color: #424242;
+  padding: 0.5em 1em;
+  margin: 2em 0 1em 0;
+  text-align: left;
+}
+
+.example p {
+  margin: 0.3em 0;
+}
+
+.example .example-title {
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 0;
+}
+
+.example pre,
+.example .pseudocode {
+  background: none;
+}
+
+/* ===== 12. Code & Figures ===== */
+.figure .SourceTitle,
+pre .SourceTitle,
+.pseudocode .SourceTitle {
+  font-weight: 700;
+  font-size: 1em;
+  text-align: center;
+}
+
+.figure,
+pre,
+.pseudocode {
+  background-color: #f7f7f7;
+  line-height: 1.6em;
+  padding: 1.5em;
+  margin: 2em 0 1em 0;
+  overflow: auto;
+  font-size: 1em;
+}
+
+pre {
+  font-family: "Courier New", monospace;
+  font-variant-ligatures: none;
+}
+
+div.figure .FigureTitle,
+div.figure .figure-title {
+  font-weight: 700;
+  font-size: 1em;
+  text-align: center;
+}
+
+div.figure > img,
+div.figure > svg {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.svg-container {
+  width: 100%;
+  display: block;
+}
+
+svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ===== 13. Footnotes ===== */
+a.footnote-number,
+a.TableFootnoteRef,
+span.TableFootnoteRef {
+  vertical-align: super;
+  font-size: 0.8em;
+}
+
+.footnote {
+  font-size: 0.9em;
+}
+
+ol.footnotes-list, aside.footnote {
+  margin-left: 1em;
+}
+
+ol.footnotes-list li, aside.footnote {
+  font-size: 0.9em;
+  vertical-align: top;
+  list-style: decimal;
+  margin-bottom: 1em;
+}
+
+ol.footnotes-list:first-child {
+  margin-top: 2em;
+}
+
+ol.footnotes-list p, aside.footnote p {
+  display: inline;
+}
+
+.TableFootnote {
+  text-align: left !important;
+}
+
+/* ===== 14. Blockquotes ===== */
+.Quote {
+  background-color: #f7f7f7;
+  font-style: italic;
+  width: 80%;
+  padding: 1.5em;
+  margin-top: 2em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+blockquote, q {
+  quotes: none;
+}
+
+blockquote::before, blockquote::after,
+q::before, q::after {
+  content: "";
+  content: none;
+}
+
+/* ===== 15. Formulas ===== */
+.formula {
+  background-color: #f7f7f7;
+  padding: 1.5em;
+  margin-top: 2em;
+  text-align: center;
+  margin-left: 20%;
+  margin-right: 20%;
+}
+
+/* ===== 16. Bibliography ===== */
+p.Biblio, p.NormRef, div.Biblio, div.NormRef {
+  margin-top: 1em;
+  margin-left: 2em;
+}
+
+/* ===== 17. Rules / Separators ===== */
+.rule {
+  width: 100%;
+  height: 1px;
+  background-color: #333;
+  margin: 2em 0;
+}
+
+/* ===== 18. ΦΕΚ Header ===== */
+.fek-header {
+  text-align: center;
+  font-size: 0.95em;
+  color: #555;
+  margin-bottom: 1.5em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #ddd;
+}
+
+/* ===== 19. Preface & Colophon ===== */
+.preface {
+  margin-bottom: 2em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #ddd;
+}
+
+.colophon {
+  margin-top: 3em;
+  padding-top: 1em;
+  border-top: 1px solid #ddd;
+}
+
+/* ===== 20. Collapsible Sections ===== */
+.hidable {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 3px 0;
+  margin: 0;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+
+.collapsible::after {
+  content: "\25BC";
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+.active::after {
+  content: "\25B2";
+}
+
+.collapsible + .hidable {
+  margin-top: 0;
+}
+
+.collapsible:not(.active) + .hidable {
+  overflow: hidden;
+  padding: 0;
+}
+
+/* ===== 21. Utility Classes ===== */
+.bold { font-weight: 700; }
+.center { text-align: center; }
+.right { text-align: right; }
+.text-indent { text-indent: 30px; }
+
+.text-success { color: #3c763d; }
+.text-danger { color: #a94442; }
+.text-info { color: #31708f; }
+.text-warning { color: #8a6d3b; }
+.text-muted { color: #717171; }
+
+.highlight, em[class^=hlt] {
+  background-color: #fff798;
+}
+
+.addition { color: blue; }
+.deletion { color: red; text-decoration: line-through; }
+
+mark {
+  background: #ff0;
+  color: #000;
+}
+
+small, .small { font-size: 80%; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+/* ===== 22. Code Highlighting ===== */
+table.rouge-line-table td.rouge-gutter {
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  padding-right: 1em;
+}
+
+table.rouge-line-table td.rouge-code {
+  -moz-user-select: all;
+  -ms-user-select: all;
+  -webkit-user-select: all;
+  user-select: all;
+}
+
+table.rouge-line-table,
+table.rouge-line-table th,
+table.rouge-line-table td {
+  width: auto;
+  border: none;
+  margin: 0;
+  padding: 0;
+  font-size: 100%;
+}
+
+table.rouge-line-table pre {
+  margin: 0;
+  padding: 0;
+  overflow-x: visible;
+  font-size: 100%;
+}
+
+/* ===== 23. Diff Markup ===== */
+span.diff-tag-removed {
+  text-decoration: line-through;
+  background-color: #fdc6c6;
+}
+
+span.diff-tag-added {
+  background-color: #cfc;
+}
+
+span.diff-html-added {
+  background-color: #cfc;
+  cursor: pointer;
+}
+
+span.diff-html-removed {
+  text-decoration: line-through;
+  background-color: #fdc6c6;
+  cursor: pointer;
+}
+
+span.diff-html-changed {
+  cursor: pointer;
+}
+
+/* ===== 24. Print ===== */
+@media print {
+  nav { display: none; }
+  #toggle { display: none; }
+
+  body {
+    font-size: 12pt;
+    color: #000;
+    background-color: #fff;
+    margin: 0;
+  }
+
+  body main {
+    margin: 0;
+  }
+
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  .Note, .note {
+    border: 1px solid #999;
+    background-color: #fafafa;
+  }
+
+  .example {
+    border: 1px solid #999;
+    background-color: #fafafa;
+  }
+
+  table, table th, table td {
+    border-color: #000;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+
+  table, figure, .example, .Note {
+    page-break-inside: avoid;
+  }
+}
+</style><style>pre.sourcecode table td { padding: 5px; }
+pre.sourcecode table pre { margin: 0; }
+pre.sourcecode, pre.sourcecode .w {
+  color: #444444;
+}
+pre.sourcecode .cp {
+  color: #CC00A3;
+}
+pre.sourcecode .cs {
+  color: #CC00A3;
+}
+pre.sourcecode .c, pre.sourcecode .ch, pre.sourcecode .cd, pre.sourcecode .cm, pre.sourcecode .cpf, pre.sourcecode .c1 {
+  color: #FF0000;
+}
+pre.sourcecode .kc {
+  color: #C34E00;
+}
+pre.sourcecode .kd {
+  color: #0000FF;
+}
+pre.sourcecode .kr {
+  color: #007575;
+}
+pre.sourcecode .k, pre.sourcecode .kn, pre.sourcecode .kp, pre.sourcecode .kt, pre.sourcecode .kv {
+  color: #0000FF;
+}
+pre.sourcecode .s, pre.sourcecode .sb, pre.sourcecode .sc, pre.sourcecode .ld, pre.sourcecode .sd, pre.sourcecode .s2, pre.sourcecode .se, pre.sourcecode .sh, pre.sourcecode .si, pre.sourcecode .sx, pre.sourcecode .sr, pre.sourcecode .s1, pre.sourcecode .ss {
+  color: #009C00;
+}
+pre.sourcecode .sa {
+  color: #0000FF;
+}
+pre.sourcecode .nb, pre.sourcecode .bp {
+  color: #C34E00;
+}
+pre.sourcecode .nt {
+  color: #0000FF;
+}
+
+</style><title>Τροποποίηση διατάξεων Κώδικα Φορολογίας Εισοδήματος και άλλες διατάξεις</title>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!--TOC script import-->
+<script type="text/javascript" src="https://cdn.rawgit.com/jgallen23/toc/0.3.2/dist/toc.min.js"></script>
+<script type="text/javascript">function toclevel() { return "h1:not(:empty):not(.TermNum):not(.noTOC),h2:not(:empty):not(.TermNum):not(.noTOC)";}
+</script>
+
+<!--Google fonts-->
+<link rel="preconnect" href="https://fonts.gstatic.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700=swap" rel="stylesheet">
+
+<!--Font awesome import for the link icon-->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css" integrity="sha384-v2Tw72dyUXeU3y4aM2Y0tBJQkGfplr39mxZqlTBDUZAb9BGoC40+rdFCG0m10lXk" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous" />
+<style class="anchorjs"></style>
+</link></head><body lang="EL" link="blue" vlink="#954F72" xml:lang="EL" class="container"><div class="title-section"><div id="toggle"> <span>◀</span> </div>
+<div class="coverpage">
+  <div class="coverpage-doc-identity">
+    Τροποποίηση διατάξεων Κώδικα Φορολογίας Εισοδήματος και άλλες διατάξεις
+  </div>
+
+  <div class="coverpage-metadata">
+    <table class="coverpage-metadata-table">
+      <tr>
+        <td class="coverpage-metadata-key"></td>
+        <td class="coverpage-metadata-value">4330</td>
+      </tr>
+      
+      <tr>
+        <td class="coverpage-metadata-key">ΦΕΚ</td>
+        <td class="coverpage-metadata-value">Α' 59/2015</td>
+      </tr>
+      
+      
+      
+      <tr>
+        <td class="coverpage-metadata-key">Εκδότης</td>
+        <td class="coverpage-metadata-value">ΕΘΝΙΚΟ ΤΥΠΟΓΡΑΦΕΙΟ</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+</div><br /><div class="prefatory-section"><nav>
+  <div id="toc"><h1 class="IntroTitle"><a class="anchor" href="#_f0634f51-3790-dbdf-bd9c-67d501689937"></a><a class="header" href="#_f0634f51-3790-dbdf-bd9c-67d501689937">Table of contents</a></h1><ul><li class="h1"><a href="#a1">      
+  
+  Άρθρο 1: Τροποποίηση διατάξεων Κώδικα Φορολογίας Εισοδήματος (κύρωση με το Ν. 4172/2013, Α ́ 167)
+</a></li>
+<li class="h2"><a href="#a1p1">      Παράγραφος 1</a></li>
+<li class="h2"><a href="#a1p2">      Παράγραφος 2</a></li>
+<li class="h2"><a href="#a1p3">      Παράγραφος 3</a></li>
+<li class="h2"><a href="#a1p4">      Παράγραφος 4</a></li>
+<li class="h2"><a href="#a1p5">      Παράγραφος 5</a></li>
+<li class="h2"><a href="#a1p6">      Παράγραφος 6</a></li>
+<li class="h1"><a href="#a2">      
+  
+  Άρθρο 2: Υπόχρεος για την απόδοση του Φόρου Προστιθέμενης Αξίας για την κατασκευή αγωγών φυσικού αερίου
+</a></li>
+<li class="h2"><a href="#a2p1">      Παράγραφος 1</a></li>
+<li class="h1"><a href="#a3">      
+  
+  Άρθρο 3: Απαλλαγή χρηματικών δωρεών από το φόρο
+</a></li>
+<li class="h2"><a href="#a3p1">      Παράγραφος 1</a></li>
+<li class="h1"><a href="#a4">      
+  
+  Άρθρο 4: Επαναπροσδιορισμός των καθαρών κερδών για τα πρατήρια καπνοβιομηχανικών προϊόντων
+</a></li>
+<li class="h2"><a href="#a4p1">      Παράγραφος 1</a></li>
+<li class="h1"><a href="#a5">      
+  
+  Άρθρο 5: Υποχρεώσεις τρίτων για τον Ενιαίο Φόρο Ιδιοκτησίας Ακινήτων
+</a></li>
+<li class="h2"><a href="#a5p1">      Παράγραφος 1</a></li>
+<li class="h2"><a href="#a5p2">      Παράγραφος 2</a></li>
+<li class="h2"><a href="#a5p3">      Παράγραφος 3</a></li>
+<li class="h1"><a href="#a6">      
+  
+  Άρθρο 6: Έναρξη ισχύος
+</a></li>
+<li class="h2"><a href="#a6p1">      Παράγραφος 1</a></li>
+<li class="h1"><a href="#_bb8101ae-4a60-79b7-2616-df0e49fdb13b">      
+  
+  Υπογραφές
+</a></li></ul></div>
+</nav>
+</div><br /><main class="main-section"><button onclick="topFunction()" id="myBtn" title="Go to top">Top</button><br /><br /><div id="_98f3a771-1a4e-a1b1-2637-070fb7f8aaf8" class="Section3"><h1 class="IntroTitle"><a class="anchor" href="#_98f3a771-1a4e-a1b1-2637-070fb7f8aaf8"></a><a class="header" href="#_98f3a771-1a4e-a1b1-2637-070fb7f8aaf8"></a></h1><p id="_6c0075d2-788e-68a0-b935-4d9dd34ea85a">Ο ΠΡΟΕΔΡΟΣ ΤΗΣ ΕΛΛΗΝΙΚΗΣ ΔΗΜΟΚΡΑΤΙΑΣ</p><p id="_bf598bef-e837-e282-435e-dd83008567a4">Εκδίδομε τον ακόλουθο νόμο που ψήφισε η Βουλή:</p></div><div id="a1" class="lawgr-article"><h1 id="_a2b493dc-4b05-43c3-a3c1-8fdc162450c1"><a class="anchor" href="#a1"></a><a class="header" href="#a1">Άρθρο 1: Τροποποίηση διατάξεων Κώδικα Φορολογίας Εισοδήματος (κύρωση με το Ν. 4172/2013, Α ́ 167)</a></h1><div id="a1p1" class="lawgr-paragraph" style="--lawgr-num-width: 2.6ch"><h2 id="_6d05fbaa-2996-4da0-8ae6-4944092ac495"><a class="anchor" href="#a1p1"></a><a class="header" href="#a1p1">1.</a></h2><p style="display:none;" class="variant-title-toc">Παράγραφος 1</p><p id="_f46dfa71-2108-759f-31c8-2b3cc61d325a"><a id="a1p1e1"></a>Η περίπτωση η ́ του άρθρου 33 του Κώδικα Φορολογίας Εισοδήματος (Κ.Φ.Ε.) αντικαθίσταται ως εξής:</p>
+
+<p id="_264f0cef-fbab-7c61-89d4-3643c3242fde"><a id="a1p1e2"></a>«η) Προκειμένου για αντικειμενικές δαπάνες και υπηρεσίες του άρθρου 31 φυσικού προσώπου που έχει τη <a id="a1p1e3"></a> φορολογική κατοικία του στην αλλοδαπή. Προκειμένου για δαπάνες απόκτησης περιουσιακών στοιχείων του  <a id="a1p1e4"></a> άρθρου 32 φυσικού προσώπου που έχει τη φορολογική κατοικία του στην αλλοδαπή εφόσον δεν αποκτά εισόδημα στην Ελλάδα.»</p>
+</div><div id="a1p2" class="lawgr-paragraph" style="--lawgr-num-width: 2.6ch"><h2 id="_8a3945b4-a5cf-4350-b217-2dae8f38ebfb"><a class="anchor" href="#a1p2"></a><a class="header" href="#a1p2">2.</a></h2><p style="display:none;" class="variant-title-toc">Παράγραφος 2</p><p id="_3324db74-c3e9-378e-fd0d-cdd1087967aa"><a id="a1p2e1"></a>Στο τέλος της περίπτωσης α ́ της παρ. 1 του άρθρου 34 του Κ.Φ.Ε. προστίθεται η φράση:</p>
+
+<p id="_eba2e123-772d-04bb-81f9-c450d9521ca2"><a id="a1p2e2"></a>«έχει εισόδημα μόνο από κεφάλαιο ή/και από υπεραξία μεταβίβασης κεφαλαίου και το τεκμαρτό του εισόδημα δεν υπερβαίνει το <a id="a1p2e3"></a> ποσό των εννιά χιλιάδων πεντακοσίων (9.500) ευρώ ή».</p>
+</div><div id="a1p3" class="lawgr-paragraph" style="--lawgr-num-width: 2.6ch"><h2 id="_d13a8aed-f761-4c22-943d-018517159ba8"><a class="anchor" href="#a1p3"></a><a class="header" href="#a1p3">3.</a></h2><p style="display:none;" class="variant-title-toc">Παράγραφος 3</p><p id="_994fe0af-d07e-950c-923a-6d3eb0cc09b5"><a id="a1p3e1"></a>Η περίπτωση ε ́ της παρ. 1 του άρθρου 34 του Κ.Φ.Ε. καταργείται.</p>
+</div><div id="a1p4" class="lawgr-paragraph" style="--lawgr-num-width: 2.6ch"><h2 id="_7c4446b7-8104-49b2-b719-b43b608cc220"><a class="anchor" href="#a1p4"></a><a class="header" href="#a1p4">4.</a></h2><p style="display:none;" class="variant-title-toc">Παράγραφος 4</p><p id="_a2552552-5dfd-1b40-8e4f-8f1f80c7ea88"><a id="a1p4e1"></a>Στο άρθρο 72 του Ν. 4172/2013 προστίθεται νέα παράγραφος 35 ως εξής:</p>
+
+<p id="_de4c6e66-dda6-8d4e-686c-f360cd9d8992"><a id="a1p4e2"></a>«35. Όταν το πραγματικό εισόδημα των φορολογουμένων κατά το φορολογικό έτος 2014 δεν υπερβαίνει το <a id="a1p4e3"></a> ποσό των 6.000 ευρώ και το τεκμαρτό τους εισόδημα δεν υπερβαίνει το ποσό των 9.500 ευρώ και εφόσον  <a id="a1p4e4"></a> δεν ασκείται επιχειρηματική δραστηριότητα για την οποία απαιτείται η υποβολή δήλωση έναρξης εργασιών  <a id="a1p4e5"></a> ή ατομική αγροτική δραστηριότητα, το εισόδημα αυτό, εξαιρουμένου του εισοδήματος από κεφάλαιο και από  <a id="a1p4e6"></a> υπεραξία μεταβίβασης κεφαλαίου, και η προστιθέμενη διαφορά τεκμηρίων, φορολογούνται με την κλίμακα των  <a id="a1p4e7"></a> μισθωτών – συνταξιούχων της παρ. 1 του άρθρου 15. Εάν το πραγματικό εισόδημα της προηγούμενης παραγράφου  <a id="a1p4e8"></a> υπερβαίνει το ποσό των 6.000 ευρώ, το υπερβάλλον ποσό φορολογείται με την κλίμακα της επιχειρηματικής  <a id="a1p4e9"></a> δραστηριότητας. Οι διατάξεις του παρόντος άρθρου εφαρμόζονται και για τους φορολογούμενους που διέκοψαν  <a id="a1p4e10"></a> την επιχειρηματική τους δραστηριότητα, για το εισόδημα που απέκτησαν μετά τη διακοπή της.»</p>
+</div><div id="a1p5" class="lawgr-paragraph" style="--lawgr-num-width: 2.6ch"><h2 id="_156f56b8-6fa5-4980-bca1-bcd81f41d4c5"><a class="anchor" href="#a1p5"></a><a class="header" href="#a1p5">5.</a></h2><p style="display:none;" class="variant-title-toc">Παράγραφος 5</p><p id="_6eea3566-f1a9-79eb-6d7c-b2eeba6abbf7"><a id="a1p5e1"></a>Στο τέλος της παρ. 2 του άρθρου 39 του Ν. 4172/2013 προστίθεται νέο εδάφιο ως εξής:</p>
+
+<p id="_62386ec2-b582-aefa-1f57-17ccd8461a87"><a id="a1p5e2"></a>«Ειδικά για τους ασκούντες ατομική αγροτική επιχειρηματική δραστηριότητα δεν υπολογίζεται τεκμαρτό <a id="a1p5e3"></a> εισόδημα από ιδιοχρησιμοποίηση ή δωρεάν παραχώρηση προς ανιόντες, κατιόντες και συζύγους, αγροτικών  <a id="a1p5e4"></a> εκτάσεων στις οποίες περιλαμβάνονται λιβάδια, καλλιεργήσιμες γαίες, βοσκήσιμες γαίες, και κάθε είδους  <a id="a1p5e5"></a> κατασκευές ή εγκαταστάσεις που χρησιμοποιούνται για την άσκηση της δραστηριότητας αυτής.»</p>
+</div><div id="a1p6" class="lawgr-paragraph" style="--lawgr-num-width: 2.6ch"><h2 id="_3a7a172d-4036-4da7-a7a7-e987329b04a5"><a class="anchor" href="#a1p6"></a><a class="header" href="#a1p6">6.</a></h2><p style="display:none;" class="variant-title-toc">Παράγραφος 6</p><p id="_a140692b-4d36-d279-050c-761c3341486d"><a id="a1p6e1"></a>Οι διατάξεις της παραγράφων 1, 2 και 5 του παρόντος άρθρου έχουν εφαρμογή για το φορολογικό έτος <a id="a1p6e2"></a> 2014 και εξής.</p>
+</div></div><div id="a2" class="lawgr-article"><h1 id="_14a6f73e-0282-4332-8788-0566c1e7d92c"><a class="anchor" href="#a2"></a><a class="header" href="#a2">Άρθρο 2: Υπόχρεος για την απόδοση του Φόρου Προστιθέμενης Αξίας για την κατασκευή αγωγών φυσικού αερίου</a></h1><div id="a2p1" class="lawgr-paragraph" style="--lawgr-num-width: 2.6ch"><h2 id="_318adddb-f3b9-42dd-ad38-f2d5050caa47"><a class="anchor" href="#a2p1"></a><a class="header" href="#a2p1">1.</a></h2><p style="display:none;" class="variant-title-toc">Παράγραφος 1</p><p id="_d4a1ae44-e749-c95b-cd77-f08668444894"><a id="a2p1e1"></a>Στο άρθρο 35 παρ. 1 του Κώδικα Φόρου Προστιθέμενης Αξίας (Φ.Π.Α., Ν. 2859/2000) προστίθεται νέα περίπτωση κ ́ ως εξής:</p>
+
+<p id="_05404b35-6734-e4a3-6c97-e09ceabe16e1"><a id="a2p1e2"></a>«κ) ο εγκατεστημένος στο εσωτερικό της χώρας, υποκείμενος στο φόρο με δραστηριότητα μεταφοράς <a id="a2p1e3"></a> φυσικού αερίου μέσω αγωγών για τα αγαθά και τις υπηρεσίες, που αποκλειστικά χρησιμοποιεί για την κατασκευή των αγωγών αυτών.»</p>
+</div></div><div id="a3" class="lawgr-article"><h1 id="_5b83b7e5-b651-4dff-aeb5-bdd01493bcd1"><a class="anchor" href="#a3"></a><a class="header" href="#a3">Άρθρο 3: Απαλλαγή χρηματικών δωρεών από το φόρο</a></h1><div id="a3p1" class="lawgr-paragraph" style="--lawgr-num-width: 2.6ch"><h2 id="_2f2104d7-48e3-47f6-a692-359a3f09dc80"><a class="anchor" href="#a3p1"></a><a class="header" href="#a3p1">1.</a></h2><p style="display:none;" class="variant-title-toc">Παράγραφος 1</p><p id="_cc93e4b0-ee89-3eda-f3aa-c3760f5d103b"><a id="a3p1e1"></a>Στην ενότητα Γ ́ του άρθρου 43 του Κώδικα διατάξεων φορολογίας κληρονομιών, δωρεών, γονικών παροχών <a id="a3p1e2"></a> και κερδών από τυχερά παίγνια, ο οποίος κυρώθηκε με το πρώτο άρθρο του Ν. 2961/2001 (Α ́ 266), όπως ισχύει,  <a id="a3p1e3"></a> προστίθεται περίπτωση στ ́ ως ακολούθως:</p>
+
+<p id="_7728b804-4ce5-c89e-3990-a8870dde2a9a"><a id="a3p1e4"></a>«στ) χρηματικά ποσά που καταβάλλονται από την 1η Ιανουαρίου 2015 έως τις 31 Δεκεμβρίου 2015 σε σύζυγο, <a id="a3p1e5"></a> τέκνα, γονείς και αδέλφια των προσώπων που απεβίωσαν ή αγνοούνται λόγω του ναυαγίου του πλοίου  <a id="a3p1e6"></a> Norman Atlantic, που έλαβε χώρα το Δεκέμβριο του 2014.»</p>
+</div></div><div id="a4" class="lawgr-article"><h1 id="_d586e133-4252-44f6-ade7-11a95effeefb"><a class="anchor" href="#a4"></a><a class="header" href="#a4">Άρθρο 4: Επαναπροσδιορισμός των καθαρών κερδών για τα πρατήρια καπνοβιομηχανικών προϊόντων</a></h1><div id="a4p1" class="lawgr-paragraph" style="--lawgr-num-width: 2.6ch"><h2 id="_04b7bbc7-b11e-44a4-b95f-c4a2943a5544"><a class="anchor" href="#a4p1"></a><a class="header" href="#a4p1">1.</a></h2><p style="display:none;" class="variant-title-toc">Παράγραφος 1</p><p id="_61d28f11-c02b-d08d-8472-792dcdfee6c5"><a id="a4p1e1"></a>Για τον προσδιορισμό των καθαρών κερδών χρήσης 2004 των επιχειρήσεων που επανεντάχθηκαν στη Β ́ <a id="a4p1e2"></a> κατηγορία βιβλίων του Κώδικα Βιβλίων και Στοιχείων (Π.δ. 186/1992, Α ́ 84) με τη διάταξη του άρθρου 32 παρ. 4  <a id="a4p1e3"></a> του Ν. 3229/2004 (Α ́ 38) η απογραφή της χρήσης αυτής υπολογίζεται σύμφωνα με τη διάταξη της παρ. 1  <a id="a4p1e4"></a> περίπτωση γ ́ του άρθρου 31 του Ν. 2238/1994 (Α ́ 151) και γίνεται επαναπροσδιορισμός των καθαρών κερδών  <a id="a4p1e5"></a> και νέα εκκαθάριση του φόρου εισοδήματος από την αρμόδια Δημόσια Οικονομική Υπηρεσία.</p>
+</div></div><div id="a5" class="lawgr-article"><h1 id="_48f39a6a-00c7-4025-8ae9-ab2918deb898"><a class="anchor" href="#a5"></a><a class="header" href="#a5">Άρθρο 5: Υποχρεώσεις τρίτων για τον Ενιαίο Φόρο Ιδιοκτησίας Ακινήτων</a></h1><div id="a5p1" class="lawgr-paragraph" style="--lawgr-num-width: 2.6ch"><h2 id="_25ed4b93-cdb2-4d6d-a1e6-60cc867b4595"><a class="anchor" href="#a5p1"></a><a class="header" href="#a5p1">1.</a></h2><p style="display:none;" class="variant-title-toc">Παράγραφος 1</p><p id="_a44bcc49-0471-6419-d26b-975dac08f916"><a id="a5p1e1"></a>Η παρ. 1 του άρθρου 54Α του Ν. 4174/2013 αντικαθίσταται ως ακολούθως:</p>
+
+<p id="_db9a1080-121c-2166-0a5d-f3457e9535af"><a id="a5p1e2"></a>«1. Απαγορεύεται κάθε υποσχετική ή εκποιητική δικαιοπραξία με την οποία συστήνονται, μεταβάλλονται, <a id="a5p1e3"></a> αλλοιώνονται ή μεταβιβάζονται, από οποιαδήποτε αιτία δικαιώματα επί ακινήτου ή παρέχεται δικαίωμα προσημείωσης  <a id="a5p1e4"></a> ή υποθήκης σε αυτό, αν δεν μνημονεύεται και δεν επισυνάπτεται από το συμβολαιογράφο στο συμβόλαιο  <a id="a5p1e5"></a> που συντάσσει, πιστοποιητικό της Φορολογικής Διοίκησης, με το οποίο πιστοποιείται ότι το ίδιο ακίνητο  <a id="a5p1e6"></a> περιλαμβάνεται στη δήλωση Ενιαίου Φόρου Ιδιοκτησίας Ακινήτων, καθώς και ότι ο φορολογούμενος έχει  <a id="a5p1e7"></a> καταβάλει, ή νόμιμα απαλλαγεί από τον ΕΝ.Φ.Ι.Α. για το συγκεκριμένο ακίνητο και έχει καταβάλει τις ληξιπρόθεσμες  <a id="a5p1e8"></a> δόσεις, έχει ρυθμίσει ή έχει νόμιμα απαλλαγεί από τον ΕΝ.Φ.Ι.Α. για τα υπόλοιπα ακίνητα, για τα οποία  <a id="a5p1e9"></a> είναι υπόχρεος για τα πέντε (5) προηγούμενα έτη. Τα παραπάνω ισχύουν και για τη σύνταξη περίληψης κατακυρωτικής  <a id="a5p1e10"></a> έκθεσης επί εκούσιου πλειστηριασμού. Στην περίπτωση αυτή το πιστοποιητικό προσκομίζεται μόνον  <a id="a5p1e11"></a> από τον επισπεύδοντα τον εκούσιο πλειστηριασμό. Ειδικά κατά το έτος 2015, το πιστοποιητικό χορηγείται  <a id="a5p1e12"></a> για τα έτη 2011, 2012, 2013 και 2014.</p>
+
+<p id="_21b15229-3d95-4a34-d7d1-d1c31530474c"><a id="a5p1e13"></a>Δεν απαιτείται η μνημόνευση, επισύναψη ή προσκόμιση του πιστοποιητικού ΕΝ.Φ.Ι.Α. στη μονομερή εξάλειψη <a id="a5p1e14"></a> υποθήκης ή στην άρση κατάσχεσης ή στην παραχώρηση υποθήκης ή προσημείωσης για εξασφάλιση δικαιωμάτων  <a id="a5p1e15"></a> του Ελληνικού Δημοσίου. Σε κάθε περίπτωση θεωρείται έγκυρη η μνημόνευση, επισύναψη ή προσκόμιση του  <a id="a5p1e16"></a> πιστοποιητικού ΕΝ.Φ.Ι.Α., στο οποίο το κτίσμα αποτυπώνεται με απόκλιση της επιφάνειάς του μέχρι πέντε  <a id="a5p1e17"></a> (5) τετραγωνικά μέτρα και το γήπεδο ή το οικόπεδο αποτυπώνονται με απόκλιση μέχρι δύο τοις εκατό (2%)  <a id="a5p1e18"></a> της επιφάνειάς τους ή παραλείπονται ή αναγράφονται εσφαλμένα στοιχεία που δεν επηρεάζουν τη φορολογική  <a id="a5p1e19"></a> ταυτότητα του ακινήτου και δεν συνεπάγονται την επιβολή μειωμένου φόρου.»</p>
+</div><div id="a5p2" class="lawgr-paragraph" style="--lawgr-num-width: 2.6ch"><h2 id="_daa87add-f926-4309-a62f-3b661fa12840"><a class="anchor" href="#a5p2"></a><a class="header" href="#a5p2">2.</a></h2><p style="display:none;" class="variant-title-toc">Παράγραφος 2</p><p id="_392df430-973a-9cea-f8e0-a40d34a12a4c"><a id="a5p2e1"></a>Οι τυχόν παραλείψεις ή σφάλματα ως προς τα στοιχεία του ακινήτου, που αναφέρονται στο πιστοποιητικό <a id="a5p2e2"></a> του ΕΝ.Φ.Ι.Α. που προσαρτάται και μνημονεύεται σε συμβολαιογραφικές πράξεις που συντάχθηκαν μέχρι  <a id="a5p2e3"></a> την έναρξη ισχύος του παρόντος νόμου δεν επιφέρουν ακυρότητα των πράξεων αυτών.</p>
+</div><div id="a5p3" class="lawgr-paragraph" style="--lawgr-num-width: 2.6ch"><h2 id="_3231d028-44c8-4440-b4b4-e774ad7a2025"><a class="anchor" href="#a5p3"></a><a class="header" href="#a5p3">3.</a></h2><p style="display:none;" class="variant-title-toc">Παράγραφος 3</p><p id="_e0058cb4-ac8f-0bfb-d7be-ed99ad068724"><a id="a5p3e1"></a>Η παρ. 6 του άρθρου 54Α του Ν. 4174/2013 αντικαθίσταται ως ακολούθως:</p>
+
+<p id="_b47190e2-9c69-98d2-489f-705b678d0c2a"><a id="a5p3e2"></a>«6. Οι συμβολαιογράφοι, οι φύλακες μεταγραφών και οι προϊστάμενοι των κτηματολογικών γραφείων, που <a id="a5p3e3"></a> παραβαίνουν τις υποχρεώσεις που προβλέπονται στο παρόν άρθρο, υπόκεινται σε πρόστιμο που ορίζεται σε  <a id="a5p3e4"></a> ένα τοις χιλίοις (1‰) επί της αξίας του μεταβιβαζομένου ακινήτου ή δικαιώματος επ’ αυτού, το οποίο πρόστιμο  <a id="a5p3e5"></a> δεν μπορεί να είναι κατώτερο από 300,00 ευρώ ούτε ανώτερο από 1.000,00 ευρώ. Σε περίπτωση υποτροπής  <a id="a5p3e6"></a> το πρόστιμο διπλασιάζεται.»</p>
+</div></div><div id="a6" class="lawgr-article"><h1 id="_3ca18a7c-2fe1-41ad-9afd-5fde4ef15ef4"><a class="anchor" href="#a6"></a><a class="header" href="#a6">Άρθρο 6: Έναρξη ισχύος</a></h1><div id="a6p1" class="lawgr-paragraph" style="--lawgr-num-width: 2.6ch"><h2 id="_a801756a-5214-4e1d-b03d-975b1605041d"><a class="anchor" href="#a6p1"></a><a class="header" href="#a6p1">1.</a></h2><p style="display:none;" class="variant-title-toc">Παράγραφος 1</p><p id="_73497cd4-8893-df74-aa25-20fba4a08619"><a id="a6p1e1"></a>Οι διατάξεις του παρόντος ισχύουν από την ημερομηνία δημοσίευσης στην Εφημερίδα της Κυβερνήσεως.</p>
+
+<p id="_70599317-96b9-6bad-39a9-3984e4ece5f8"><a id="a6p1e2"></a>Παραγγέλλομε τη δημοσίευση του παρόντος στην Εφημερίδα της Κυβερνήσεως και την εκτέλεσή του ως <a id="a6p1e3"></a> νόμου του Κράτους.</p>
+</div></div><br /><div class="Section3" id="_bb8101ae-4a60-79b7-2616-df0e49fdb13b"><h1 class="IntroTitle" id="_136561b9-4301-4199-b039-440c4f5a46ec"><a class="anchor" href="#_bb8101ae-4a60-79b7-2616-df0e49fdb13b"></a><a class="header" href="#_bb8101ae-4a60-79b7-2616-df0e49fdb13b">Υπογραφές</a></h1><p id="_c57e1b4f-a413-c6fb-1e56-0c96570dd12c">Αθήνα, 16 Ιουνίου 2015<br />  Ο ΠΡΟΕΔΡΟΣ ΤΗΣ ΔΗΜΟΚΡΑΤΙΑΣ<br />  ΠΡΟΚΟΠΙΟΣ Β. ΠΑΥΛΟΠΟΥΛΟΣ</p></div></main><script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": {
+      preferredFont: "STIX",
+      linebreaks: {
+        automatic: true,
+        width: "container"  // or specify something like "90%"/"30em"
+      }
+    },
+    MathML: {
+      linebreaks: {
+        automatic: true
+      }
+    },
+    asciimath2jax: { delimiters: [['(#(', ')#)']] }
+  });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=MML_HTMLorMML-full" async="async"></script>
+  <script>
+    $("#toc").on('click', 'li', function(e) {
+    $(this).parent().find('li.toc-active').removeClass('toc-active');
+    $(this).addClass('toc-active');
+});
+  </script>
+
+  <script>
+    //TOC toggle animation
+    (function() {
+      const jqNav = $('nav');
+      const jqBody = $('body');
+      const jqToggle = $('#toggle');
+      const animationSpeed = 'slow';
+
+      jqToggle.on('click', function() {
+        const isNavVisible = jqNav.is(':visible');
+        const fullNavWidth = jqNav.outerWidth();
+        const navLeft = isNavVisible ? '-' + fullNavWidth + 'px' : '0px';
+        const bodyMarginLeft = isNavVisible ? '0px' : fullNavWidth + 'px';
+
+        // Stop current animations
+        jqNav.stop(true, true);
+        jqBody.stop(true, true);
+
+        if(!isNavVisible) {
+            jqNav.show();
+        }
+        jqNav.animate({'left': navLeft}, animationSpeed, function() {
+          if(isNavVisible) {jqNav.hide()}
+        });
+        jqBody.animate({'marginLeft': bodyMarginLeft}, animationSpeed);
+
+      });
+    })();
+  </script>
+
+<script>
+    // Scroll to top button
+    window.onscroll = function() {scrollFunction()};
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+            document.getElementById("myBtn").style.display = "block";
+        } else {
+            document.getElementById("myBtn").style.display = "none";
+        }
+    }
+
+    // When the user clicks on the button, scroll to the top of the document
+    function topFunction() {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    }
+    </script>
+
+<script>
+/*
+  $(document).ready(function() {
+	  $('[id^=toc]').each(function ()
+	  {
+	     var currentToc = $(this);
+       var url = window.location.href;
+            currentToc.wrap("<a href='" + url + "#" + currentToc.attr("id") + "'></a>");
+	  });
+});
+*/
+</script>
+
+  <script>
+    document.querySelectorAll('*|svg a').forEach(function(item) {
+      var loc = item.getAttribute('href');
+      if (loc !== null && loc.startsWith('#')) {
+  item.setAttribute('href', location.pathname + loc);
+      }
+});
+  </script>
+
+
+<script>
+
+// jQuery Inline Footnotes v1.0.3
+// Copyright (c) 2011 Vesa Vänskä, released under the MIT License.
+
+// Generated by CoffeeScript 1.6.1
+(function() {
+
+  (function($) {
+    $.inlineFootnote = function(el, options) {
+      var _this = this;
+      this.el = $(el);
+      this.el.data("inlineFootnote", this);
+      this.initialize = function() {
+        this.options = $.extend({}, $.inlineFootnote.defaultOptions, options);
+        this.footnoteId = this.el.attr("href").match(/#(.*)/)[1];
+        if (this.footnoteId) {
+          this.el.mouseenter(this.openBox);
+          return $("body").mousemove(this.closeBox);
+        }
+      };
+      this.openBox = function(event) {
+        var footnoteContent, linkOffset;
+        if (!_this.box) {
+          footnoteContent = $("[id='" + _this.footnoteId + "']").children().filter(":not('" + _this.options.hideFromContent + "')");
+          linkOffset = _this.el.offset();
+          _this.box = $("<div />", {
+            id: _this.options.boxId,
+            html: footnoteContent.clone().find(_this.options.hideFromContent).remove().end(),
+            css: {
+              position: "absolute",
+              top: linkOffset.top,
+              left: linkOffset.left + _this.el.outerWidth()
+            }
+          }).appendTo("body");
+          return _this.positionBox();
+        }
+      };
+      this.closeBox = function(event) {
+        if (_this.box) {
+          if (_this.isHoveringFootnote(event)) {
+            clearTimeout(_this.closeTimeout);
+            return _this.closeTimeout = null;
+          } else {
+            if (!_this.closeTimeout) {
+              return _this.closeTimeout = setTimeout((function() {
+                _this.box.remove();
+                return _this.box = null;
+              }), _this.options.hideDelay);
+            }
+          }
+        }
+      };
+      this.isHoveringFootnote = function(event) {
+        return this.box.is(event.target) || $(event.target).closest(this.box).length > 0 || event.target === this.el[0];
+      };
+      this.positionBox = function() {
+        var boxHorizontalPadding, boxLeft, boxWidth, linkLeftOffset, windowWidth;
+        boxHorizontalPadding = parseInt(this.box.css("padding-left")) + parseInt(this.box.css("padding-right"));
+        linkLeftOffset = this.el.offset().left;
+        windowWidth = $(window).width();
+        if ((windowWidth / 2) > linkLeftOffset) {
+          boxLeft = linkLeftOffset + 20;
+          boxWidth = windowWidth - boxLeft - boxHorizontalPadding - this.options.boxMargin * 2;
+          if (boxWidth > this.options.maximumBoxWidth) {
+            boxWidth = this.options.maximumBoxWidth;
+          }
+        } else {
+          boxWidth = linkLeftOffset - boxHorizontalPadding - this.options.boxMargin * 2;
+          if (boxWidth > this.options.maximumBoxWidth) {
+            boxWidth = this.options.maximumBoxWidth;
+          }
+          boxLeft = linkLeftOffset - boxWidth - this.options.boxMargin * 2;
+        }
+        return this.box.css({
+          width: boxWidth,
+          left: boxLeft
+        });
+      };
+      return this.initialize();
+    };
+    $.inlineFootnote.defaultOptions = {
+      boxMargin: 20,
+      hideDelay: 200,
+      hideFromContent: "[rel=footnote]",
+      maximumBoxWidth: 500,
+      boxId: "footnote_box"
+    };
+    return $.fn.inlineFootnote = function(options) {
+      return this.each(function() {
+        return new $.inlineFootnote(this, options);
+      });
+    };
+  })(jQuery);
+
+}).call(this);
+</script>
+
+<script>
+      $(function() {
+        $("[rel=footnote]").inlineFootnote();
+        });
+</script>
+  <script>
+// @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt Expat
+//
+// AnchorJS - v4.2.2 - 2020-04-20
+// https://www.bryanbraun.com/anchorjs/
+// Copyright (c) 2020 Bryan Braun; Licensed MIT
+//
+// @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt Expat
+!function(A,e){"use strict";"function"==typeof define&&define.amd?define([],e):"object"==typeof module&&module.exports?module.exports=e():(A.AnchorJS=e(),A.anchors=new A.AnchorJS)}(this,function(){"use strict";return function(A){function f(A){A.icon=A.hasOwnProperty("icon")?A.icon:"",A.visible=A.hasOwnProperty("visible")?A.visible:"hover",A.placement=A.hasOwnProperty("placement")?A.placement:"right",A.ariaLabel=A.hasOwnProperty("ariaLabel")?A.ariaLabel:"Anchor",A.class=A.hasOwnProperty("class")?A.class:"",A.base=A.hasOwnProperty("base")?A.base:"",A.truncate=A.hasOwnProperty("truncate")?Math.floor(A.truncate):64,A.titleText=A.hasOwnProperty("titleText")?A.titleText:""}function p(A){var e;if("string"==typeof A||A instanceof String)e=[].slice.call(document.querySelectorAll(A));else{if(!(Array.isArray(A)||A instanceof NodeList))throw new Error("The selector provided to AnchorJS was invalid.");e=[].slice.call(A)}return e}this.options=A||{},this.elements=[],f(this.options),this.isTouchDevice=function(){return!!("ontouchstart"in window||window.DocumentTouch&&document instanceof DocumentTouch)},this.add=function(A){var e,t,i,n,o,s,a,r,c,h,l,u,d=[];if(f(this.options),"touch"===(l=this.options.visible)&&(l=this.isTouchDevice()?"always":"hover"),0===(e=p(A=A||"h2, h3, h4, h5, h6")).length)return this;for(!function(){if(null!==document.head.querySelector("style.anchorjs"))return;var A,e=document.createElement("style");e.className="anchorjs",e.appendChild(document.createTextNode("")),void 0===(A=document.head.querySelector('[rel="stylesheet"],style'))?document.head.appendChild(e):document.head.insertBefore(e,A);e.sheet.insertRule(".anchorjs-link{opacity:0;text-decoration:none;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}",e.sheet.cssRules.length),e.sheet.insertRule(":hover>.anchorjs-link,.anchorjs-link:focus{opacity:1}",e.sheet.cssRules.length),e.sheet.insertRule("[data-anchorjs-icon]::after{content:attr(data-anchorjs-icon)}",e.sheet.cssRules.length),e.sheet.insertRule('@font-face{font-family:anchorjs-icons;src:url(data:n/a;base64,AAEAAAALAIAAAwAwT1MvMg8yG2cAAAE4AAAAYGNtYXDp3gC3AAABpAAAAExnYXNwAAAAEAAAA9wAAAAIZ2x5ZlQCcfwAAAH4AAABCGhlYWQHFvHyAAAAvAAAADZoaGVhBnACFwAAAPQAAAAkaG10eASAADEAAAGYAAAADGxvY2EACACEAAAB8AAAAAhtYXhwAAYAVwAAARgAAAAgbmFtZQGOH9cAAAMAAAAAunBvc3QAAwAAAAADvAAAACAAAQAAAAEAAHzE2p9fDzz1AAkEAAAAAADRecUWAAAAANQA6R8AAAAAAoACwAAAAAgAAgAAAAAAAAABAAADwP/AAAACgAAA/9MCrQABAAAAAAAAAAAAAAAAAAAAAwABAAAAAwBVAAIAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAMCQAGQAAUAAAKZAswAAACPApkCzAAAAesAMwEJAAAAAAAAAAAAAAAAAAAAARAAAAAAAAAAAAAAAAAAAAAAQAAg//0DwP/AAEADwABAAAAAAQAAAAAAAAAAAAAAIAAAAAAAAAIAAAACgAAxAAAAAwAAAAMAAAAcAAEAAwAAABwAAwABAAAAHAAEADAAAAAIAAgAAgAAACDpy//9//8AAAAg6cv//f///+EWNwADAAEAAAAAAAAAAAAAAAAACACEAAEAAAAAAAAAAAAAAAAxAAACAAQARAKAAsAAKwBUAAABIiYnJjQ3NzY2MzIWFxYUBwcGIicmNDc3NjQnJiYjIgYHBwYUFxYUBwYGIwciJicmNDc3NjIXFhQHBwYUFxYWMzI2Nzc2NCcmNDc2MhcWFAcHBgYjARQGDAUtLXoWOR8fORYtLTgKGwoKCjgaGg0gEhIgDXoaGgkJBQwHdR85Fi0tOAobCgoKOBoaDSASEiANehoaCQkKGwotLXoWOR8BMwUFLYEuehYXFxYugC44CQkKGwo4GkoaDQ0NDXoaShoKGwoFBe8XFi6ALjgJCQobCjgaShoNDQ0NehpKGgobCgoKLYEuehYXAAAADACWAAEAAAAAAAEACAAAAAEAAAAAAAIAAwAIAAEAAAAAAAMACAAAAAEAAAAAAAQACAAAAAEAAAAAAAUAAQALAAEAAAAAAAYACAAAAAMAAQQJAAEAEAAMAAMAAQQJAAIABgAcAAMAAQQJAAMAEAAMAAMAAQQJAAQAEAAMAAMAAQQJAAUAAgAiAAMAAQQJAAYAEAAMYW5jaG9yanM0MDBAAGEAbgBjAGgAbwByAGoAcwA0ADAAMABAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAH//wAP) format("truetype")}',e.sheet.cssRules.length)}(),t=document.querySelectorAll("[id]"),i=[].map.call(t,function(A){return A.id}),o=0;o<e.length;o++)if(this.hasAnchorJSLink(e[o]))d.push(o);else{if(e[o].hasAttribute("id"))n=e[o].getAttribute("id");else if(e[o].hasAttribute("data-anchor-id"))n=e[o].getAttribute("data-anchor-id");else{for(c=r=this.urlify(e[o].textContent),a=0;void 0!==s&&(c=r+"-"+a),a+=1,-1!==(s=i.indexOf(c)););s=void 0,i.push(c),e[o].setAttribute("id",c),n=c}(h=document.createElement("a")).className="anchorjs-link "+this.options.class,h.setAttribute("aria-label",this.options.ariaLabel),h.setAttribute("data-anchorjs-icon",this.options.icon),this.options.titleText&&(h.title=this.options.titleText),u=document.querySelector("base")?window.location.pathname+window.location.search:"",u=this.options.base||u,h.href=u+"#"+n,"always"===l&&(h.style.opacity="1"),""===this.options.icon&&(h.style.font="1em/1 anchorjs-icons","left"===this.options.placement&&(h.style.lineHeight="inherit")),"left"===this.options.placement?(h.style.position="absolute",h.style.marginLeft="-1em",h.style.paddingRight="0.5em",e[o].insertBefore(h,e[o].firstChild)):(h.style.paddingLeft="0.375em",e[o].appendChild(h))}for(o=0;o<d.length;o++)e.splice(d[o]-o,1);return this.elements=this.elements.concat(e),this},this.remove=function(A){for(var e,t,i=p(A),n=0;n<i.length;n++)(t=i[n].querySelector(".anchorjs-link"))&&(-1!==(e=this.elements.indexOf(i[n]))&&this.elements.splice(e,1),i[n].removeChild(t));return this},this.removeAll=function(){this.remove(this.elements)},this.urlify=function(A){return this.options.truncate||f(this.options),A.trim().replace(/\'/gi,"").replace(/[& +$,:;=?@"#{}|^~[`%!'<>\]\.\/\(\)\*\\\n\t\b\v]/g,"-").replace(/-{2,}/g,"-").substring(0,this.options.truncate).replace(/^-+|-+$/gm,"").toLowerCase()},this.hasAnchorJSLink=function(A){var e=A.firstChild&&-1<(" "+A.firstChild.className+" ").indexOf(" anchorjs-link "),t=A.lastChild&&-1<(" "+A.lastChild.className+" ").indexOf(" anchorjs-link ");return e||t||!1}}});
+// @license-end
+  </script>
+    <script>
+  anchors.options = {
+  placement: 'left'
+};
+anchors.add('h1, h2, h3, h4');
+</script>
+
+<script>
+// use .collapsible element to toggle visibility of element following it
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.maxHeight){
+      content.style.maxHeight = null;
+    } else {
+      content.style.maxHeight = content.scrollHeight + "px";
+    }
+  });
+}
+</script>
+
+<script>
+// lawgr: unified toggle handler for the navigation sidebar.
+// The base isodoc script binds its own #toggle click handler that
+// animates nav left + body marginLeft.  We remove it and replace
+// with a single handler that also slides #toggle in sync and
+// keeps a minimum body margin so content never overlaps the widget.
+(function() {
+  var jqToggle = $('#toggle');
+  var jqNav = $('nav');
+  var jqBody = $('body');
+  if (!jqToggle.length || !jqNav.length) return;
+
+  var navWidth = parseInt(jqNav.css('width')) || 278;
+  var toggleWidth = jqToggle.outerWidth() || 30;
+  var gap = parseInt(jqBody.css('margin-left')) - navWidth - toggleWidth;
+  if (gap < 0) gap = 12;
+  var speed = 'slow';
+
+  // Remove base isodoc toggle handler to prevent double animation.
+  jqToggle.off('click');
+
+  jqToggle.on('click', function() {
+    var isVisible = jqNav.is(':visible');
+
+    var navLeft      = isVisible ? '-' + navWidth + 'px' : '0px';
+    var toggleLeft   = isVisible ? '0px' : navWidth + 'px';
+    var bodyMargin   = isVisible
+      ? (toggleWidth + gap) + 'px'
+      : (navWidth + toggleWidth + gap) + 'px';
+
+    // Stop any in-flight animations.
+    jqNav.stop(true, true);
+    jqToggle.stop(true, true);
+    jqBody.stop(true, true);
+
+    // Show nav before sliding it in.
+    if (!isVisible) { jqNav.show(); }
+
+    // Slide nav, toggle, and body in sync.
+    jqNav.animate({ left: navLeft }, speed, function() {
+      if (isVisible) { jqNav.hide(); }
+    });
+    jqToggle.animate({ left: toggleLeft }, speed);
+    jqBody.animate({ marginLeft: bodyMargin }, speed);
+
+    var arrow = isVisible ? '\u25B6' : '\u25C0';
+    jqToggle.find('span').text(arrow);
+  });
+})();
+</script>
+</body></html>

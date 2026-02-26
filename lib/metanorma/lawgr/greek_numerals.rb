@@ -9,6 +9,11 @@ module Metanorma
         "ΕΚΤΟ", "ΕΒΔΟΜΟ", "ΟΓΔΟΟ", "ΕΝΑΤΟ", "ΔΕΚΑΤΟ"
       ].freeze
 
+      EDAFIO_ORDINALS = [
+        "", "πρώτο", "δεύτερο", "τρίτο", "τέταρτο", "πέμπτο",
+        "έκτο", "έβδομο", "όγδοο", "ένατο", "δέκατο"
+      ].freeze
+
       GREEK_UPPER_LETTERS = %w[
         Α Β Γ Δ Ε Ζ Η Θ Ι Κ Λ Μ Ν Ξ Ο Π Ρ Σ Τ Υ Φ Χ Ψ Ω
       ].freeze
@@ -39,6 +44,16 @@ module Metanorma
         return "" if n <= 0 || n > GREEK_UPPER_LETTERS.length
 
         "#{GREEK_UPPER_LETTERS[n - 1]}'"
+      end
+
+      # Εδάφιο ordinal word (neuter gender, lowercase).
+      # 1→πρώτο, 2→δεύτερο, etc.
+      # Falls back to Arabic numeral string for n > 10.
+      def self.edafio_ordinal(n)
+        return n.to_s if n <= 0
+        return EDAFIO_ORDINALS[n] if n < EDAFIO_ORDINALS.length
+
+        n.to_s
       end
 
       # Book ordinal word (neuter gender, uppercase).

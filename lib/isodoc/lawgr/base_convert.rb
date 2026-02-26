@@ -131,6 +131,23 @@ module IsoDoc
         super
         @lang = "el" if docxml.xpath(ns("//bibdata/language")).empty?
       end
+
+      # Override parse to handle εδάφιο markers
+      def parse(node, out)
+        if !node.text? && node.name == "eb"
+          eb_parse(node, out)
+        else
+          super
+        end
+      end
+
+      # Render εδάφιο markers as HTML anchors.
+      # The <eb/> element itself has no visible content, but creates
+      # an anchor point for cross-references and URL fragments.
+      def eb_parse(node, out)
+        return unless node["id"]
+        out.a **attr_code(id: node["id"])
+      end
     end
   end
 end
