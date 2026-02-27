@@ -11,19 +11,39 @@ module IsoDoc
       end
 
       def default_fonts(options)
-        {
-          bodyfont: '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
-          headerfont: '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
-          monospacefont: '"JetBrains Mono", "Fira Code", "Courier New", monospace',
-          normalfontsize: "16px",
-          footnotefontsize: "0.9em",
-        }
+        if options[:alt]
+          {
+            bodyfont: '"Lato", sans-serif',
+            headerfont: '"Lato", sans-serif',
+            monospacefont: '"Space Mono", monospace',
+            normalfontsize: "1.0em",
+            smallerfontsize: "0.9em",
+            footnotefontsize: "0.9em",
+            monospacefontsize: "0.8em",
+          }
+        else
+          {
+            bodyfont: '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
+            headerfont: '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
+            monospacefont: '"JetBrains Mono", "Fira Code", "Courier New", monospace',
+            normalfontsize: "16px",
+            footnotefontsize: "0.9em",
+          }
+        end
       end
 
-      def default_file_locations(_options)
+      def default_file_locations(options)
         {
-          htmlstylesheet: html_doc_path("htmlstyle.css"),
-          htmlcoverpage: html_doc_path("html_lawgr_titlepage.html"),
+          htmlstylesheet: (if options[:alt]
+                             html_doc_path("htmlstyle-alt.css")
+                           else
+                             html_doc_path("htmlstyle.css")
+                           end),
+          htmlcoverpage: (if options[:alt]
+                            html_doc_path("html_lawgr_titlepage-alt.html")
+                          else
+                            html_doc_path("html_lawgr_titlepage.html")
+                          end),
           htmlintropage: html_doc_path("html_lawgr_intro.html"),
           scripts_override: html_doc_path("scripts_override.html"),
         }
@@ -32,6 +52,8 @@ module IsoDoc
       def googlefonts
         <<~HEAD.freeze
           <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,900" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css?family=Space+Mono:400,400i,700,700i&display=swap" rel="stylesheet">
         HEAD
       end
 

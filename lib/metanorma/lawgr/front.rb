@@ -21,6 +21,8 @@ module Metanorma
 
       def metadata_ext(node, xml)
         super
+        dl = node.attr("doctype_label") || node.attr("doctype-label")
+        xml.send("doctype-label", dl) if dl
         metadata_fek(node, xml)
         inh = node.attr("inheritnumbering")
         xml.inheritnumbering inh if inh

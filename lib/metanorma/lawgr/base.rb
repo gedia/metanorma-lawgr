@@ -24,6 +24,8 @@ module Metanorma
       def outputs(node, ret)
         File.open("#{@filename}.xml", "w:UTF-8") { |f| f.write(ret) }
         presentation_xml_converter(node).convert("#{@filename}.xml")
+        html_converter_alt(node).convert("#{@filename}.presentation.xml",
+                                         nil, false, "#{@filename}_alt.html")
         html_converter(node).convert("#{@filename}.presentation.xml",
                                      nil, false, "#{@filename}.html")
       end
@@ -37,6 +39,11 @@ module Metanorma
 
       def html_converter(node)
         IsoDoc::Lawgr::HtmlConvert.new(html_extract_attributes(node))
+      end
+
+      def html_converter_alt(node)
+        IsoDoc::Lawgr::HtmlConvert.new(html_extract_attributes(node)
+                                       .merge(alt: true))
       end
 
     end

@@ -36,6 +36,12 @@
       <optional>
         <ref name="fek"/>
       </optional>
+      <optional>
+        <element name="doctype-label"><text/></element>
+      </optional>
+      <optional>
+        <element name="inheritnumbering"><text/></element>
+      </optional>
     </define>
   </include>
   <define name="fek">

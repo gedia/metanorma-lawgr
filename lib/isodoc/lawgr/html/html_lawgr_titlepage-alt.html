@@ -1,0 +1,27 @@
+<div id='toggle'> <span>&#x25C0;</span> </div>
+<div class="coverpage">
+  <div class="doctitle-el">
+    <div class="doctitle-main">{{ doctitle }}</div>
+    {% if docsubtitle %}
+    <div class="doctitle-sub">{{ docsubtitle }}</div>
+    {% endif %}
+    <div class="doctitle-meta">
+      <div class="meta-left">
+        {% if doctype_label and docnumber %}
+        <span class="meta-item"><span class="meta-label">{{ doctype_label }}</span> {{ docnumber }}</span>
+        {% endif %}
+        {% if fek_number %}
+        <span class="meta-item"><span class="meta-label">ΦΕΚ</span> {{ fek_series }} {{ fek_number }}/{{ fek_year }}</span>
+        {% endif %}
+        {% if pubdate %}
+        <span class="meta-item"><span class="meta-label">Ημερομηνία</span> {{ pubdate }}</span>
+        {% endif %}
+      </div>
+      {% if publisher %}
+      <div class="meta-right">
+        <span class="meta-item">{{ publisher }}</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

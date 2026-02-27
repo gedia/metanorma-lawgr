@@ -36,6 +36,21 @@ module IsoDoc
         set(:fek_year, isoxml.at(ns("//bibdata/ext/fek/year"))&.text)
       end
 
+      DOCTYPE_LABELS = {
+        "act" => "Αριθμός Νόμου",
+        "pd"  => "Αριθμός Π.Δ.",
+        "ap"  => "Αριθμός Απόφασης",
+        "egk" => "Αριθμός Εγκυκλίου",
+      }.freeze
+
+      def doctype(isoxml, _out)
+        super
+        dt = isoxml.at(ns("//bibdata/ext/doctype"))&.text
+        lbl = isoxml.at(ns("//bibdata/ext/doctype-label"))&.text
+        lbl ||= DOCTYPE_LABELS[dt] || dt
+        set(:doctype_label, lbl)
+      end
+
       def docid(isoxml, _out)
         dn = isoxml.at(ns("//bibdata/docidentifier"))&.text
         set(:docnumber, dn)

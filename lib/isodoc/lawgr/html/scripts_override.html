@@ -4,17 +4,26 @@
 // animates nav left + body marginLeft.  We remove it and replace
 // with a single handler that also slides #toggle in sync and
 // keeps a minimum body margin so content never overlaps the widget.
+//
+// On load (desktop only), we also sync body margin + toggle position
+// to the actual computed nav width.  This supports the alt theme's
+// dynamic-width nav (max-content clamped to 250px–20vw).
 (function() {
   var jqToggle = $('#toggle');
   var jqNav = $('nav');
   var jqBody = $('body');
   if (!jqToggle.length || !jqNav.length) return;
 
+  var GAP = 12;
   var navWidth = parseInt(jqNav.css('width')) || 278;
   var toggleWidth = jqToggle.outerWidth() || 30;
-  var gap = parseInt(jqBody.css('margin-left')) - navWidth - toggleWidth;
-  if (gap < 0) gap = 12;
   var speed = 'slow';
+
+  // Sync initial layout to actual computed nav width (desktop only).
+  if (window.matchMedia('(min-width: 768px)').matches) {
+    jqToggle.css('left', navWidth + 'px');
+    jqBody.css('marginLeft', (navWidth + toggleWidth + GAP) + 'px');
+  }
 
   // Remove base isodoc toggle handler to prevent double animation.
   jqToggle.off('click');
@@ -25,8 +34,8 @@
     var navLeft      = isVisible ? '-' + navWidth + 'px' : '0px';
     var toggleLeft   = isVisible ? '0px' : navWidth + 'px';
     var bodyMargin   = isVisible
-      ? (toggleWidth + gap) + 'px'
-      : (navWidth + toggleWidth + gap) + 'px';
+      ? (toggleWidth + GAP) + 'px'
+      : (navWidth + toggleWidth + GAP) + 'px';
 
     // Stop any in-flight animations.
     jqNav.stop(true, true);
